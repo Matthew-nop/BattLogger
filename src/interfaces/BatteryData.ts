@@ -1,5 +1,5 @@
 export interface BatteryData {
-  id: number;
+  id: string;
   hr_identifier: string;
   model_id: string;
   last_tested_capacity: number;

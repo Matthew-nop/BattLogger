@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			return `
 				<tr>
-					<td>${row.id}</td>
+					<td title="ID: ${row.id}">${row.hr_identifier}</td>
 					<td><a href="#" class="model-link" data-guid="${row.model_id}">${modelName}</a></td>
 					<td><a href="#" class="battery-link" data-id="${row.id}">${row.last_tested_capacity}</a></td>
 					<td>${row.last_tested_timestamp}</td>

@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 			testData = await testDataResponse.json();
 			const allBatteries: BatteryData[] = await batteryDataResponse.json();
-			const batteryDetails = allBatteries.find(battery => battery.id === parseInt(batteryId as string));
+			const batteryDetails = allBatteries.find(battery => battery.id === batteryId as string);
 
 			if (!batteryDetails) {
 				throw new Error('Battery details not found.');

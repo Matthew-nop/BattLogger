@@ -43,7 +43,7 @@ export async function createTables(db: Database): Promise<void> {
 		)`);
 
 		await runAsync(`CREATE TABLE IF NOT EXISTS batteries (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			id TEXT PRIMARY KEY,
 			hr_identifier TEXT NOT NULL,
 			model_id TEXT NOT NULL,
 			FOREIGN KEY (model_id) REFERENCES models(id)

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { Database, RunResult } from 'sqlite3';
+import { randomUUID } from 'crypto';
 
 import { CreateBatteryParams } from '../interfaces/CreateBatteryParams';
 import { BatteryData } from '../interfaces/BatteryData';
@@ -86,7 +87,7 @@ export const getBattery = (db: Database) => (req: Request<{ batteryId: string }>
 	});
 };
 
-export const createBattery = (db: Database) => (req: Request<{}, {}, CreateBatteryParams>, res: Response<{ message: string, id: number } | { error: string }>) => {
+export const createBattery = (db: Database) => (req: Request<{}, {}, CreateBatteryParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
 	const { hrIdentifier, modelIdentifier } = req.body;
 
 	if (!modelIdentifier) {
@@ -100,15 +101,17 @@ export const createBattery = (db: Database) => (req: Request<{}, {}, CreateBatte
 		return;
 	}
 
-	db.run("INSERT INTO batteries (hr_identifier, model_id) VALUES (?, ?)",
-		[hrIdentifier, modelIdentifier],
+	const newBatteryId = randomUUID();
+
+	db.run("INSERT INTO batteries (id, hr_identifier, model_id) VALUES (?, ?, ?)",
+		[newBatteryId, hrIdentifier, modelIdentifier],
 		function (this: RunResult, err: Error | null) {
 			if (err) {
 				console.error('Error inserting battery:', err.message);
 				res.status(500).json({ error: 'Failed to add battery.' });
 				return;
 			}
-			res.status(201).json({ message: 'Battery added successfully', id: this.lastID });
+			res.status(201).json({ message: 'Battery added successfully', id: newBatteryId });
 		}
 	);
 };
