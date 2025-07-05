@@ -14,7 +14,8 @@ export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryP
 		bd.id as id,
 		bd.hr_identifier,
 		bd.model_id,
-		bt.capacity AS last_tested_capacity
+		bt.capacity AS last_tested_capacity,
+		bt.timestamp AS last_tested_timestamp
 	FROM
 		batteries bd
 	LEFT JOIN models m ON bd.model_id = m.id
