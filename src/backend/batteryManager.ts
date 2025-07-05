@@ -15,10 +15,14 @@ export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryP
 		bd.hr_identifier,
 		bd.model_id,
 		bt.capacity AS last_tested_capacity,
-		bt.timestamp AS last_tested_timestamp
+		bt.timestamp AS last_tested_timestamp,
+		c.name AS chemistry_name,
+		ff.name AS formfactor_name
 	FROM
 		batteries bd
 	LEFT JOIN models m ON bd.model_id = m.id
+	LEFT JOIN chemistries c ON m.chemistry_id = c.id
+	LEFT JOIN formfactors ff ON m.formfactor_id = ff.id
 	LEFT JOIN (
 		SELECT
 			battery_id,

@@ -1,3 +1,5 @@
+import { BatteryData } from '../interfaces/BatteryData';
+
 document.addEventListener('DOMContentLoaded', () => {
 	let sortColumn: string = 'id';
 	let sortOrder: string = 'asc';
@@ -124,24 +126,20 @@ document.addEventListener('DOMContentLoaded', () => {
 				url += `&chemistry=${chemistryFilter}`;
 			}
 
-			const [dataResponse, modelDetailsResponse, chemistryDetailsResponse, formFactorDetailsResponse] = await Promise.all([
+			const [dataResponse, modelDetailsResponse] = await Promise.all([
 				fetch(url),
-				fetch('/api/model_details'),
-				fetch('/api/chemistry_details'),
-				fetch('/api/formfactor_details')
+				fetch('/api/model_details')
 			]);
-			const data = await dataResponse.json();
+			const data: BatteryData[] = await dataResponse.json();
 			const modelDetails = await modelDetailsResponse.json();
-			const chemistryDetails = await chemistryDetailsResponse.json();
-			const formFactorDetails = await formFactorDetailsResponse.json();
-			renderTable(data, modelDetails, chemistryDetails, formFactorDetails);
+			renderTable(data, modelDetails);
 		} catch (error) {
 			console.error('Error fetching data:', error);
 			document.querySelector('tbody')!.innerHTML = '<tr><td colspan="6">Error loading data.</td></tr>';
 		}
 	}
 
-	function renderTable(data: any[], modelDetails: any, chemistryDetails: any, formFactorDetails: any) {
+	function renderTable(data: BatteryData[], modelDetails: any) {
 		const tableBody = document.querySelector('tbody');
 		if (!tableBody) {
 			return;
@@ -149,8 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		tableBody.innerHTML = data.map(row => {
 			const modelName = modelDetails[row.model_id]?.name || 'N/A';
-			const chemistryName = chemistryDetails[row.chemistry_identifier]?.name || 'N/A';
-			const formfactorName = formFactorDetails[row.formfactor_id]?.name || 'N/A';
 
 			return `
 				<tr>
@@ -158,8 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
 					<td><a href="#" class="model-link" data-guid="${row.model_id}">${modelName}</a></td>
 					<td><a href="#" class="battery-link" data-id="${row.id}">${row.last_tested_capacity}</a></td>
 					<td>${row.last_tested_timestamp}</td>
-					<td>${chemistryName}</td>
-					<td>${formfactorName}</td>
+					<td>${row.chemistry_name}</td>
+					<td>${row.formfactor_name}</td>
 				</tr>
 			`;
 		}).join('');
