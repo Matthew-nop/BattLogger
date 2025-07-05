@@ -80,6 +80,24 @@ document.addEventListener('DOMContentLoaded', () => {
 		fetchData(); // Refresh data after closing popup
 	});
 
+	const addTestBtn = document.getElementById('addTestBtn');
+	const addTestOverlay = document.getElementById('addTestOverlay') as HTMLElement;
+	const addTestIframe = document.getElementById('addTestIframe') as HTMLIFrameElement;
+	const closeAddTestPopupBtn = document.getElementById('closeAddTestPopupBtn') as HTMLButtonElement;
+
+	if (addTestBtn) {
+		addTestBtn.addEventListener('click', () => {
+			addTestIframe.src = '/add_test_info';
+			addTestOverlay.classList.add('visible');
+		});
+	}
+
+	closeAddTestPopupBtn.addEventListener('click', () => {
+		addTestOverlay.classList.remove('visible');
+		addTestIframe.src = ''; // Clear iframe content
+		fetchData(); // Refresh data after closing popup
+	});
+
 	const applyFiltersBtn = document.getElementById('applyFiltersBtn');
 	if (applyFiltersBtn) {
 		applyFiltersBtn.addEventListener('click', () => {

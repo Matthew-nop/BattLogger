@@ -46,6 +46,11 @@
 			"source": "src/frontend/components/model-details/model_details.html",
 			"distDir": "dist/frontend/model-details",
 			"publicUrl": "/model-details/"
+		},
+		"@addTest": {
+			"source": "src/frontend/components/add-test-info/add_test_info.html",
+			"distDir": "dist/frontend/add-test-info",
+			"publicUrl": "/add-test-info/"
 		}
 	},
 	"dependencies": {
