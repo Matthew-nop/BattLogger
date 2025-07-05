@@ -60,6 +60,24 @@ a {
   border-radius: 5px;
 }
 
+.filters {
+  display: flex;
+  align-items: center;
+  gap: $spacing-unit;
+
+  label {
+    white-space: nowrap;
+  }
+
+  select {
+    flex-grow: 1;
+  }
+
+  button {
+    margin-top: 0; // Override global button margin for alignment
+  }
+}
+
 .form-container {
   max-width: 500px;
   margin: 2 * $spacing-unit auto;
@@ -71,44 +89,9 @@ a {
 }
 
 // Form Elements
-.filters {
-  label {
-    margin-right: $spacing-unit;
-  }
 
-  input {
-    padding: 5px;
-    margin-right: $spacing-unit;
-  }
-}
 
-.form-group {
-  margin-bottom: 1.5 * $spacing-unit;
 
-  label {
-    display: block;
-    margin-bottom: 0.5 * $spacing-unit;
-    font-weight: bold;
-  }
-
-  input[type="text"],
-  input[type="number"],
-  input[type="date"],
-  select,
-  textarea {
-    width: 100%;
-    padding: $spacing-unit;
-    border: 1px solid $border-color;
-    border-radius: 4px;
-    box-sizing: border-box;
-
-    &:focus {
-      border-color: #88bbee;
-      outline: none;
-      box-shadow: 0 0 5px rgba(136, 187, 238, 0.5);
-    }
-  }
-}
 
 .form-actions {
   margin-top: 2 * $spacing-unit;
@@ -133,20 +116,7 @@ button {
   }
 }
 
-// Selects (matching button style)
-select {
-  padding: $spacing-unit 1.5 * $spacing-unit;
-  cursor: pointer;
-  background-color: $primary-color;
-  border: none;
-  border-radius: 5px;
-  margin-top: $spacing-unit;
-  margin-right: $spacing-unit; // Keep some margin for filters
 
-  &:hover {
-    background-color: $primary-hover-color;
-  }
-}
 
 // Table Styles
 table {
@@ -299,4 +269,30 @@ span {
   font-size: 24px;
   cursor: pointer;
   color: #333;
+}
+
+/* Text input field styles */
+.input-base {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+  &:focus {
+    border-color: #88bbee;
+    outline: none;
+    box-shadow: 0 0 5px rgba(136, 187, 238, 0.5);
+  }
+}
+
+.text-input, select.text-input {
+  @extend .input-base;
+  width: 100%;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+.filter-input {
+  @extend .input-base;
 }
