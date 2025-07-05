@@ -1,0 +1,13 @@
+dist/
+node_modules/
+
+*.sublime-project
+*.sublime-workspace
+
+.DS_Store
+ehthumbs.db
+Thumbs.db
+
+*.log
+*.sql
+*.sqlite
