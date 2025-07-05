@@ -172,9 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
 				<tr>
 					<td title="ID: ${row.id}">${row.hr_identifier}</td>
 					<td><a href="#" class="model-link" data-guid="${row.model_id}">${modelName}</a></td>
-					<td><a href="#" class="battery-link" data-id="${row.id}">${row.last_tested_capacity}</a></td>
-					<td>${row.last_tested_timestamp}</td>
-					<td>${row.chemistry_name}</td>
+					<td><a href="#" class="battery-link" data-id="${row.id}">${row.last_tested_capacity !== null ? row.last_tested_capacity : 'N/A'}</a></td>
+					<td>${row.last_tested_timestamp !== null ? row.last_tested_timestamp : 'N/A'}</td>
+					<td>${row.chemistry_name !== null ? row.chemistry_name : 'N/A'}</td>
 					<td>${row.formfactor_name}</td>
 				</tr>
 			`;
