@@ -9,6 +9,11 @@ import { Chemistry } from '../../interfaces/Chemistry';
 import { FormFactor } from '../../interfaces/FormFactor';
 import { ModelDataDTO } from '../../interfaces/ModelDataDTO';
 
+export const isValidUUID = (uuid: string): boolean => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
+};
+
 export const stmtRunAsync = (stmt: sqlite3.Statement, params: any[] = []): Promise<sqlite3.RunResult> => {
 	return new Promise((resolve, reject) => {
 		stmt.run(params, function (this: sqlite3.RunResult, err: Error | null) {
