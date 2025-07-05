@@ -7,7 +7,7 @@ import { GetDataQueryParams } from '../interfaces/GetDataQueryParams';
 
 import { modelDetails } from './modelManager';
 
-export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryParams>, res: Response) => {
+export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryParams>, res: Response<BatteryData[]>) => {
 	const { sortBy, order = 'asc', name, formfactor, chemistry } = req.query as GetDataQueryParams;
 	let query = `
 	SELECT
@@ -66,7 +66,7 @@ export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryP
 	});
 };
 
-export const getBattery = (db: Database) => (req: Request<{ batteryId: string }>, res: Response) => {
+export const getBattery = (db: Database) => (req: Request<{ batteryId: string }>, res: Response<BatteryData | { error: string }>) => {
 	const batteryId = req.params.batteryId;
 	db.get<BatteryData>("SELECT id, hr_identifier, model_id FROM batteries WHERE id = ?", [batteryId], (err: Error | null, row: BatteryData) => {
 		if (err) {
@@ -82,7 +82,7 @@ export const getBattery = (db: Database) => (req: Request<{ batteryId: string }>
 	});
 };
 
-export const createBattery = (db: Database) => (req: Request<{}, {}, CreateBatteryParams>, res: Response) => {
+export const createBattery = (db: Database) => (req: Request<{}, {}, CreateBatteryParams>, res: Response<{ message: string, id: number } | { error: string }>) => {
 	const { hrIdentifier, modelIdentifier } = req.body;
 
 	if (!modelIdentifier) {
@@ -109,7 +109,7 @@ export const createBattery = (db: Database) => (req: Request<{}, {}, CreateBatte
 	);
 };
 
-export const updateBattery = (db: Database) => (req: Request<{ batteryId: string }, {}, CreateBatteryParams>, res: Response) => {
+export const updateBattery = (db: Database) => (req: Request<{ batteryId: string }, {}, CreateBatteryParams>, res: Response<{ message: string } | { error: string }>) => {
 	const batteryId = req.params.batteryId;
 	const { hrIdentifier, modelIdentifier } = req.body;
 
@@ -142,7 +142,7 @@ export const updateBattery = (db: Database) => (req: Request<{ batteryId: string
 	);
 };
 
-export const deleteBattery = (db: Database) => (req: Request<{ batteryId: string }>, res: Response) => {
+export const deleteBattery = (db: Database) => (req: Request<{ batteryId: string }>, res: Response<{ message: string } | { error: string }>) => {
 	const batteryId = req.params.batteryId;
 
 	db.run("DELETE FROM batteries WHERE id = ?", [batteryId], function (this: RunResult, err: Error | null) {

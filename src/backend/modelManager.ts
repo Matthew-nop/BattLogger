@@ -55,15 +55,15 @@ export function loadModelMap(): Map<string, string> {
 export let modelMap = loadModelMap();
 export let modelDetails = loadModelDetails();
 
-export const getModelMap = (req: Request, res: Response) => {
+export const getModelMap = (req: Request, res: Response<Record<string, string>>) => {
 	res.json(Object.fromEntries(modelMap));
 };
 
-export const getModelDetails = (req: Request, res: Response) => {
+export const getModelDetails = (req: Request, res: Response<Record<string, Model>>) => {
 	res.json(Object.fromEntries(modelDetails));
 };
 
-export const getModelDetailsForId = (req: Request<{ guid: string }>, res: Response) => {
+export const getModelDetailsForId = (req: Request<{ guid: string }>, res: Response<Model | { error: string }>) => {
 	const guid = req.params.guid;
 	const model = modelDetails.get(guid);
 	if (model) {
@@ -73,7 +73,7 @@ export const getModelDetailsForId = (req: Request<{ guid: string }>, res: Respon
 	}
 };
 
-export const createModel = (req: Request<{}, {}, CreateModelParams>, res: Response) => {
+export const createModel = (req: Request<{}, {}, CreateModelParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
 	const { name, designCapacity, formFactorId, chemistryId, manufacturer } = req.body;
 
 	if (!name || !designCapacity || !formFactorId || !chemistryId) {
