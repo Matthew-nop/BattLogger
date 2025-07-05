@@ -1,17 +1,17 @@
-import { AddFormFactorRequestBody } from '../../interfaces/AddFormFactorRequestBody';
+import { CreateFormFactorParams } from '../../interfaces/CreateFormFactorParams';
 
 document.addEventListener('DOMContentLoaded', async () => {
 	document.getElementById('createFormFactorSubmit')?.addEventListener('click', async () => {
-		const formfactor = (document.getElementById('formfactor') as HTMLInputElement).value;
+		const name = (document.getElementById('formfactor') as HTMLInputElement).value;
 
 		// Basic validation
-		if (!formfactor) {
+		if (!name) {
 			alert('Please enter a form factor.');
 			return;
 		}
 
-		const newFormFactor: AddFormFactorRequestBody = {
-			formfactor
+		const newFormFactor: CreateFormFactorParams = {
+			name
 		};
 
 		try {

@@ -1,11 +1,14 @@
 import * as sqlite3 from 'sqlite3';
 
 import { createTables } from './create_tables';
-import { loadModelDetails, loadChemistryDetails, loadFormFactorDetails, populateModelsTable, populateChemistriesTable, populateFormFactorsTable } from './dataLoader';
+import { loadChemistryDetails, populateChemistriesTable } from './chemistryManager';
+import { loadFormFactorDetails, populateFormFactorsTable } from './formfactorManager';
+import { loadModelDetails, populateModelsTable } from './modelManager';
+import { stmtRunAsync } from './utils/dbUtils';
 
-import { Model } from '../interfaces/Model';
 import { Chemistry } from '../interfaces/Chemistry';
 import { FormFactor } from '../interfaces/FormFactor';
+import { Model } from '../interfaces/Model';
 
 // Create a new database file
 const db = new sqlite3.Database('./database.sqlite', (err: Error | null) => {
@@ -14,19 +17,6 @@ const db = new sqlite3.Database('./database.sqlite', (err: Error | null) => {
 	}
 	console.log('Connected to the SQLite database.');
 });
-
-// Helper function to promisify stmt.run
-const stmtRunAsync = (stmt: sqlite3.Statement, params: any[] = []): Promise<sqlite3.RunResult> => {
-	return new Promise((resolve, reject) => {
-		stmt.run(params, function(this: sqlite3.RunResult, err: Error | null) {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(this);
-			}
-		});
-	});
-};
 
 // Create a table and insert some data
 (async () => {
@@ -42,7 +32,7 @@ const stmtRunAsync = (stmt: sqlite3.Statement, params: any[] = []): Promise<sqli
 		await populateChemistriesTable(db, chemistryDetails);
 		await populateFormFactorsTable(db, formFactorDetails);
 
-		const batteryStmt = db.prepare("INSERT INTO battery_data (hr_identifier, model_id) VALUES (?, ?)");
+		const batteryStmt = db.prepare("INSERT INTO batteries (hr_identifier, model_id) VALUES (?, ?)");
 		const testStmt = db.prepare("INSERT INTO battery_tests (battery_id, capacity, timestamp) VALUES (?, ?, ?)");
 
 		const modelKeys = Array.from(modelDetails.keys());

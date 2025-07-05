@@ -3,6 +3,7 @@ import sqlite3 from 'sqlite3';
 import path from 'path';
 
 import { setupPageRoutes } from './pageRoutes';
+import { setupApiRoutes } from './apiRoutes';
 
 const distPath = path.join(__dirname, '..', '..', 'dist');
 
@@ -21,6 +22,7 @@ app.use(express.static(distPath));
 app.use('/components', express.static(path.join(distPath, 'components')));
 app.use(express.json()); // Enable JSON body parsing
 
+setupApiRoutes(app, db);
 setupPageRoutes(app);
 
 app.listen(port, () => {
