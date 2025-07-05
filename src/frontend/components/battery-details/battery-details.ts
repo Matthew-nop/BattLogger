@@ -42,7 +42,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 			document.getElementById('designCapacity')!.textContent = `${designCapacity} mAh [${batteryDetails.formfactor_name}, ${batteryDetails.chemistry_name}]`;
 			const latestTest = testData[0];
-			document.getElementById('latestTestInfo')!.textContent = `${latestTest.capacity} mAh [${new Date(latestTest.timestamp).toISOString()}]`;
+			if (latestTest) {
+				document.getElementById('latestTestInfo')!.textContent = `${latestTest.capacity} mAh [${new Date(latestTest.timestamp).toISOString()}]`;
+			} else {
+				document.getElementById('latestTestInfo')!.textContent = 'No test data available';
+			}
 
 			// Sort data by date in ascending order for chart
 			testData.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
