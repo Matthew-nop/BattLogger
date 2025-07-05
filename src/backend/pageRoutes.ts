@@ -32,6 +32,10 @@ export function setupPageRoutes(app: any) {
 		res.sendFile(path.join(frontendPath, 'add-test-info', 'add_test_info.html'));
 	});
 
+	app.get('/battery_summary', (req: Request, res: Response) => {
+		res.sendFile(path.join(frontendPath, 'battery-summary', 'battery_summary.html'));
+	});
+
 	app.get('/', (req: Request, res: Response) => {
 		res.sendFile(path.join(frontendPath, 'index.html'));
 	});

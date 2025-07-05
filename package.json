@@ -51,6 +51,11 @@
 			"source": "src/frontend/components/add-test-info/add_test_info.html",
 			"distDir": "dist/frontend/add-test-info",
 			"publicUrl": "/add-test-info/"
+		},
+		"@batterySummary": {
+			"source": "src/frontend/components/battery-summary/battery_summary.html",
+			"distDir": "dist/frontend/battery-summary",
+			"publicUrl": "/battery-summary/"
 		}
 	},
 	"dependencies": {

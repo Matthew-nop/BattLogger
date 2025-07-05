@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			return `
 				<tr>
-					<td title="ID: ${row.id}">${row.hr_identifier}</td>
+					<td><a href="#" class="battery-summary-link" data-id="${row.id}" title="ID: ${row.id}">${row.hr_identifier}</a></td>
 					<td><a href="#" class="model-link" data-guid="${row.model_id}">${modelName}</a></td>
 					<td><a href="#" class="battery-link" data-id="${row.id}">${row.last_tested_capacity !== null ? row.last_tested_capacity : 'N/A'}</a></td>
 					<td>${row.last_tested_timestamp !== null ? row.last_tested_timestamp : 'N/A'}</td>
@@ -225,6 +225,27 @@ document.addEventListener('DOMContentLoaded', () => {
 	closePopupBtn.addEventListener('click', () => {
 		modelDetailsOverlay.classList.remove('visible');
 		modelDetailsIframe.src = ''; // Clear iframe content
+	});
+
+	const batterySummaryOverlay = document.getElementById('batterySummaryOverlay') as HTMLElement;
+	const batterySummaryIframe = document.getElementById('batterySummaryIframe') as HTMLIFrameElement;
+	const closeBatterySummaryPopupBtn = document.getElementById('closeBatterySummaryPopupBtn') as HTMLButtonElement;
+
+	document.addEventListener('click', (e) => {
+		const target = e.target as HTMLElement;
+		if (target.classList.contains('battery-summary-link')) {
+			e.preventDefault();
+			const id = target.dataset.id;
+			if (id) {
+				batterySummaryIframe.src = `/battery_summary?batteryId=${id}`;
+				batterySummaryOverlay.classList.add('visible');
+			}
+		}
+	});
+
+	closeBatterySummaryPopupBtn.addEventListener('click', () => {
+		batterySummaryOverlay.classList.remove('visible');
+		batterySummaryIframe.src = ''; // Clear iframe content
 	});
 
 	const batteryDetailsOverlay = document.getElementById('batteryDetailsOverlay') as HTMLElement;

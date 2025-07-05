@@ -87,6 +87,48 @@ export const getBattery = (db: Database) => (req: Request<{ batteryId: string }>
 	});
 };
 
+export const getBatteryDetailsForId = (db: Database) => (req: Request<{ batteryId: string }>, res: Response<BatteryData | { error: string }>) => {
+	const batteryId = req.params.batteryId;
+	const query = `
+		SELECT
+			b.id,
+			b.hr_identifier,
+			b.model_id,
+			bt.capacity AS last_tested_capacity,
+			bt.timestamp AS last_tested_timestamp,
+			c.name AS chemistry_name,
+			ff.name AS formfactor_name
+		FROM
+			batteries b
+		LEFT JOIN models m ON b.model_id = m.id
+		LEFT JOIN chemistries c ON m.chemistry_id = c.id
+		LEFT JOIN formfactors ff ON m.formfactor_id = ff.id
+		LEFT JOIN (
+			SELECT
+				battery_id,
+				capacity,
+				timestamp,
+				ROW_NUMBER() OVER(PARTITION BY battery_id ORDER BY timestamp DESC) as rn
+			FROM
+				battery_tests
+		) bt ON b.id = bt.battery_id AND bt.rn = 1
+		WHERE b.id = ?
+	`;
+
+	db.get<BatteryData>(query, [batteryId], (err: Error | null, row: BatteryData) => {
+		if (err) {
+			console.error(err.message);
+			res.status(500).json({ error: 'Failed to retrieve battery details.' });
+			return;
+		}
+		if (row) {
+			res.json(row);
+		} else {
+			res.status(404).json({ error: 'Battery not found' });
+		}
+	});
+};
+
 export const createBattery = (db: Database) => (req: Request<{}, {}, CreateBatteryParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
 	const { hrIdentifier, modelIdentifier } = req.body;
 
