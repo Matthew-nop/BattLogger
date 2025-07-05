@@ -6,7 +6,7 @@
   "scripts": {
     "build": "build/build.sh",
     "start": "node dist/backend/server.js",
-    "setup": "tsc && node dist/backend/setup_database.js"
+    "setup": "npm run build && node dist/backend/setup_database.js"
   },
   "dependencies": {
     "express": "^5.1.0",
