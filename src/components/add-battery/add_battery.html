@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Add Battery</title>
+	<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+	<h1>Add Battery</h1>
+
+	<div class="form-container">
+		<div class="form-group">
+			<label for="hrIdentifier">HR Identifier:</label>
+			<input type="text" id="hrIdentifier" required>
+		</div>
+		<div class="form-group">
+			<label for="modelIdentifier">Model:</label>
+			<select id="modelIdentifier" required>
+				<option value="">Select Model</option>
+			</select>
+		</div>
+
+		<div class="form-actions">
+			<button id="addBatterySubmit">Add</button>
+		</div>
+	</div>
+	<br>
+
+	<script type="module" src="/components/add-battery/add-battery.js"></script>
+
+</body>
+</html>
