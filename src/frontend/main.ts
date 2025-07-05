@@ -1,4 +1,5 @@
 import { BatteryData } from '../interfaces/BatteryData';
+import { ModelDataDTO } from '../interfaces/ModelDataDTO';
 
 document.addEventListener('DOMContentLoaded', () => {
 	let sortColumn: string = 'id';
@@ -139,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 
-	function renderTable(data: BatteryData[], modelDetails: any) {
+	function renderTable(data: BatteryData[], modelDetails: Record<string, ModelDataDTO>) {
 		const tableBody = document.querySelector('tbody');
 		if (!tableBody) {
 			return;

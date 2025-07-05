@@ -14,7 +14,7 @@ export function setupApiRoutes(app: Application, db: Database) {
 	app.get('/api/model_details', getModelDetails);
 	app.get('/api/chemistry_details', getChemistryDetails);
 	app.get('/api/formfactor_details', getFormFactorDetails);
-	app.get('/api/model_details_data/:guid', getModelDetailsForId);
+	app.get('/api/model_details_data/:guid', getModelDetailsForId(db));
 	app.get('/api/battery_tests/:batteryId', getBatteryTests(db));
 	app.get('/api/battery/:batteryId', getBattery(db));
 

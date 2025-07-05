@@ -8,7 +8,7 @@ import { stmtRunAsync } from './utils/dbUtils';
 
 import { Chemistry } from '../interfaces/Chemistry';
 import { FormFactor } from '../interfaces/FormFactor';
-import { Model } from '../interfaces/Model';
+import { ModelDataDTO } from '../interfaces/ModelDataDTO';
 
 // Create a new database file
 const db = new sqlite3.Database('./database.sqlite', (err: Error | null) => {
@@ -24,7 +24,7 @@ const db = new sqlite3.Database('./database.sqlite', (err: Error | null) => {
 
 		await createTables(db);
 
-		const modelDetails: Map<string, Model> = loadModelDetails();
+		const modelDetails: Map<string, ModelDataDTO> = loadModelDetails();
 		const chemistryDetails: Map<string, Chemistry> = loadChemistryDetails();
 		const formFactorDetails: Map<string, FormFactor> = loadFormFactorDetails();
 
@@ -41,7 +41,7 @@ const db = new sqlite3.Database('./database.sqlite', (err: Error | null) => {
 
 		for (let i = 0; i < 10; i++) {
 			const randomModelKey = modelKeys[Math.floor(Math.random() * modelKeys.length)];
-			const model: Model | undefined = modelDetails.get(randomModelKey);
+			const model: ModelDataDTO | undefined = modelDetails.get(randomModelKey);
 			if (model) {
 				const batteryResult = await stmtRunAsync(batteryStmt, [`HR-${Math.floor(Math.random() * 10000)}`, model.id]);
 				const batteryId = batteryResult.lastID;

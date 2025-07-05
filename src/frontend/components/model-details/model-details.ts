@@ -1,38 +1,31 @@
+import { ModelDataDTO } from '../../../interfaces/ModelDataDTO';
+
 document.addEventListener('DOMContentLoaded', async () => {
-	const urlParams = new URLSearchParams(window.location.search);
-	const guid = urlParams.get('guid');
+  const guid = new URLSearchParams(window.location.search).get('guid');
 
-	if (!guid) {
-		console.error('Model GUID not found in URL.');
-		return;
-	}
+  if (!guid) {
+    console.error('Model GUID not found in URL.');
+    return;
+  }
 
-	try {
-		const [modelDetailsResponse, formFactorDetailsResponse, chemistryDetailsResponse] = await Promise.all([
-			fetch(`/api/model_details_data/${guid}`),
-			fetch('/api/formfactor_details'),
-			fetch('/api/chemistry_details')
-		]);
+  try {
+    const modelDetailsResponse = await fetch(`/api/model_details_data/${guid}`);
 
-		if (!modelDetailsResponse.ok) {
-			throw new Error(`Failed to fetch model details: ${modelDetailsResponse.statusText}`);
-		}
+    if (!modelDetailsResponse.ok) {
+      throw new Error(`Failed to fetch model details: ${modelDetailsResponse.statusText}`);
+    }
 
-		const model = await modelDetailsResponse.json();
-		const formFactorDetails = await formFactorDetailsResponse.json();
-		const chemistryDetails = await chemistryDetailsResponse.json();
+    const model: ModelDataDTO = await modelDetailsResponse.json();
 
-		const formfactor = formFactorDetails[model.formFactorId]?.formfactor || 'N/A';
-		const chemistry = chemistryDetails[model.chemistryId]?.name || 'N/A';
+    document.getElementById('name')!.textContent = model.name;
+    document.getElementById('modelId')!.textContent = model.id;
+    document.getElementById('designCapacity')!.textContent = model.designCapacity.toString();
+    document.getElementById('formfactor')!.textContent = model.formfactor_name || 'N/A';
+    document.getElementById('chemistry')!.textContent = model.chemistry_name || 'N/A';
+    document.getElementById('manufacturer')!.textContent = model.manufacturer || 'N/A';
 
-		document.getElementById('name')!.textContent = model.name;
-		document.getElementById('modelId')!.textContent = model.id;
-		document.getElementById('designCapacity')!.textContent = model.designCapacity;
-		document.getElementById('formfactor')!.textContent = formfactor;
-		document.getElementById('chemistry')!.textContent = chemistry;
-		document.getElementById('manufacturer')!.textContent = model.manufacturer || 'N/A';
-
-	} catch (error) {
-		console.error('Error fetching model details:', error);
-	}
+  } catch (error) {
+    console.error('Error fetching model details:', error);
+    alert('An error occurred while fetching model details.');
+  }
 });

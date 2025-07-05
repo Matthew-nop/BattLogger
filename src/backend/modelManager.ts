@@ -5,15 +5,15 @@ import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 import * as sqlite3 from 'sqlite3';
 
-import { Model } from '../interfaces/Model';
+import { ModelDataDTO } from '../interfaces/ModelDataDTO';
 import { CreateModelParams } from '../interfaces/CreateModelParams';
 import { stmtRunAsync } from './utils/dbUtils';
 
 const dataPath = path.join(__dirname, '..', '..', 'data');
 
 // Function to load model details from JSON files
-export function loadModelDetails(): Map<string, Model> {
-	const modelDetails = new Map<string, Model>();
+export function loadModelDetails(): Map<string, ModelDataDTO> {
+	const modelDetails = new Map<string, ModelDataDTO>();
 	const modelsDir = path.join(dataPath, 'models');
 	const files = fs.readdirSync(modelsDir);
 
@@ -26,7 +26,7 @@ export function loadModelDetails(): Map<string, Model> {
 	return modelDetails;
 }
 
-export async function populateModelsTable(db: sqlite3.Database, models: Map<string, Model>): Promise<void> {
+export async function populateModelsTable(db: sqlite3.Database, models: Map<string, ModelDataDTO>): Promise<void> {
 	const stmt = db.prepare("INSERT OR IGNORE INTO models (id, name, design_capacity, manufacturer, chemistry_id, formfactor_id) VALUES (?, ?, ?, ?, ?, ?)");
 	for (const [guid, model] of models.entries()) {
 		await stmtRunAsync(stmt, [
@@ -59,18 +59,41 @@ export const getModelMap = (req: Request, res: Response<Record<string, string>>)
 	res.json(Object.fromEntries(modelMap));
 };
 
-export const getModelDetails = (req: Request, res: Response<Record<string, Model>>) => {
+export const getModelDetails = (req: Request, res: Response<Record<string, ModelDataDTO>>) => {
 	res.json(Object.fromEntries(modelDetails));
 };
 
-export const getModelDetailsForId = (req: Request<{ guid: string }>, res: Response<Model | { error: string }>) => {
+export const getModelDetailsForId = (db: sqlite3.Database) => (req: Request<{ guid: string }>, res: Response<ModelDataDTO | { error: string }>) => {
 	const guid = req.params.guid;
-	const model = modelDetails.get(guid);
-	if (model) {
-		res.json(model);
-	} else {
-		res.status(404).json({ error: 'Model not found' });
-	}
+	db.get<ModelDataDTO>(
+		`SELECT
+			m.id,
+			m.name,
+			m.design_capacity AS designCapacity,
+			m.manufacturer,
+			m.chemistry_id AS chemistryId,
+			m.formfactor_id AS formFactorId,
+			c.name AS chemistry_name,
+			ff.name AS formfactor_name
+		FROM
+			models m
+		LEFT JOIN chemistries c ON m.chemistry_id = c.id
+		LEFT JOIN formfactors ff ON m.formfactor_id = ff.id
+		WHERE m.id = ?`,
+		[guid],
+		(err: Error | null, row: ModelDataDTO) => {
+			if (err) {
+				console.error(err.message);
+				res.status(500).json({ error: 'Failed to retrieve model details.' });
+				return;
+			}
+			if (row) {
+				res.json(row);
+			} else {
+				res.status(404).json({ error: 'Model not found' });
+			}
+		}
+	);
 };
 
 export const createModel = (req: Request<{}, {}, CreateModelParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
