@@ -1,3 +1,5 @@
+import { CreateBatteryParams } from '../../../interfaces/CreateBatteryParams';
+
 document.addEventListener('DOMContentLoaded', async () => {
 	const modelSelect = document.getElementById('modelIdentifier') as HTMLSelectElement;
 
@@ -20,9 +22,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 	document.getElementById('addBatterySubmit')?.addEventListener('click', async () => {
 		const hrIdentifier = (document.getElementById('hrIdentifier') as HTMLInputElement).value;
 		const modelIdentifier = modelSelect.value;
-		const lastTestedCapacity = parseInt((document.getElementById('lastTestedCapacity') as HTMLInputElement).value);
-		const lastTestedTimestamp = (document.getElementById('lastTestedDate') as HTMLInputElement).value;
-		const manufacturer = (document.getElementById('manufacturer') as HTMLInputElement).value;
 
 		// Basic validation
 		if (!hrIdentifier || !modelIdentifier) {
@@ -30,12 +29,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 			return;
 		}
 
-		const newBattery = {
+		const newBattery: CreateBatteryParams = {
 			hrIdentifier,
-			modelIdentifier,
-			lastTestedCapacity: isNaN(lastTestedCapacity) ? null : lastTestedCapacity,
-			lastTestedTimestamp: lastTestedTimestamp || null,
-			manufacturer: manufacturer || null
+			modelIdentifier
 		};
 
 		try {

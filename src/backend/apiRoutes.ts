@@ -2,7 +2,7 @@ import { Application } from 'express';
 import { Database } from 'sqlite3';
 
 import { createBattery, deleteBattery, getBattery, getData, updateBattery } from './batteryManager';
-import { addBatteryTest, getBatteryTests } from './testManager';
+import { addBatteryTestRunInfo, getBatteryTests } from './testManager';
 import { createChemistry, getChemistryDetails } from './chemistryManager';
 import { createFormFactor, getFormFactorDetails } from './formfactorManager';
 import { createModel, getModelDetails, getModelDetailsForId, getModelMap } from './modelManager';
@@ -24,6 +24,6 @@ export function setupApiRoutes(app: Application, db: Database) {
 	app.post('/api/create_battery', createBattery(db));
 	app.put('/api/battery/:batteryId', updateBattery(db));
 	app.delete('/api/battery/:batteryId', deleteBattery(db));
-	app.post('/api/battery_test/:batteryId', addBatteryTest(db));
+	app.post('/api/battery_test', addBatteryTestRunInfo(db));
 
 }

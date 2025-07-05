@@ -25,7 +25,7 @@ export async function populateChemistriesTable(db: sqlite3.Database, chemistries
 	console.log('Chemistries table populated.');
 }
 
-export const getChemistryDetails = (req: Request, res: Response) => {
+export const getChemistryDetails = (req: Request, res: Response<Record<string, Chemistry>>) => {
 	res.json(Object.fromEntries(chemistryDetails));
 };
 
@@ -44,8 +44,8 @@ export function loadChemistryDetails(): Map<string, Chemistry> {
 	return chemistryDetails;
 }
 
-export const createChemistry = (req: Request, res: Response) => {
-	const { name, nominalVoltage } = req.body as CreateChemistryParams;
+export const createChemistry = (req: Request<{}, {}, CreateChemistryParams>, res: Response) => {
+	const { name, nominalVoltage } = req.body;
 
 	if (!name || isNaN(nominalVoltage)) {
 		res.status(400).json({ error: 'Missing required fields.' });

@@ -1,10 +1,9 @@
 import { Request, Response } from 'express';
 import { Database, RunResult } from 'sqlite3';
 
-import { AddBatteryRequestBody } from '../interfaces/AddBatteryRequestBody';
+import { CreateBatteryParams } from '../interfaces/CreateBatteryParams';
 import { BatteryData } from '../interfaces/BatteryData';
 import { GetDataQueryParams } from '../interfaces/GetDataQueryParams';
-import { TestRunInfo } from '../interfaces/TestRunInfo';
 
 import { modelDetails } from './modelManager';
 
@@ -41,8 +40,7 @@ export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryP
 		params.push(formfactor);
 	}
 	if (chemistry) {
-		conditions.push(`m.chemistry_id = ?`);
-		params.push(chemistry);
+		conditions.push(`m.chemistry_id = ?`);		params.push(chemistry);
 	}
 
 	if (conditions.length > 0) {
@@ -67,7 +65,7 @@ export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryP
 	});
 };
 
-export const getBattery = (db: Database) => (req: Request, res: Response) => {
+export const getBattery = (db: Database) => (req: Request<{ batteryId: string }>, res: Response) => {
 	const batteryId = req.params.batteryId;
 	db.get<BatteryData>("SELECT id, hr_identifier, model_id FROM batteries WHERE id = ?", [batteryId], (err: Error | null, row: BatteryData) => {
 		if (err) {
@@ -83,8 +81,8 @@ export const getBattery = (db: Database) => (req: Request, res: Response) => {
 	});
 };
 
-export const createBattery = (db: Database) => (req: Request, res: Response) => {
-	const { hrIdentifier, modelIdentifier, manufacturer } = req.body as AddBatteryRequestBody;
+export const createBattery = (db: Database) => (req: Request<{}, {}, CreateBatteryParams>, res: Response) => {
+	const { hrIdentifier, modelIdentifier } = req.body;
 
 	if (!modelIdentifier) {
 		res.status(400).json({ error: 'Missing required fields.' });
@@ -110,9 +108,9 @@ export const createBattery = (db: Database) => (req: Request, res: Response) => 
 	);
 };
 
-export const updateBattery = (db: Database) => (req: Request, res: Response) => {
+export const updateBattery = (db: Database) => (req: Request<{ batteryId: string }, {}, CreateBatteryParams>, res: Response) => {
 	const batteryId = req.params.batteryId;
-	const { hrIdentifier, modelIdentifier } = req.body as AddBatteryRequestBody;
+	const { hrIdentifier, modelIdentifier } = req.body;
 
 	if (!hrIdentifier || !modelIdentifier) {
 		res.status(400).json({ error: 'Missing required fields.' });
@@ -143,7 +141,7 @@ export const updateBattery = (db: Database) => (req: Request, res: Response) => 
 	);
 };
 
-export const deleteBattery = (db: Database) => (req: Request, res: Response) => {
+export const deleteBattery = (db: Database) => (req: Request<{ batteryId: string }>, res: Response) => {
 	const batteryId = req.params.batteryId;
 
 	db.run("DELETE FROM batteries WHERE id = ?", [batteryId], function (this: RunResult, err: Error | null) {

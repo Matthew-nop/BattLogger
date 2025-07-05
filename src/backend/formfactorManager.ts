@@ -40,12 +40,12 @@ export async function populateFormFactorsTable(db: sqlite3.Database, formFactors
 	console.log('Form Factors table populated.');
 }
 
-export const getFormFactorDetails = (req: Request, res: Response) => {
+export const getFormFactorDetails = (req: Request, res: Response<Record<string, FormFactor>>) => {
 	res.json(Object.fromEntries(formFactorDetails));
 };
 
-export const createFormFactor = (req: Request, res: Response) => {
-	const { name } = req.body as CreateFormFactorParams;
+export const createFormFactor = (req: Request<{}, {}, CreateFormFactorParams>, res: Response) => {
+	const { name } = req.body;
 
 	if (!name) {
 		res.status(400).json({ error: 'Missing required fields.' });
