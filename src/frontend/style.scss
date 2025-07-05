@@ -295,4 +295,5 @@ span {
 
 .filter-input {
   @extend .input-base;
+  flex-grow: 1;
 }

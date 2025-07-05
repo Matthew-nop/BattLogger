@@ -20,10 +20,9 @@
 	</div>
 
 	<div class="filters">
-		<label for="nameFilter">Model Name:</label>
-		<select id="nameFilter" class="filter-input">
-			<option value="">All</option>
-		</select>
+		<label for="nameFilter">Model:</label>
+		<input type="text" id="nameFilter" class="filter-input" list="modelNames" placeholder="Molicel M35A">
+		<datalist id="modelNames"></datalist>
 
 		<label for="formfactorFilter">Form Factor:</label>
 		<select id="formfactorFilter" class="filter-input">
@@ -36,6 +35,7 @@
 		</select>
 
 		<button id="applyFiltersBtn">Apply Filters</button>
+		<button id="clearFiltersBtn">Clear Filters</button>
 	</div>
 
 	<table>

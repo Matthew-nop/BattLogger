@@ -83,14 +83,33 @@ document.addEventListener('DOMContentLoaded', () => {
 	const applyFiltersBtn = document.getElementById('applyFiltersBtn');
 	if (applyFiltersBtn) {
 		applyFiltersBtn.addEventListener('click', () => {
-			const nameFilterElement = document.getElementById('nameFilter');
-			nameFilter = (nameFilterElement instanceof HTMLSelectElement) ? nameFilterElement.value : '';
+			const nameFilterElement = document.getElementById('nameFilter') as HTMLInputElement;
+			const selectedModelName = nameFilterElement.value;
+			// Find the GUID for the selected model name
+			const modelNamesDatalist = document.getElementById('modelNames') as HTMLDataListElement;
+			const selectedOption = Array.from(modelNamesDatalist.options).find(option => option.value === selectedModelName);
+			nameFilter = selectedOption?.dataset.guid || '';
 
 			const formFactorFilterElement = document.getElementById('formfactorFilter');
 			formfactorFilter = (formFactorFilterElement instanceof HTMLSelectElement) ? formFactorFilterElement.value : '';
 
 			const chemistryFilterElement = document.getElementById('chemistryFilter');
 			chemistryFilter = (chemistryFilterElement instanceof HTMLSelectElement) ? chemistryFilterElement.value : '';
+			fetchData();
+		});
+	}
+
+	const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+	if (clearFiltersBtn) {
+		clearFiltersBtn.addEventListener('click', () => {
+			nameFilter = '';
+			formfactorFilter = '';
+			chemistryFilter = '';
+
+			(document.getElementById('nameFilter') as HTMLInputElement).value = '';
+			(document.getElementById('formfactorFilter') as HTMLSelectElement).value = '';
+			(document.getElementById('chemistryFilter') as HTMLSelectElement).value = '';
+
 			fetchData();
 		});
 	}
@@ -118,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (nameFilter) {
 				url += `&name=${nameFilter}`;
 			}
-			
+
 
 			if (formfactorFilter) {
 				url += `&formfactor=${formfactorFilter}`;
@@ -263,13 +282,13 @@ document.addEventListener('DOMContentLoaded', () => {
 				});
 			}
 
-			const modelSelect = document.getElementById('nameFilter');
-			if (modelSelect instanceof HTMLSelectElement) {
+			const modelDatalist = document.getElementById('modelNames');
+			if (modelDatalist) {
 				models.forEach((name, guid) => {
 					const option = document.createElement('option');
-					option.value = guid;
-					option.textContent = name;
-					modelSelect.appendChild(option);
+					option.value = name;
+					option.dataset.guid = guid;
+					modelDatalist.appendChild(option);
 				});
 			}
 
