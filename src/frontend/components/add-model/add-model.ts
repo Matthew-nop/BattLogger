@@ -1,7 +1,7 @@
 
-import { Chemistry } from '../../interfaces/Chemistry';
-import { FormFactor } from '../../interfaces/FormFactor';
-import { CreateModelParams } from '../../interfaces/CreateModelParams';
+import { Chemistry } from '../../../interfaces/Chemistry';
+import { FormFactor } from '../../../interfaces/FormFactor';
+import { CreateModelParams } from '../../../interfaces/CreateModelParams';
 document.addEventListener('DOMContentLoaded', async () => {
   const formFactorSelect = document.getElementById('formFactorId') as HTMLSelectElement;
   const chemistrySelect = document.getElementById('chemistryId') as HTMLSelectElement;
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     for (const guid in formFactorDetails) {
       const option = document.createElement('option');
       option.value = guid;
-      option.textContent = formFactorDetails[guid].formfactor;
+      option.textContent = formFactorDetails[guid].name;
       formFactorSelect.appendChild(option);
     }
 

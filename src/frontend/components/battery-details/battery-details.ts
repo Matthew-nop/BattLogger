@@ -1,4 +1,4 @@
-
+import Chart from 'chart.js/auto'
 
 document.addEventListener('DOMContentLoaded', async () => {
 	const batteryId = window.location.pathname.split('/').pop();
@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	const toggleViewBtn = document.getElementById('toggleViewBtn') as HTMLButtonElement;
 	let currentView = 'chart'; // 'chart' or 'table'
 	let testData: any[] = [];
+	let capacityChart: Chart | null = null; // Store chart instance
 
 	const fetchData = async () => {
 		try {
@@ -74,7 +75,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 		if (!ctx) {
 			return;
 		}
-		new Chart(ctx, {
+
+		// Destroy existing chart if it exists
+		if (capacityChart) {
+			capacityChart.destroy();
+		}
+
+		capacityChart = new Chart(ctx, {
 			type: 'line',
 			data: {
 				labels: data.map(row => new Date(row.timestamp).toLocaleString()),

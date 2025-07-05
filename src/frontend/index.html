@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>SQLite Data Table</title>
+	<link rel="stylesheet" href="style.scss">
+</head>
+<body>
+
+	<h1>Battery Data</h1>
+
+	<div class="create-options-container">
+		<div class="create-options-left">
+			<button id="addBatteryBtn">Add New Battery</button>
+		</div>
+		<div class="create-options-right">
+			<button id="addModelBtn">Add New Model</button>
+			<button id="addFormFactorBtn">Add New Form Factor</button>
+			<button id="addChemistryBtn">Add New Chemistry</button>
+		</div>
+	</div>
+
+	<div class="filters">
+		<label for="nameFilter">Model Name:</label>
+		<select id="nameFilter">
+			<option value="">All</option>
+		</select>
+
+		<label for="formfactorFilter">Form Factor:</label>
+		<select id="formfactorFilter">
+			<option value="">All</option>
+		</select>
+
+		<label for="chemistryFilter">Chemistry:</label>
+		<select id="chemistryFilter">
+			<option value="">All</option>
+		</select>
+
+		<button id="applyFiltersBtn">Apply Filters</button>
+	</div>
+
+	<table>
+		<thead>
+			<tr>
+				<th data-sort="id">ID</th>
+				<th data-sort="model_id">Model Name</th>
+				
+				<th data-sort="last_tested_capacity">Last Tested Capacity</th>
+				<th data-sort="last_tested_timestamp">Last Tested Date</th>
+				<th data-sort="chemistry_identifier">Chemistry</th>
+				<th data-sort="formfactor_id">Form Factor</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td colspan="6">Loading...</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div id="modelDetailsOverlay" class="overlay">
+		<div class="popup">
+			<button id="closePopupBtn" class="close-btn">&times;</button>
+			<iframe id="modelDetailsIframe" frameborder="0" data-parcel-ignore></iframe>
+		</div>
+	</div>
+
+	<div id="batteryDetailsOverlay" class="overlay">
+		<div class="popup battery-details-popup">
+			<button id="closeBatteryPopupBtn" class="close-btn">&times;</button>
+			<iframe id="batteryDetailsIframe" frameborder="0" data-parcel-ignore></iframe>
+		</div>
+	</div>
+
+	<div id="addBatteryOverlay" class="overlay">
+		<div class="popup">
+			<button id="closeAddBatteryPopupBtn" class="close-btn">&times;</button>
+			<iframe id="addBatteryIframe" frameborder="0" data-parcel-ignore></iframe>
+		</div>
+	</div>
+
+	<div id="addModelOverlay" class="overlay">
+		<div class="popup">
+			<button id="closeAddModelPopupBtn" class="close-btn">&times;</button>
+			<iframe id="addModelIframe" frameborder="0" data-parcel-ignore></iframe>
+		</div>
+	</div>
+
+	<div id="addFormFactorOverlay" class="overlay">
+		<div class="popup">
+			<button id="closeAddFormFactorPopupBtn" class="close-btn">&times;</button>
+			<iframe id="addFormFactorIframe" frameborder="0" data-parcel-ignore></iframe>
+		</div>
+	</div>
+
+	<div id="addChemistryOverlay" class="overlay">
+		<div class="popup">
+			<button id="closeAddChemistryPopupBtn" class="close-btn">&times;</button>
+			<iframe id="addChemistryIframe" frameborder="0" data-parcel-ignore></iframe>
+		</div>
+	</div>
+
+	<link rel="stylesheet" href="style.scss">
+
+	<script src="./main.ts" type="module"></script>
+</body>
+</html>

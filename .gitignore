@@ -1,5 +1,6 @@
 dist/
 node_modules/
+.parcel-cache/
 
 *.sublime-project
 *.sublime-workspace

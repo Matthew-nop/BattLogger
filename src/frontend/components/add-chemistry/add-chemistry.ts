@@ -1,4 +1,4 @@
-import { CreateChemistryParams } from '../../interfaces/CreateChemistryParams';
+import { CreateChemistryParams } from '../../../interfaces/CreateChemistryParams';
 
 document.addEventListener('DOMContentLoaded', async () => {
 	document.getElementById('createChemistrySubmit')?.addEventListener('click', async () => {

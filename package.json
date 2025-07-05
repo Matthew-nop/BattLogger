@@ -1,23 +1,64 @@
 {
-  "name": "batt-logger",
-  "version": "0.0.1",
-  "description": "Logging and tracking app for batteries",
-  "main": "dist/backend/server.js",
-  "scripts": {
-    "build": "build/build.sh",
-    "start": "node dist/backend/server.js",
-    "setup": "npm run build && node dist/backend/setup_database.js"
-  },
-  "dependencies": {
-    "express": "^5.1.0",
-    "sqlite3": "^5.1.7"
-  },
-  "devDependencies": {
-    "@types/chart.js": "^2.9.41",
-    "@types/express": "^5.0.3",
-    "@types/node": "^24.0.10",
-    "@types/sqlite3": "^3.1.11",
-    "sass": "^1.89.2",
-    "typescript": "^5.8.3"
-  }
+	"name": "batt-logger",
+	"version": "0.0.1",
+	"description": "Logging and tracking app for batteries",
+	"main": "dist/backend/server.js",
+	"scripts": {
+		"build": "build/build.sh && npm run build:backend && npm run build:frontend",
+		"build:backend": "tsc -p tsconfig.json",
+		"build:frontend": "parcel build",
+		"start": "node dist/backend/server.js",
+		"setup": "npm run build && node dist/backend/setup_database.js"
+	},
+	"targets": {
+		"@mainPage": {
+			"source": "src/frontend/index.html",
+			"distDir": "dist/frontend",
+			"publicUrl": "."
+		},
+		"@addModel": {
+			"source": "src/frontend/components/add-model/add_model.html",
+			"distDir": "dist/frontend/add-model",
+			"publicUrl": "/add-model/"
+		},
+		"@addBattery": {
+			"source": "src/frontend/components/add-battery/add_battery.html",
+			"distDir": "dist/frontend/add-battery",
+			"publicUrl": "/add-battery/"
+		},
+		"@addChemistry": {
+			"source": "src/frontend/components/add-chemistry/add_chemistry.html",
+			"distDir": "dist/frontend/add-chemistry",
+			"publicUrl": "/add-chemistry/"
+		},
+		"@addFormfactor": {
+			"source": "src/frontend/components/add-formfactor/add_formfactor.html",
+			"distDir": "dist/frontend/add-formfactor",
+			"publicUrl": "/add-formfactor/"
+		},
+		"@batteryDetails": {
+			"source": "src/frontend/components/battery-details/battery_details.html",
+			"distDir": "dist/frontend/battery-details",
+			"publicUrl": "/battery-details/"
+		},
+		"@modelDetails": {
+			"source": "src/frontend/components/model-details/model_details.html",
+			"distDir": "dist/frontend/model-details",
+			"publicUrl": "/model-details/"
+		}
+	},
+	"dependencies": {
+		"chart.js": "^4.5.0",
+		"express": "^5.1.0",
+		"sqlite3": "^5.1.7"
+	},
+	"devDependencies": {
+		"@parcel/transformer-sass": "^2.15.4",
+		"@types/express": "^5.0.3",
+		"@types/node": "^24.0.10",
+		"@types/sqlite3": "^5.1.0",
+		"parcel": "^2.15.4",
+		"sass": "^1.89.2",
+		"typescript": "^5.8.3"
+	}
 }

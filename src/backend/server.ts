@@ -5,8 +5,6 @@ import path from 'path';
 import { setupPageRoutes } from './pageRoutes';
 import { setupApiRoutes } from './apiRoutes';
 
-const distPath = path.join(__dirname, '..', '..', 'dist');
-
 const app: any = express();
 
 const port = 3000;
@@ -18,8 +16,8 @@ const db = new sqlite3.Database('./database.sqlite', (err: Error | null) => {
 	console.log('Connected to the SQLite database.');
 });
 
-app.use(express.static(distPath));
-app.use('/components', express.static(path.join(distPath, 'components')));
+const frontendPath = path.join(__dirname, '..', '..', 'dist', 'frontend');
+app.use(express.static(frontendPath));
 app.use(express.json()); // Enable JSON body parsing
 
 setupApiRoutes(app, db);
