@@ -54,7 +54,7 @@ export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryP
 	}
 
 	if (sortBy) {
-		query += ` ORDER BY ${sortBy} ${sortOrder}`;
+		query += ` ORDER BY ${sortBy} ${order}`;
 	}
 
 	db.all<BatteryData>(query, params, (err: Error | null, rows: BatteryData[]) => {
