@@ -1,13 +1,39 @@
 import * as sqlite3 from 'sqlite3';
 
+import { createTables } from '../create_tables';
+import { loadChemistryDetails, populateChemistriesTable } from '../chemistryManager';
+import { loadFormFactorDetails, populateFormFactorsTable } from '../formfactorManager';
+import { loadModelDetails, populateModelsTable } from '../modelManager';
+
+import { Chemistry } from '../../interfaces/Chemistry';
+import { FormFactor } from '../../interfaces/FormFactor';
+import { ModelDataDTO } from '../../interfaces/ModelDataDTO';
+
 export const stmtRunAsync = (stmt: sqlite3.Statement, params: any[] = []): Promise<sqlite3.RunResult> => {
-  return new Promise((resolve, reject) => {
-    stmt.run(params, function(this: sqlite3.RunResult, err: Error | null) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(this);
-      }
-    });
-  });
+	return new Promise((resolve, reject) => {
+		stmt.run(params, function (this: sqlite3.RunResult, err: Error | null) {
+			if (err) {
+				reject(err);
+			} else {
+				resolve(this);
+			}
+		});
+	});
+};
+
+export const initializeDatabase = async (db: sqlite3.Database): Promise<void> => {
+	try {
+		await createTables(db);
+
+		const modelDetails: Map<string, ModelDataDTO> = loadModelDetails();
+		const chemistryDetails: Map<string, Chemistry> = loadChemistryDetails();
+		const formFactorDetails: Map<string, FormFactor> = loadFormFactorDetails();
+
+		await populateModelsTable(db, modelDetails);
+		await populateChemistriesTable(db, chemistryDetails);
+		await populateFormFactorsTable(db, formFactorDetails);
+
+	} catch (err: any) {
+		console.error(err.message);
+	}
 };
