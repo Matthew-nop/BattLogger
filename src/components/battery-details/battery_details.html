@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Battery Details</title>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+	<div class="battery-info">
+		<p><strong>Design Capacity:</strong> <span id="designCapacity"></span></p>
+		<p><strong>Last Tested Capacity:</strong> <span id="latestTestInfo"></span></p>
+	</div>
+	<div class="button-container">
+		<button id="toggleViewBtn">Show Table</button>
+	</div>
+	<div id="chartContainer">
+		<canvas id="capacityChart"></canvas>
+	</div>
+	<table id="testDataTable" class="hidden-table">
+		<thead>
+			<tr>
+				<th>Capacity</th>
+				<th>Timestamp</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td colspan="2">Loading...</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<script type="module" src="/components/battery-details/battery-details.js"></script>
+
+</body>
+</html>
