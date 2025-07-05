@@ -54,13 +54,7 @@ export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryP
 	}
 
 	if (sortBy) {
-		const allowedColumns = ['id', 'hr_identifier', 'model_id', 'last_tested_capacity'];
-		if (allowedColumns.includes(sortBy as string)) {
-			const sortOrder = (order as string).toUpperCase();
-			if (sortOrder === 'ASC' || sortOrder === 'DESC') {
-				query += ` ORDER BY ${sortBy} ${sortOrder}`;
-			}
-		}
+		query += ` ORDER BY ${sortBy} ${sortOrder}`;
 	}
 
 	db.all<BatteryData>(query, params, (err: Error | null, rows: BatteryData[]) => {
