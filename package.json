@@ -1,0 +1,23 @@
+{
+  "name": "batt-logger",
+  "version": "0.0.1",
+  "description": "Logging and tracking app for batteries",
+  "main": "dist/backend/server.js",
+  "scripts": {
+    "build": "build/build.sh",
+    "start": "node dist/backend/server.js",
+    "setup": "tsc && node dist/backend/setup_database.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@types/chart.js": "^2.9.41",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.10",
+    "@types/sqlite3": "^3.1.11",
+    "sass": "^1.89.2",
+    "typescript": "^5.8.3"
+  }
+}
