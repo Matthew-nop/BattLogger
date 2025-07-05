@@ -1,4 +1,5 @@
 import Chart from 'chart.js/auto'
+import { BatteryData } from '../../../interfaces/BatteryData';
 
 document.addEventListener('DOMContentLoaded', async () => {
 	const batteryId = window.location.pathname.split('/').pop();
@@ -12,47 +13,34 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 	const fetchData = async () => {
 		try {
-			const [testDataResponse, batteryDetailsResponse, modelDetailsResponse, formFactorDetailsResponse, chemistryDetailsResponse] = await Promise.all([
+			const [testDataResponse, batteryDataResponse] = await Promise.all([
 				fetch(`/api/battery_tests/${batteryId}`),
-				fetch(`/api/battery/${batteryId}`),
-				fetch('/api/model_details'),
-				fetch('/api/formfactor_details'),
-				fetch('/api/chemistry_details')
+				fetch('/api/data')
 			]);
+
 			if (!testDataResponse.ok) {
 				throw new Error(`Failed to fetch test data: ${testDataResponse.statusText}`);
 			}
-			else if (!batteryDetailsResponse.ok) {
-				throw new Error(`Failed to fetch battery details: ${batteryDetailsResponse.statusText}`);
-			}
-			else if (!modelDetailsResponse.ok) {
-				throw new Error(`Failed to fetch model details: ${modelDetailsResponse.statusText}`);
-			}
-			else if (!formFactorDetailsResponse.ok) {
-				throw new Error(`Failed to fetch form factor details: ${formFactorDetailsResponse.statusText}`);
-			}
-			else if (!chemistryDetailsResponse.ok) {
-				throw new Error(`Failed to fetch chemistry details: ${chemistryDetailsResponse.statusText}`);
+			if (!batteryDataResponse.ok) {
+				throw new Error(`Failed to fetch all batteries data: ${batteryDataResponse.statusText}`);
 			}
 
 			testData = await testDataResponse.json();
-			const batteryDetails = await batteryDetailsResponse.json();
-			const modelDetails = await modelDetailsResponse.json();
-			const formFactorDetails = await formFactorDetailsResponse.json();
-			const chemistryDetails = await chemistryDetailsResponse.json();
+			const allBatteries: BatteryData[] = await batteryDataResponse.json();
+			const batteryDetails = allBatteries.find(battery => battery.id === parseInt(batteryId as string));
 
-			console.log('Battery Details:', batteryDetails);
-			console.log('Model Details:', modelDetails);
-			console.log('Form Factor Details:', formFactorDetails);
+			if (!batteryDetails) {
+				throw new Error('Battery details not found.');
+			}
 
-			const designCapacity = modelDetails[batteryDetails.model_id]?.designCapacity;
-			const modelName = modelDetails[batteryDetails.model_id]?.name;
-			const formfactorName = formFactorDetails[batteryDetails.formfactor_id]?.name;
-			const chemistryName = chemistryDetails[batteryDetails.chemistry_identifier]?.name;
+			const designCapacityResponse = await fetch(`/api/model_details_data/${batteryDetails.model_id}`);
+			if (!designCapacityResponse.ok) {
+				throw new Error(`Failed to fetch model details for design capacity: ${designCapacityResponse.statusText}`);
+			}
+			const modelDetails = await designCapacityResponse.json();
+			const designCapacity = modelDetails.designCapacity;
 
-
-
-			document.getElementById('designCapacity')!.textContent = `${designCapacity} mAh [${formfactorName}, ${chemistryName}]`;
+			document.getElementById('designCapacity')!.textContent = `${designCapacity} mAh [${batteryDetails.formfactor_name}, ${batteryDetails.chemistry_name}]`;
 			const latestTest = testData[0];
 			document.getElementById('latestTestInfo')!.textContent = `${latestTest.capacity} mAh [${new Date(latestTest.timestamp).toISOString()}]`;
 
