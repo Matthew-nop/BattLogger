@@ -1,9 +1,9 @@
 export interface BatteryData {
 	id: string;
-	model_id: string;
-  last_tested_capacity: number;
-  last_tested_timestamp: string;
-  chemistry_name: string;
-  chemistry_short_name: string;
-  formfactor_name: string;
+	modelId: string;
+  lastTestedCapacity: number;
+  lastTestedTimestamp: string;
+  chemistryName: string;
+  chemistryShortName: string;
+  formfactorName: string;
 }

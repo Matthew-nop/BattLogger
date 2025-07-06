@@ -11,13 +11,13 @@ export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryP
 	const { sortBy, order = 'asc', name, formfactor, chemistry } = req.query as GetDataQueryParams;
 	let query = `
 	SELECT
-		bd.id as id,
-		bd.model_id,
-		bt.capacity AS last_tested_capacity,
-		bt.timestamp AS last_tested_timestamp,
-		c.name AS chemistry_name,
-		c.short_name AS chemistry_short_name,
-		ff.name AS formfactor_name
+		bd.id AS id,
+		bd.model_id AS modelId,
+		bt.capacity AS lastTestedCapacity,
+		bt.timestamp AS lastTestedTimestamp,
+		c.name AS chemistryName,
+		c.short_name AS chemistryShortName,
+		ff.name AS formfactorName
 	FROM
 		batteries bd
 	LEFT JOIN models m ON bd.model_id = m.id
@@ -66,7 +66,7 @@ export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryP
 
 export const getBattery = (db: Database) => (req: Request<{ batteryId: string }>, res: Response<BatteryData | { error: string }>) => {
 	const batteryId = req.params.batteryId;
-	db.get<BatteryData>("SELECT id, model_id FROM batteries WHERE id = ?", [batteryId], (err: Error | null, row: BatteryData) => {
+	db.get<BatteryData>("SELECT id, model_id AS modelId FROM batteries WHERE id = ?", [batteryId], (err: Error | null, row: BatteryData) => {
 		if (err) {
 			console.error(err.message);
 			res.status(500).json({ error: 'Failed to add battery.' });
@@ -85,11 +85,11 @@ export const getBatteryDetailsForId = (db: Database) => (req: Request<{ batteryI
 	const query = `
 		SELECT
 			b.id,
-			b.model_id,
-			bt.capacity AS last_tested_capacity,
-			bt.timestamp AS last_tested_timestamp,
-			c.name AS chemistry_name,
-			ff.name AS formfactor_name
+			b.model_id AS modelId,
+			bt.capacity AS lastTestedCapacity,
+			bt.timestamp AS lastTestedTimestamp,
+			c.name AS chemistryName,
+			ff.name AS formfactorName
 		FROM
 			batteries b
 		LEFT JOIN models m ON b.model_id = m.id

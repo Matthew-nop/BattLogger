@@ -33,14 +33,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 				throw new Error('Battery details not found.');
 			}
 
-			const designCapacityResponse = await fetch(`/api/model_details_data/${batteryDetails.model_id}`);
+			const designCapacityResponse = await fetch(`/api/model_details_data/${batteryDetails.modelId}`);
 			if (!designCapacityResponse.ok) {
 				throw new Error(`Failed to fetch model details for design capacity: ${designCapacityResponse.statusText}`);
 			}
 			const modelDetails = await designCapacityResponse.json();
 			const designCapacity = modelDetails.designCapacity;
 
-			document.getElementById('designCapacity')!.textContent = `${designCapacity} mAh [${batteryDetails.formfactor_name}, ${batteryDetails.chemistry_name}]`;
+			document.getElementById('designCapacity')!.textContent = `${designCapacity} mAh [${batteryDetails.formfactorName}, ${batteryDetails.chemistryName}]`;
 			const latestTest = testData[0];
 			if (latestTest) {
 				document.getElementById('latestTestInfo')!.textContent = `${latestTest.capacity} mAh [${new Date(latestTest.timestamp).toISOString()}]`;

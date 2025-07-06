@@ -184,16 +184,16 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 
 		tableBody.innerHTML = data.map(row => {
-			const modelName = modelDetails[row.model_id]?.name || 'N/A';
+			const modelName = modelDetails[row.modelId]?.name || 'N/A';
 
 			return `
 				<tr>
 					<td><a href="#" class="battery-summary-link" data-id="${row.id}" title="ID: ${row.id}">${row.id}</a></td>
-					<td><a href="#" class="model-link" data-guid="${row.model_id}">${modelName}</a></td>
-					<td><a href="#" class="battery-link" data-id="${row.id}">${row.last_tested_capacity !== null ? row.last_tested_capacity : 'N/A'}</a></td>
-					<td>${row.last_tested_timestamp !== null ? row.last_tested_timestamp : 'N/A'}</td>
-					<td>${row.chemistry_short_name !== null ? row.chemistry_short_name : 'N/A'}</td>
-					<td>${row.formfactor_name}</td>
+					<td><a href="#" class="model-link" data-guid="${row.modelId}">${modelName}</a></td>
+					<td><a href="#" class="battery-link" data-id="${row.id}">${row.lastTestedCapacity !== null ? row.lastTestedCapacity : 'N/A'}</a></td>
+					<td>${row.lastTestedTimestamp !== null ? row.lastTestedTimestamp : 'N/A'}</td>
+					<td>${row.chemistryShortName !== null ? row.chemistryShortName : 'N/A'}</td>
+					<td>${row.formfactorName}</td>
 				</tr>
 			`;
 		}).join('');
