@@ -21,17 +21,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 	}
 
 	document.getElementById('addBatterySubmit')?.addEventListener('click', async () => {
-		const hrIdentifier = (document.getElementById('hrIdentifier') as HTMLInputElement).value;
+		const id = (document.getElementById('id') as HTMLInputElement).value;
 		const modelIdentifier = modelSelect.value;
 
 		// Basic validation
-		if (!hrIdentifier || !modelIdentifier) {
-			alert('Please enter an HR Identifier and select a Model.');
+		if (!id || !modelIdentifier) {
+			alert('Please enter an ID and select a Model.');
 			return;
 		}
 
 		const newBattery: CreateBatteryParams = {
-			hrIdentifier,
+			id,
 			modelIdentifier
 		};
 

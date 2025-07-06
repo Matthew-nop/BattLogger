@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const model = await modelResponse.json();
 
         document.getElementById('batteryId')!.textContent = battery.id;
-        document.getElementById('hrIdentifier')!.textContent = battery.hr_identifier;
         document.getElementById('modelName')!.textContent = model?.name || 'N/A';
         document.getElementById('chemistryName')!.textContent = battery.chemistry_name || 'N/A';
         document.getElementById('formfactorName')!.textContent = battery.formfactor_name || 'N/A';

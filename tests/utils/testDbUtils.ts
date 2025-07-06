@@ -9,6 +9,7 @@ import { stmtRunAsync } from '../../src/backend/utils/dbUtils';
 import { Chemistry } from '../../src/interfaces/Chemistry';
 import { FormFactor } from '../../src/interfaces/FormFactor';
 import { ModelDataDTO } from '../../src/interfaces/ModelDataDTO';
+import { randomUUID } from 'crypto';
 
 export const insertDummyValues = async (db: sqlite3.Database): Promise<void> => {
 	try {
@@ -17,7 +18,7 @@ export const insertDummyValues = async (db: sqlite3.Database): Promise<void> => 
 		const formFactorDetails: Map<string, FormFactor> = loadFormFactorDetails();
 
 		// Insert dummy battery and test data as part of application setup
-		const batteryStmt = db.prepare("INSERT INTO batteries (hr_identifier, model_id) VALUES (?, ?)");
+		const batteryStmt = db.prepare("INSERT INTO batteries (id, model_id) VALUES (?, ?)");
 		const testStmt = db.prepare("INSERT INTO battery_tests (battery_id, capacity, timestamp) VALUES (?, ?, ?)");
 
 		const modelKeys = Array.from(modelDetails.keys());
@@ -28,8 +29,8 @@ export const insertDummyValues = async (db: sqlite3.Database): Promise<void> => 
 			const randomModelKey = modelKeys[Math.floor(Math.random() * modelKeys.length)];
 			const model: ModelDataDTO | undefined = modelDetails.get(randomModelKey);
 			if (model) {
-				const batteryResult = await stmtRunAsync(batteryStmt, [`HR-${Math.floor(Math.random() * 10000)}`, model.id]);
-				const batteryId = batteryResult.lastID;
+				const batteryId = randomUUID();
+				await stmtRunAsync(batteryStmt, [batteryId, model.id]);
 
 				// Insert 3 test records for each battery
 				for (let j = 0; j < 4; j++) {

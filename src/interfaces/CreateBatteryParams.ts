@@ -1,4 +1,4 @@
 export interface CreateBatteryParams {
-  hrIdentifier: string;
+  id: string;
   modelIdentifier: string;
 }

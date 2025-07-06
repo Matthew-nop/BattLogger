@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { Database, RunResult } from 'sqlite3';
-import { randomUUID } from 'crypto';
 
 import { CreateBatteryParams } from '../interfaces/CreateBatteryParams';
 import { BatteryData } from '../interfaces/BatteryData';
@@ -13,7 +12,6 @@ export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryP
 	let query = `
 	SELECT
 		bd.id as id,
-		bd.hr_identifier,
 		bd.model_id,
 		bt.capacity AS last_tested_capacity,
 		bt.timestamp AS last_tested_timestamp,
@@ -67,7 +65,7 @@ export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryP
 
 export const getBattery = (db: Database) => (req: Request<{ batteryId: string }>, res: Response<BatteryData | { error: string }>) => {
 	const batteryId = req.params.batteryId;
-	db.get<BatteryData>("SELECT id, hr_identifier, model_id FROM batteries WHERE id = ?", [batteryId], (err: Error | null, row: BatteryData) => {
+	db.get<BatteryData>("SELECT id, model_id FROM batteries WHERE id = ?", [batteryId], (err: Error | null, row: BatteryData) => {
 		if (err) {
 			console.error(err.message);
 			res.status(500).json({ error: 'Failed to add battery.' });
@@ -86,7 +84,6 @@ export const getBatteryDetailsForId = (db: Database) => (req: Request<{ batteryI
 	const query = `
 		SELECT
 			b.id,
-			b.hr_identifier,
 			b.model_id,
 			bt.capacity AS last_tested_capacity,
 			bt.timestamp AS last_tested_timestamp,
@@ -124,7 +121,7 @@ export const getBatteryDetailsForId = (db: Database) => (req: Request<{ batteryI
 };
 
 export const createBattery = (db: Database) => (req: Request<{}, {}, CreateBatteryParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
-	const { hrIdentifier, modelIdentifier } = req.body;
+	const { id, modelIdentifier } = req.body;
 
 	if (!modelIdentifier) {
 		res.status(400).json({ error: 'Missing required fields.' });
@@ -137,26 +134,24 @@ export const createBattery = (db: Database) => (req: Request<{}, {}, CreateBatte
 		return;
 	}
 
-	const newBatteryId = randomUUID();
-
-	db.run("INSERT INTO batteries (id, hr_identifier, model_id) VALUES (?, ?, ?)",
-		[newBatteryId, hrIdentifier, modelIdentifier],
+	db.run("INSERT INTO batteries (id, model_id) VALUES (?, ?)",
+		[id, modelIdentifier],
 		function (this: RunResult, err: Error | null) {
 			if (err) {
 				console.error('Error inserting battery:', err.message);
 				res.status(500).json({ error: 'Failed to add battery.' });
 				return;
 			}
-			res.status(201).json({ message: 'Battery added successfully', id: newBatteryId });
+			res.status(201).json({ message: 'Battery added successfully', id });
 		}
 	);
 };
 
 export const updateBattery = (db: Database) => (req: Request<{ batteryId: string }, {}, CreateBatteryParams>, res: Response<{ message: string } | { error: string }>) => {
 	const batteryId = req.params.batteryId;
-	const { hrIdentifier, modelIdentifier } = req.body;
+	const { modelIdentifier } = req.body;
 
-	if (!hrIdentifier || !modelIdentifier) {
+	if (!modelIdentifier) {
 		res.status(400).json({ error: 'Missing required fields.' });
 		return;
 	}
@@ -168,8 +163,8 @@ export const updateBattery = (db: Database) => (req: Request<{ batteryId: string
 	}
 
 	db.run(
-		"UPDATE batteries SET hr_identifier = ?, model_id = ? WHERE id = ?",
-		[hrIdentifier, modelIdentifier, batteryId],
+		"UPDATE batteries SET model_id = ? WHERE id = ?",
+		[modelIdentifier, batteryId],
 		function (this: RunResult, err: Error | null) {
 			if (err) {
 				console.error('Error updating battery:', err.message);
