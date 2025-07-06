@@ -1,14 +1,11 @@
 import * as sqlite3 from 'sqlite3';
 
-import { createTables } from '../../src/backend/create_tables';
-import { loadChemistryDetails, populateChemistriesTable } from '../../src/backend/chemistryManager';
-import { loadFormFactorDetails, populateFormFactorsTable } from '../../src/backend/formfactorManager';
-import { loadModelDetails, populateModelsTable } from '../../src/backend/modelManager';
+import { loadChemistryDetails } from '../../src/backend/chemistryManager';
+import { loadFormFactorDetails } from '../../src/backend/formfactorManager';
+import { loadModelDetails } from '../../src/backend/modelManager';
 import { stmtRunAsync } from '../../src/backend/utils/dbUtils';
 
-import { Chemistry } from '../../src/interfaces/Chemistry';
-import { FormFactor } from '../../src/interfaces/FormFactor';
-import { ModelData } from '../../src/interfaces/ModelData';
+import { Chemistry, FormFactor, ModelData } from '../../src/interfaces/interfaces';
 import { randomUUID } from 'crypto';
 
 export const insertDummyValues = async (db: sqlite3.Database): Promise<void> => {
