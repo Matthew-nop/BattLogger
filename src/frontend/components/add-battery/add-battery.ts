@@ -1,4 +1,4 @@
-import { CreateBatteryParams, ModelDataDTO } from '../../../interfaces/interfaces';
+import { CreateBatteryParams, ModelData } from '../../../interfaces/interfaces';
 
 document.addEventListener('DOMContentLoaded', async () => {
 	const modelSelect = document.getElementById('modelIdentifier') as HTMLSelectElement;
@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	// Populate dropdowns
 	try {
 		const modelResponse = await fetch('/api/model_details');
-		const modelDetails: Record<string, ModelDataDTO> = await modelResponse.json();
+		const modelDetails: Record<string, ModelData> = await modelResponse.json();
 
 		for (const guid in modelDetails) {
 			const option = document.createElement('option');

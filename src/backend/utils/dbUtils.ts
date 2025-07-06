@@ -5,7 +5,7 @@ import { loadChemistryDetails, populateChemistriesTable } from '../chemistryMana
 import { loadFormFactorDetails, populateFormFactorsTable } from '../formfactorManager';
 import { loadModelDetails, populateModelsTable } from '../modelManager';
 
-import { Chemistry, FormFactor, ModelDataDTO } from '../../interfaces/interfaces';
+import { Chemistry, FormFactor, ModelData } from '../../interfaces/interfaces';
 
 export const isValidUUID = (uuid: string): boolean => {
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -28,7 +28,7 @@ export const initializeDatabase = async (db: sqlite3.Database): Promise<void> =>
 	try {
 		await createTables(db);
 
-		const modelDetails: Map<string, ModelDataDTO> = loadModelDetails();
+		const modelDetails: Map<string, ModelData> = loadModelDetails();
 		const chemistryDetails: Map<string, Chemistry> = loadChemistryDetails();
 		const formFactorDetails: Map<string, FormFactor> = loadFormFactorDetails();
 

@@ -1,4 +1,4 @@
-import { ModelDataDTO } from '../../../interfaces/interfaces';
+import { ModelData } from '../../../interfaces/interfaces';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const guid = new URLSearchParams(window.location.search).get('guid');
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       throw new Error(`Failed to fetch model details: ${modelDetailsResponse.statusText}`);
     }
 
-    const model: ModelDataDTO = await modelDetailsResponse.json();
+    const model: ModelData = await modelDetailsResponse.json();
 
     document.getElementById('name')!.textContent = model.name;
     document.getElementById('modelId')!.textContent = model.id;

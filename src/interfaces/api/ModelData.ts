@@ -1,4 +1,4 @@
-export interface ModelDataDTO {
+export interface ModelData {
   id: string;
   name: string;
   designCapacity: number;

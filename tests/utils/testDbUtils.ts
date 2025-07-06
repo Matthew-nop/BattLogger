@@ -8,12 +8,12 @@ import { stmtRunAsync } from '../../src/backend/utils/dbUtils';
 
 import { Chemistry } from '../../src/interfaces/Chemistry';
 import { FormFactor } from '../../src/interfaces/FormFactor';
-import { ModelDataDTO } from '../../src/interfaces/ModelDataDTO';
+import { ModelData } from '../../src/interfaces/ModelData';
 import { randomUUID } from 'crypto';
 
 export const insertDummyValues = async (db: sqlite3.Database): Promise<void> => {
 	try {
-		const modelDetails: Map<string, ModelDataDTO> = loadModelDetails();
+		const modelDetails: Map<string, ModelData> = loadModelDetails();
 		const chemistryDetails: Map<string, Chemistry> = loadChemistryDetails();
 		const formFactorDetails: Map<string, FormFactor> = loadFormFactorDetails();
 
@@ -27,7 +27,7 @@ export const insertDummyValues = async (db: sqlite3.Database): Promise<void> => 
 
 		for (let i = 0; i < 11; i++) {
 			const randomModelKey = modelKeys[Math.floor(Math.random() * modelKeys.length)];
-			const model: ModelDataDTO | undefined = modelDetails.get(randomModelKey);
+			const model: ModelData | undefined = modelDetails.get(randomModelKey);
 			if (model) {
 				const batteryId = randomUUID();
 				await stmtRunAsync(batteryStmt, [batteryId, model.id]);

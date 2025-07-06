@@ -5,14 +5,14 @@ import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 import * as sqlite3 from 'sqlite3';
 
-import { ModelDataDTO, CreateModelParams } from '../interfaces/interfaces';
+import { ModelData, CreateModelParams } from '../interfaces/interfaces';
 import { stmtRunAsync } from './utils/dbUtils';
 
 const dataPath = path.join(__dirname, '..', '..', 'data');
 
 // Function to load model details from JSON files
-export function loadModelDetails(): Map<string, ModelDataDTO> {
-	const modelDetails = new Map<string, ModelDataDTO>();
+export function loadModelDetails(): Map<string, ModelData> {
+	const modelDetails = new Map<string, ModelData>();
 	const modelsDir = path.join(dataPath, 'models');
 	const files = fs.readdirSync(modelsDir);
 
@@ -25,7 +25,7 @@ export function loadModelDetails(): Map<string, ModelDataDTO> {
 	return modelDetails;
 }
 
-export async function populateModelsTable(db: sqlite3.Database, models: Map<string, ModelDataDTO>): Promise<void> {
+export async function populateModelsTable(db: sqlite3.Database, models: Map<string, ModelData>): Promise<void> {
 	const stmt = db.prepare("INSERT OR IGNORE INTO models (id, name, design_capacity, manufacturer, chemistry_id, formfactor_id) VALUES (?, ?, ?, ?, ?, ?)");
 	for (const [guid, model] of models.entries()) {
 		await stmtRunAsync(stmt, [
@@ -58,13 +58,13 @@ export const getModelMap = (req: Request, res: Response<Record<string, string>>)
 	res.json(Object.fromEntries(modelMap));
 };
 
-export const getModelDetails = (req: Request, res: Response<Record<string, ModelDataDTO>>) => {
+export const getModelDetails = (req: Request, res: Response<Record<string, ModelData>>) => {
 	res.json(Object.fromEntries(modelDetails));
 };
 
-export const getModelDetailsForId = (db: sqlite3.Database) => (req: Request<{ guid: string }>, res: Response<ModelDataDTO | { error: string }>) => {
+export const getModelDetailsForId = (db: sqlite3.Database) => (req: Request<{ guid: string }>, res: Response<ModelData | { error: string }>) => {
 	const guid = req.params.guid;
-	db.get<ModelDataDTO>(
+	db.get<ModelData>(
 		`SELECT
 			m.id,
 			m.name,
@@ -80,7 +80,7 @@ export const getModelDetailsForId = (db: sqlite3.Database) => (req: Request<{ gu
 		LEFT JOIN formfactors ff ON m.formfactor_id = ff.id
 		WHERE m.id = ?`,
 		[guid],
-		(err: Error | null, row: ModelDataDTO) => {
+		(err: Error | null, row: ModelData) => {
 			if (err) {
 				console.error(err.message);
 				res.status(500).json({ error: 'Failed to retrieve model details.' });
