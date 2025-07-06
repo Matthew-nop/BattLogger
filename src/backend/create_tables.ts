@@ -34,6 +34,7 @@ export async function createTables(db: Database): Promise<void> {
 		await runAsync(`CREATE TABLE IF NOT EXISTS chemistries (
 			id TEXT PRIMARY KEY,
 			name TEXT NOT NULL,
+			short_name TEXT NOT NULL,
 			nominal_voltage REAL NOT NULL
 		)`);
 

@@ -13,11 +13,12 @@ const dataPath = path.join(__dirname, '..', '..', 'data');
 export let chemistryDetails = loadChemistryDetails();
 
 export async function populateChemistriesTable(db: sqlite3.Database, chemistries: Map<string, Chemistry>): Promise<void> {
-	const stmt = db.prepare("INSERT OR IGNORE INTO chemistries (id, name, nominal_voltage) VALUES (?, ?, ?)");
+	const stmt = db.prepare("INSERT OR IGNORE INTO chemistries (id, name, short_name, nominal_voltage) VALUES (?, ?, ?, ?)");
 	for (const [guid, chemistry] of chemistries.entries()) {
 		await stmtRunAsync(stmt, [
 			chemistry.id,
 			chemistry.name,
+			chemistry.shortName,
 			chemistry.nominalVoltage
 		]);
 	}
@@ -45,9 +46,9 @@ export function loadChemistryDetails(): Map<string, Chemistry> {
 }
 
 export const createChemistry = (req: Request<{}, {}, CreateChemistryParams>, res: Response) => {
-	const { name, nominalVoltage } = req.body;
+	const { name, shortName, nominalVoltage } = req.body;
 
-	if (!name || isNaN(nominalVoltage)) {
+	if (!name || !shortName || isNaN(nominalVoltage)) {
 		res.status(400).json({ error: 'Missing required fields.' });
 		return;
 	}
@@ -56,6 +57,7 @@ export const createChemistry = (req: Request<{}, {}, CreateChemistryParams>, res
 	const newChemistry = {
 		id: newGuid,
 		name,
+		shortName,
 		nominalVoltage
 	};
 

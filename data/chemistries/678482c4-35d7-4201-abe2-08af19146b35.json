@@ -1,5 +1,6 @@
 {
   "id": "678482c4-35d7-4201-abe2-08af19146b35",
-  "name": "Lithium Iron Phosphate (IFR/LFP)",
+  "name": "Lithium Iron Phosphate", 
+  "shortName": "LiFePO4 (IFR)",
   "nominalVoltage": 3.2
 }

@@ -3,16 +3,18 @@ import { CreateChemistryParams } from '../../../interfaces/CreateChemistryParams
 document.addEventListener('DOMContentLoaded', async () => {
 	document.getElementById('createChemistrySubmit')?.addEventListener('click', async () => {
 		const name = (document.getElementById('name') as HTMLInputElement).value;
+		const shortName = (document.getElementById('shortName') as HTMLInputElement).value;
 		const nominalVoltage = parseFloat((document.getElementById('nominalVoltage') as HTMLInputElement).value);
 
 		// Basic validation
-		if (!name || isNaN(nominalVoltage)) {
+		if (!name || !shortName || isNaN(nominalVoltage)) {
 			alert('Please fill in all required fields.');
 			return;
 		}
 
 		const newChemistry: CreateChemistryParams = {
 			name,
+			shortName,
 			nominalVoltage
 		};
 
