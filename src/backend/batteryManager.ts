@@ -121,10 +121,10 @@ export const getBatteryDetailsForId = (db: Database) => (req: Request<{ batteryI
 };
 
 export const createBattery = (db: Database) => (req: Request<{}, {}, CreateBatteryParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
-	const { id, modelIdentifier } = req.body;
+	const { batteryId, modelIdentifier } = req.body;
 
-	if (!modelIdentifier) {
-		res.status(400).json({ error: 'Missing required fields.' });
+	if (!batteryId || !modelIdentifier) {
+		res.status(400).json({ error: 'Missing required fields: batteryId or modelIdentifier.' });
 		return;
 	}
 
@@ -134,17 +134,29 @@ export const createBattery = (db: Database) => (req: Request<{}, {}, CreateBatte
 		return;
 	}
 
-	db.run("INSERT INTO batteries (id, model_id) VALUES (?, ?)",
-		[id, modelIdentifier],
-		function (this: RunResult, err: Error | null) {
-			if (err) {
-				console.error('Error inserting battery:', err.message);
-				res.status(500).json({ error: 'Failed to add battery.' });
-				return;
-			}
-			res.status(201).json({ message: 'Battery added successfully', id });
+	db.get("SELECT id FROM batteries WHERE id = ?", [batteryId], (err: Error | null, row: any) => {
+		if (err) {
+			console.error('Error checking for existing battery:', err.message);
+			res.status(500).json({ error: 'Failed to check for existing battery.' });
+			return;
 		}
-	);
+		if (row) {
+			res.status(409).json({ error: 'Battery with this ID already exists.' });
+			return;
+		}
+
+		db.run("INSERT INTO batteries (id, model_id) VALUES (?, ?)",
+			[batteryId, modelIdentifier],
+			function (this: RunResult, err: Error | null) {
+				if (err) {
+					console.error('Error inserting battery:', err.message);
+					res.status(500).json({ error: 'Failed to add battery.' });
+					return;
+				}
+				res.status(201).json({ message: 'Battery added successfully', id: batteryId });
+			}
+		);
+	});
 };
 
 export const updateBattery = (db: Database) => (req: Request<{ batteryId: string }, {}, CreateBatteryParams>, res: Response<{ message: string } | { error: string }>) => {
