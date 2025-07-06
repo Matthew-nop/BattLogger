@@ -1,0 +1,26 @@
+[
+	{
+		"id": "57af2b7f-9355-4467-90b2-041147cd0504",
+		"name": "Lithium Cobalt Oxide",
+		"shortName": "Li-LCO (ICR)",
+		"nominalVoltage": 3.7
+	},
+	{
+		"id": "416b07be-2aea-4766-81cf-9898814d0093",
+		"name": "Lithium Nickel Manganese Cobalt Oxide",
+		"shortName": "Li-LMO (IMR)",
+		"nominalVoltage": 3.6
+	},
+	{
+		"id": "678482c4-35d7-4201-abe2-08af19146b35",
+		"name": "Lithium Iron Phosphate",
+		"shortName": "LiFePO4 (IFR)",
+		"nominalVoltage": 3.2
+	},
+	{
+		"id": "c3d3456a-0e1d-4365-85bb-ec9a5230be31",
+		"name": "Lithium Nickel Manganese Cobalt Oxide",
+		"shortName": "Li-NMC (INR)",
+		"nominalVoltage": 3.6
+	}
+]

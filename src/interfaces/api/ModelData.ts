@@ -4,7 +4,7 @@ export interface ModelData {
   designCapacity: number;
   formFactorId: string;
   chemistryId: string;
-  manufacturer: string;
-  formfactor_name: string;
-  chemistry_name: string;
+  manufacturer?: string;
+  formfactor_name?: string;
+  chemistry_name?: string;
 }

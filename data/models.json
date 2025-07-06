@@ -1,0 +1,34 @@
+[
+  {
+    "id": "2ad51cfe-1b31-4a6d-9748-7d7ce1e67c59",
+    "name": "Vapcell H10",
+    "designCapacity": 1000,
+    "formFactorId": "223b27e9-d1af-426b-8a19-83be8722f189",
+    "chemistryId": "c3d3456a-0e1d-4365-85bb-ec9a5230be31",
+    "manufacturer": "Vapcell"
+  },
+  {
+    "id": "2eaa52a5-0587-48cc-9390-e4413e789177",
+    "name": "Vapcell F38",
+    "designCapacity": 3800,
+    "formFactorId": "c7bbe94c-993f-4e3e-a151-928de183993b",
+    "chemistryId": "c3d3456a-0e1d-4365-85bb-ec9a5230be31",
+    "manufacturer": "Vapcell"
+  },
+  {
+    "id": "a4a6c070-236d-4429-b712-f579b5630b34",
+    "name": "Vapcell F12",
+    "designCapacity": 1250,
+    "formFactorId": "223b27e9-d1af-426b-8a19-83be8722f189",
+    "chemistryId": "c3d3456a-0e1d-4365-85bb-ec9a5230be31",
+    "manufacturer": "Vapcell"
+  },
+  {
+    "id": "fe8daa80-f909-4672-aeb9-fcba69e6c510",
+    "name": "Vapcell F15",
+    "designCapacity": 1500,
+    "formFactorId": "223b27e9-d1af-426b-8a19-83be8722f189",
+    "chemistryId": "c3d3456a-0e1d-4365-85bb-ec9a5230be31",
+    "manufacturer": "Vapcell"
+  }
+]

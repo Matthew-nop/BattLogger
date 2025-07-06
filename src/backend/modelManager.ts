@@ -13,14 +13,15 @@ const dataPath = path.join(__dirname, '..', '..', 'data');
 // Function to load model details from JSON files
 export function loadModelDetails(): Map<string, ModelData> {
 	const modelDetails = new Map<string, ModelData>();
-	const modelsDir = path.join(dataPath, 'models');
-	const files = fs.readdirSync(modelsDir);
-
-	for (const file of files) {
-		if (file.endsWith('.json')) {
-			const modelData = JSON.parse(fs.readFileSync(path.join(modelsDir, file), 'utf8'));
-			modelDetails.set(modelData.id, modelData);
+	const modelsFilePath = path.join(dataPath, 'models.json');
+	try {
+		const data = fs.readFileSync(modelsFilePath, 'utf8');
+		const models: ModelData[] = JSON.parse(data);
+		for (const model of models) {
+			modelDetails.set(model.id, model);
 		}
+	} catch (error) {
+		console.error('Error reading models.json:', error);
 	}
 	return modelDetails;
 }
@@ -113,16 +114,31 @@ export const createModel = (req: Request<{}, {}, CreateModelParams>, res: Respon
 		manufacturer
 	};
 
-	const filePath = path.join(dataPath, 'models', `${newGuid}.json`);
-	fs.writeFile(filePath, JSON.stringify(newModel, null, 2), (err) => {
-		if (err) {
-			console.error('Error writing model file:', err);
+	const modelsFilePath = path.join(dataPath, 'models.json');
+	fs.readFile(modelsFilePath, 'utf8', (err, data) => {
+		if (err && err.code !== 'ENOENT') {
+			console.error('Error reading models.json:', err);
 			res.status(500).json({ error: 'Failed to save model.' });
 			return;
 		}
-		// Reload model details after adding a new model
-		modelDetails = loadModelDetails();
-		modelMap = loadModelMap();
-		res.status(201).json({ message: 'Model created successfully', id: newGuid });
+
+		let models: ModelData[] = [];
+		if (data) {
+			models = JSON.parse(data);
+		}
+
+		models.push(newModel);
+
+		fs.writeFile(modelsFilePath, JSON.stringify(models, null, 2), (err) => {
+			if (err) {
+				console.error('Error writing models.json:', err);
+				res.status(500).json({ error: 'Failed to save model.' });
+				return;
+			}
+			// Reload model details after adding a new model
+			modelDetails = loadModelDetails();
+			modelMap = loadModelMap();
+			res.status(201).json({ message: 'Model created successfully', id: newGuid });
+		});
 	});
 };
