@@ -4,8 +4,7 @@ import * as sqlite3 from 'sqlite3';
 import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 
-import { FormFactor } from '../interfaces/FormFactor';
-import { CreateFormFactorParams } from '../interfaces/CreateFormFactorParams';
+import { FormFactor, CreateFormFactorParams } from '../interfaces/interfaces';
 
 import { stmtRunAsync } from './utils/dbUtils';
 

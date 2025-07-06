@@ -1,5 +1,5 @@
 import Chart from 'chart.js/auto'
-import { BatteryData } from '../../../interfaces/BatteryData';
+import { BatteryData } from '../../../interfaces/interfaces';
 
 document.addEventListener('DOMContentLoaded', async () => {
 	const batteryId = window.location.pathname.split('/').pop();

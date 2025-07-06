@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
 import { Database, RunResult } from 'sqlite3';
 
-import { CreateBatteryParams } from '../interfaces/CreateBatteryParams';
-import { BatteryData } from '../interfaces/BatteryData';
-import { GetDataQueryParams } from '../interfaces/GetDataQueryParams';
+import { BatteryData, CreateBatteryParams, GetDataQueryParams } from '../interfaces/interfaces';
 
 import { modelDetails } from './modelManager';
 

@@ -5,9 +5,7 @@ import { loadChemistryDetails, populateChemistriesTable } from '../chemistryMana
 import { loadFormFactorDetails, populateFormFactorsTable } from '../formfactorManager';
 import { loadModelDetails, populateModelsTable } from '../modelManager';
 
-import { Chemistry } from '../../interfaces/Chemistry';
-import { FormFactor } from '../../interfaces/FormFactor';
-import { ModelDataDTO } from '../../interfaces/ModelDataDTO';
+import { Chemistry, FormFactor, ModelDataDTO } from '../../interfaces/interfaces';
 
 export const isValidUUID = (uuid: string): boolean => {
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;

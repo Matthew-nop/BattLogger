@@ -1,5 +1,4 @@
-import { BatteryData } from '../interfaces/BatteryData';
-import { ModelDataDTO } from '../interfaces/ModelDataDTO';
+import { BatteryData, ModelDataDTO } from '../interfaces/interfaces';
 
 document.addEventListener('DOMContentLoaded', () => {
 	let sortColumn: string = 'id';

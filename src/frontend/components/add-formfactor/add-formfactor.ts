@@ -1,4 +1,4 @@
-import { CreateFormFactorParams } from '../../../interfaces/CreateFormFactorParams';
+import { CreateFormFactorParams } from '../../../interfaces/interfaces';
 
 document.addEventListener('DOMContentLoaded', async () => {
 	document.getElementById('createFormFactorSubmit')?.addEventListener('click', async () => {

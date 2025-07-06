@@ -1,7 +1,5 @@
 
-import { Chemistry } from '../../../interfaces/Chemistry';
-import { FormFactor } from '../../../interfaces/FormFactor';
-import { CreateModelParams } from '../../../interfaces/CreateModelParams';
+import { Chemistry, FormFactor, CreateModelParams } from '../../../interfaces/interfaces';
 document.addEventListener('DOMContentLoaded', async () => {
   const formFactorSelect = document.getElementById('formFactorId') as HTMLSelectElement;
   const chemistrySelect = document.getElementById('chemistryId') as HTMLSelectElement;

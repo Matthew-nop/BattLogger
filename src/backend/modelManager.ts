@@ -5,8 +5,7 @@ import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 import * as sqlite3 from 'sqlite3';
 
-import { ModelDataDTO } from '../interfaces/ModelDataDTO';
-import { CreateModelParams } from '../interfaces/CreateModelParams';
+import { ModelDataDTO, CreateModelParams } from '../interfaces/interfaces';
 import { stmtRunAsync } from './utils/dbUtils';
 
 const dataPath = path.join(__dirname, '..', '..', 'data');

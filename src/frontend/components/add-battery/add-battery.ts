@@ -1,5 +1,4 @@
-import { CreateBatteryParams } from '../../../interfaces/CreateBatteryParams';
-import { ModelDataDTO } from '../../../interfaces/ModelDataDTO';
+import { CreateBatteryParams, ModelDataDTO } from '../../../interfaces/interfaces';
 
 document.addEventListener('DOMContentLoaded', async () => {
 	const modelSelect = document.getElementById('modelIdentifier') as HTMLSelectElement;

@@ -4,8 +4,7 @@ import { randomUUID } from 'crypto';
 import * as sqlite3 from 'sqlite3';
 import { Request, Response } from 'express';
 
-import { Chemistry } from '../interfaces/Chemistry';
-import { CreateChemistryParams } from '../interfaces/CreateChemistryParams';
+import { Chemistry, CreateChemistryParams } from '../interfaces/interfaces';
 import { stmtRunAsync } from './utils/dbUtils';
 
 const dataPath = path.join(__dirname, '..', '..', 'data');

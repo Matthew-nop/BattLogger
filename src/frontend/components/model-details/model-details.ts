@@ -1,4 +1,4 @@
-import { ModelDataDTO } from '../../../interfaces/ModelDataDTO';
+import { ModelDataDTO } from '../../../interfaces/interfaces';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const guid = new URLSearchParams(window.location.search).get('guid');
