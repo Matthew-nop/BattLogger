@@ -6,9 +6,12 @@ import { createTables } from '../src/backend/create_tables';
 import { initializeDatabase } from '../src/backend/utils/dbUtils';
 import { insertDummyValues } from './utils/testDbUtils';
 
+import { randomUUID } from 'crypto';
+
 describe('API Route Integration Smoke Tests', () => {
     let app: express.Application;
     let db: Database;
+    let batteries: any[];
 
     beforeAll(async () => {
         app = express();
@@ -19,6 +22,10 @@ describe('API Route Integration Smoke Tests', () => {
         await initializeDatabase(db);
         await insertDummyValues(db);
         setupApiRoutes(app, db);
+
+        // Fetch created batteries to use in tests
+        const res = await request(app).get('/api/data');
+        batteries = res.body;
     });
 
     afterAll((done) => {
@@ -30,6 +37,13 @@ describe('API Route Integration Smoke Tests', () => {
         const res = await request(app).get('/api/data');
         expect(res.statusCode).toEqual(200);
         expect(res.body).toBeInstanceOf(Array);
+        expect(res.body[0]).toHaveProperty('id');
+        expect(res.body[0]).toHaveProperty('modelId');
+        expect(res.body[0]).toHaveProperty('lastTestedCapacity');
+        expect(res.body[0]).toHaveProperty('lastTestedTimestamp');
+        expect(res.body[0]).toHaveProperty('chemistryName');
+        expect(res.body[0]).toHaveProperty('chemistryShortName');
+        expect(res.body[0]).toHaveProperty('formfactorName');
     });
 
     test('GET /api/model_map should return 200', async () => {
@@ -63,14 +77,14 @@ describe('API Route Integration Smoke Tests', () => {
     });
 
     test('GET /api/battery_tests/:batteryId should return 200', async () => {
-        const testBatteryId = 1; // Assuming battery IDs are numbers and 1 exists after setup
+        const testBatteryId = batteries[0].id;
         const res = await request(app).get(`/api/battery_tests/${testBatteryId}`);
         expect(res.statusCode).toEqual(200);
         expect(res.body).toBeInstanceOf(Array);
     });
 
     test('GET /api/battery/:batteryId should return 200', async () => {
-        const testBatteryId = 1; // Assuming battery IDs are numbers and 1 exists after setup
+        const testBatteryId = batteries[0].id;
         const res = await request(app).get(`/api/battery/${testBatteryId}`);
         expect(res.statusCode).toEqual(200);
         expect(res.body).toBeInstanceOf(Object);
@@ -100,6 +114,7 @@ describe('API Route Integration Smoke Tests', () => {
     test('POST /api/create_chemistry should return 201 with valid data', async () => {
         const res = await request(app).post('/api/create_chemistry').send({
             name: 'Test Chemistry',
+            shortName: 'TestChem',
             nominalVoltage: 3.7
         });
         expect(res.statusCode).toEqual(201);
@@ -109,13 +124,35 @@ describe('API Route Integration Smoke Tests', () => {
     test('POST /api/create_battery should return 201 with valid data', async () => {
         const modelMap = (await request(app).get('/api/model_map')).body;
         const firstModelId = Object.keys(modelMap)[0];
+        const testBatteryId = randomUUID();
 
         const res = await request(app).post('/api/create_battery').send({
-            hrIdentifier: 'HR-TEST-001',
+            batteryId: testBatteryId,
             modelIdentifier: firstModelId
         });
         expect(res.statusCode).toEqual(201);
         expect(res.body).toHaveProperty('id');
+    });
+
+    test('POST /api/create_battery should return 409 for duplicate ID', async () => {
+        const modelMap = (await request(app).get('/api/model_map')).body;
+        const firstModelId = Object.keys(modelMap)[0];
+        const duplicateBatteryId = randomUUID();
+
+        // First insertion (should succeed)
+        await request(app).post('/api/create_battery').send({
+            batteryId: duplicateBatteryId,
+            modelIdentifier: firstModelId
+        });
+
+        // Second insertion with the same ID (should conflict)
+        const res = await request(app).post('/api/create_battery').send({
+            batteryId: duplicateBatteryId,
+            modelIdentifier: firstModelId
+        });
+        expect(res.statusCode).toEqual(409);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Battery with this ID already exists.');
     });
 
     test('POST /api/battery_test should return 201 with valid data', async () => {
@@ -130,12 +167,11 @@ describe('API Route Integration Smoke Tests', () => {
 
     // PUT routes
     test('PUT /api/battery/:batteryId should return 200 with valid data', async () => {
-        const testBatteryId = 1; // Assuming battery with ID 1 exists
+        const testBatteryId = batteries[0].id;
         const modelMap = (await request(app).get('/api/model_map')).body;
         const firstModelId = Object.keys(modelMap)[0];
 
         const res = await request(app).put(`/api/battery/${testBatteryId}`).send({
-            hrIdentifier: 'HR-UPDATED-001',
             modelIdentifier: firstModelId
         });
         expect(res.statusCode).toEqual(200);
@@ -146,11 +182,11 @@ describe('API Route Integration Smoke Tests', () => {
         // First, create a battery to delete
         const modelMap = (await request(app).get('/api/model_map')).body;
         const firstModelId = Object.keys(modelMap)[0];
-        const createRes = await request(app).post('/api/create_battery').send({
-            hrIdentifier: 'HR-TO-DELETE',
+        const batteryIdToDelete = randomUUID();
+        await request(app).post('/api/create_battery').send({
+            batteryId: batteryIdToDelete,
             modelIdentifier: firstModelId
         });
-        const batteryIdToDelete = createRes.body.id;
 
         const res = await request(app).delete(`/api/battery/${batteryIdToDelete}`);
         expect(res.statusCode).toEqual(200);
