@@ -16,6 +16,7 @@ export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryP
 		bt.capacity AS last_tested_capacity,
 		bt.timestamp AS last_tested_timestamp,
 		c.name AS chemistry_name,
+		c.short_name AS chemistry_short_name,
 		ff.name AS formfactor_name
 	FROM
 		batteries bd

@@ -4,5 +4,6 @@ export interface BatteryData {
   last_tested_capacity: number;
   last_tested_timestamp: string;
   chemistry_name: string;
+  chemistry_short_name: string;
   formfactor_name: string;
 }

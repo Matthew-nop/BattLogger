@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					<td><a href="#" class="model-link" data-guid="${row.model_id}">${modelName}</a></td>
 					<td><a href="#" class="battery-link" data-id="${row.id}">${row.last_tested_capacity !== null ? row.last_tested_capacity : 'N/A'}</a></td>
 					<td>${row.last_tested_timestamp !== null ? row.last_tested_timestamp : 'N/A'}</td>
-					<td>${row.chemistry_name !== null ? row.chemistry_name : 'N/A'}</td>
+					<td>${row.chemistry_short_name !== null ? row.chemistry_short_name : 'N/A'}</td>
 					<td>${row.formfactor_name}</td>
 				</tr>
 			`;
@@ -295,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				formFactors.set(guid, formFactorDetails[guid].name);
 			}
 			for (const guid in chemistryDetails) {
-				chemistries.set(guid, chemistryDetails[guid].name);
+				chemistries.set(guid, chemistryDetails[guid].shortName);
 			}
 			for (const guid in modelDetails) {
 				models.set(guid, modelDetails[guid].name);
