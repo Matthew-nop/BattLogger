@@ -15,11 +15,44 @@ describe('POST /api/battery_test', () => {
 
 	test('should return 201 with valid data', async () => {
 		const res = await request(app).post('/api/battery_test').send({
-			batteryId: 1, // Assuming battery with ID 1 exists
+			batteryId: 'test-battery-1',
 			capacity: 1500,
 			timestamp: Date.now()
 		});
 		expect(res.statusCode).toEqual(201);
 		expect(res.body).toHaveProperty('id');
+	});
+
+	test.each([
+		['batteryId', { capacity: 1500, timestamp: Date.now() }],
+		['capacity', { batteryId: 'test-battery-1', timestamp: Date.now() }],
+		['timestamp', { batteryId: 'test-battery-1', capacity: 1500 }],
+	])('should return 400 if %s is missing', async (field, payload) => {
+		const res = await request(app).post('/api/battery_test').send(payload);
+		expect(res.statusCode).toEqual(400);
+		expect(res.body).toHaveProperty('error');
+		expect(res.body.error).toEqual('Missing required fields: batteryId, capacity, or a valid timestamp.');
+	});
+
+	test('should return 400 if capacity is not a number', async () => {
+		const res = await request(app).post('/api/battery_test').send({
+			batteryId: 'test-battery-1',
+			capacity: 'invalid',
+			timestamp: Date.now()
+		});
+		expect(res.statusCode).toEqual(400);
+		expect(res.body).toHaveProperty('error');
+		expect(res.body.error).toEqual('Missing required fields: batteryId, capacity, or a valid timestamp.');
+	});
+
+	test('should return 400 if timestamp is not a valid number', async () => {
+		const res = await request(app).post('/api/battery_test').send({
+			batteryId: 'test-battery-1',
+			capacity: 1500,
+			timestamp: 'invalid'
+		});
+		expect(res.statusCode).toEqual(400);
+		expect(res.body).toHaveProperty('error');
+		expect(res.body.error).toEqual('Missing required fields: batteryId, capacity, or a valid timestamp.');
 	});
 });
