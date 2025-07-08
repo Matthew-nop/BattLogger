@@ -1,4 +1,4 @@
-import { CreateChemistryParams, CreateFormFactorParams, CreateModelParams } from '../../../interfaces/interfaces';
+import { CreateChemistryParams, CreateFormFactorParams, CreateModelParams } from '../../../interfaces/interfaces.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
 	const batteryTypeSelect = document.getElementById('entityType') as HTMLSelectElement;

@@ -1,13 +1,9 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import { randomUUID } from 'crypto';
 import * as sqlite3 from 'sqlite3';
 import { Request, Response } from 'express';
 
-import { Chemistry, CreateChemistryParams } from '../interfaces/interfaces';
-import { stmtRunAsync } from './utils/dbUtils';
-
-const dataPath = path.join(__dirname, '..', '..', 'data');
+import { Chemistry, CreateChemistryParams } from '../interfaces/interfaces.js';
+import { stmtRunAsync } from './utils/dbUtils.js';
 
 export class ChemistryManager {
 	private static instance: ChemistryManager;

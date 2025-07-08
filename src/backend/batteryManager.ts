@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { Database, RunResult } from 'sqlite3';
 
-import { BatteryData, CreateBatteryParams, GetDataQueryParams } from '../interfaces/interfaces';
+import { BatteryData, CreateBatteryParams, GetDataQueryParams } from '../interfaces/interfaces.js';
 
-import { loadModelDetails } from './utils/dbUtils';
+import { loadModelDetails } from './utils/dbUtils.js';
 
 export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryParams>, res: Response<BatteryData[]>) => {
 	const { sortBy, order = 'asc', name, formfactor, chemistry } = req.query as GetDataQueryParams;

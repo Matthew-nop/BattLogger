@@ -1,2 +1,2 @@
-export * from "./api/api";
-export * from "./tables/tables";
+export * from "./api/api.js";
+export * from "./tables/tables.js";

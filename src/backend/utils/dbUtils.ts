@@ -4,12 +4,12 @@ import * as sqlite3 from 'sqlite3';
 
 const dataPath = path.join(__dirname, '..', '..', '..', 'data');
 
-import { createTables } from './createTables';
-import { ChemistryManager } from '../chemistryManager';
-import { FormFactorManager } from '../formfactorManager';
-import { populateModelsTable } from '../modelManager';
+import { createTables } from './createTables.js';
+import { ChemistryManager } from '../chemistryManager.js';
+import { FormFactorManager } from '../formfactorManager.js';
+import { populateModelsTable } from '../modelManager.js';
 
-import { Chemistry, FormFactor, ModelData } from '../../interfaces/interfaces';
+import { Chemistry, FormFactor, ModelData } from '../../interfaces/interfaces.js';
 
 export const isValidUUID = (uuid: string): boolean => {
 	const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;

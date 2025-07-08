@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import * as sqlite3 from 'sqlite3';
 
-import { ModelData, CreateModelParams } from '../interfaces/interfaces';
+import { ModelData, CreateModelParams } from '../interfaces/interfaces.js';
 import { randomUUID } from 'crypto';
-import { stmtRunAsync, loadModelDetails, loadModelMap } from './utils/dbUtils';
-import { FormFactorManager } from './formfactorManager';
-import { ChemistryManager } from './chemistryManager';
+import { stmtRunAsync, loadModelDetails, loadModelMap } from './utils/dbUtils.js';
+import { FormFactorManager } from './formfactorManager.js';
+import { ChemistryManager } from './chemistryManager.js';
 
 export async function populateModelsTable(db: sqlite3.Database, models: Map<string, ModelData>): Promise<void> {
 	const stmt = db.prepare("INSERT OR REPLACE INTO models (id, name, design_capacity, manufacturer, chemistry_id, formfactor_id) VALUES (?, ?, ?, ?, ?, ?)");

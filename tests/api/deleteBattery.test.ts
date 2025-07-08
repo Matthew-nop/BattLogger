@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { randomUUID } from 'crypto';
-import { setupTestEnvironment, teardownTestEnvironment } from '../utils/testSetup';
+import { setupTestEnvironment, teardownTestEnvironment } from '../utils/testSetup.js';
 
 describe('DELETE /api/battery/:batteryId', () => {
 	let app: any;

@@ -1,11 +1,11 @@
 import { Application } from 'express';
 import { Database } from 'sqlite3';
 
-import { createBattery, deleteBattery, getBattery, getData, updateBattery, getBatteryDetailsForId } from './batteryManager';
-import { addBatteryTestRunInfo, getBatteryTests } from './testManager';
-import { ChemistryManager } from './chemistryManager';
-import { FormFactorManager } from './formfactorManager';
-import { createModel, getModelDetails, getModelDetailsForId, getModelMap } from './modelManager';
+import { createBattery, deleteBattery, getBattery, getData, updateBattery, getBatteryDetailsForId } from './batteryManager.js';
+import { addBatteryTestRunInfo, getBatteryTests } from './testManager.js';
+import { ChemistryManager } from './chemistryManager.js';
+import { FormFactorManager } from './formfactorManager.js';
+import { createModel, getModelDetails, getModelDetailsForId, getModelMap } from './modelManager.js';
 
 export function setupApiRoutes(app: Application, db: Database, chemistryManager: ChemistryManager, formFactorManager: FormFactorManager) {
 	

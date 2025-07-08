@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { setupTestEnvironment, teardownTestEnvironment } from '../utils/testSetup';
+import { setupTestEnvironment, teardownTestEnvironment } from '../utils/testSetup.js';
 
 describe('GET /api/model_details_data/:guid', () => {
 	let app: any;

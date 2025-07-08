@@ -1,9 +1,9 @@
 import express from 'express';
 import { setupApiRoutes } from '../../src/backend/apiRoutes';
-import { ChemistryManager } from '../../src/backend/chemistryManager';
-import { FormFactorManager } from '../../src/backend/formFactorManager';
+import { ChemistryManager } from '../../src/backend/chemistryManager.js';
+import { FormFactorManager } from '../../src/backend/formfactorManager.js';
 import { Database } from 'sqlite3';
-import { setupTestDatabase, teardownTestDatabase } from './testDbUtils';
+import { setupTestDatabase, teardownTestDatabase } from './testDbUtils.js';
 
 interface TestSetup {
     app: express.Application;

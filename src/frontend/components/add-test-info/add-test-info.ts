@@ -1,4 +1,4 @@
-import { CreateTestRunInfoParams } from '../../../interfaces/interfaces';
+import { CreateTestRunInfoParams } from '../../../interfaces/interfaces.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 	const form = document.getElementById('addTestForm') as HTMLFormElement;

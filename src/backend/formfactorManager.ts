@@ -1,12 +1,10 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import * as sqlite3 from 'sqlite3';
 import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 
-import { FormFactor, CreateFormFactorParams } from '../interfaces/interfaces';
+import { FormFactor, CreateFormFactorParams } from '../interfaces/interfaces.js';
 
-import { stmtRunAsync } from './utils/dbUtils';
+import { stmtRunAsync } from './utils/dbUtils.js';
 
 export class FormFactorManager {
 	private static instance: FormFactorManager;

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Database, RunResult } from 'sqlite3';
 
-import { TestRunInfo, CreateTestRunInfoParams } from '../interfaces/interfaces';
+import { TestRunInfo, CreateTestRunInfoParams } from '../interfaces/interfaces.js';
 
 export const getBatteryTests = (db: Database) => (req: Request<{ batteryId: string }>, res: Response<TestRunInfo[] | { error: string }>) => {
 	const batteryId = req.params.batteryId;

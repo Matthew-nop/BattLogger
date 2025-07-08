@@ -1,4 +1,4 @@
-import { ModelData } from '../../../interfaces/interfaces';
+import { ModelData } from '../../../interfaces/interfaces.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
 	const guid = new URLSearchParams(window.location.search).get('guid');

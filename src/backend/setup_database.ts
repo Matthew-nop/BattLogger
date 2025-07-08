@@ -2,13 +2,9 @@
 // It creates necessary tables and populates them with initial data,
 // including dummy battery and test run information for demonstration purposes.
 
-// This script sets up the SQLite database for the BattLogger application.
-// It creates necessary tables and populates them with initial data,
-// including dummy battery and test run information for demonstration purposes.
-
 import * as sqlite3 from 'sqlite3';
-import { initializeDatabase } from './utils/dbUtils';
-import { ChemistryManager } from './chemistryManager';
+import { initializeDatabase } from './utils/dbUtils.js';
+import { ChemistryManager } from './chemistryManager.js';
 
 // Create a new database file
 const db = new sqlite3.Database('./database.sqlite', (err: Error | null) => {

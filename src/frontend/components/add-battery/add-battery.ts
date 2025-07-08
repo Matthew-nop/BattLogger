@@ -1,4 +1,4 @@
-import { CreateBatteryParams, ModelData } from '../../../interfaces/interfaces';
+import { CreateBatteryParams, ModelData } from '../../../interfaces/interfaces.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
 	const modelSelect = document.getElementById('modelIdentifier') as HTMLSelectElement;

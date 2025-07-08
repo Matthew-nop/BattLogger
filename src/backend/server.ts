@@ -2,10 +2,10 @@ import express from 'express';
 import sqlite3 from 'sqlite3';
 import path from 'path';
 
-import { setupPageRoutes } from './pageRoutes';
-import { setupApiRoutes } from './apiRoutes';
-import { ChemistryManager } from './chemistryManager';
-import { FormFactorManager } from './formfactorManager';
+import { setupPageRoutes } from './pageRoutes.js';
+import { setupApiRoutes } from './apiRoutes.js';
+import { ChemistryManager } from './chemistryManager.js';
+import { FormFactorManager } from './formfactorManager.js';
 
 const app: any = express();
 
