@@ -1,30 +1,39 @@
 import { Application } from 'express';
 import sqlite3 from 'sqlite3';
 
-import { createBattery, deleteBattery, getBattery, getData, updateBattery, getBatteryDetailsForId } from './batteryManager.js';
-import { addBatteryTestRunInfo, getBatteryTests } from './testManager.js';
+
 import { ChemistryManager } from './chemistryManager.js';
 import { FormFactorManager } from './formfactorManager.js';
 import { ModelManager } from './modelManager.js';
+import { ChemistryHandler } from './handlers/chemistryHandler.js';
+import { FormFactorHandler } from './handlers/formfactorHandler.js';
+import { ModelHandler } from './handlers/modelHandler.js';
+import { BatteryHandler } from './handlers/batteryHandler.js';
+import { TestHandler } from './handlers/testHandler.js';
 
 export function setupApiRoutes(app: Application, db: sqlite3.Database, chemistryManager: ChemistryManager, formFactorManager: FormFactorManager, modelManager: ModelManager) {
-	
-	app.get('/api/data', getData(db));
-	app.get('/api/model_map', modelManager.getModelMap);
-	app.get('/api/model_details', modelManager.getModelDetails);
-	app.get('/api/chemistry_details', (req, res) => chemistryManager.getChemistriesMap(req, res));
-	app.get('/api/formfactor_details', (req, res) => formFactorManager.getFormFactorMap(req, res));
-	app.get('/api/model_details_data/:guid', modelManager.getModelDetailsForId);
-	app.get('/api/battery_tests/:batteryId', getBatteryTests(db));
-	app.get('/api/battery/:batteryId', getBattery(db));
-	app.get('/api/battery_details_data/:batteryId', getBatteryDetailsForId(db));
+	const chemistryHandler = new ChemistryHandler(chemistryManager);
+	const formFactorHandler = new FormFactorHandler(formFactorManager);
+	const modelHandler = new ModelHandler(modelManager);
+	const batteryHandler = new BatteryHandler(db);
+	const testHandler = new TestHandler(db);
 
-	app.post('/api/create_model', (req, res) => modelManager.createModel(req, res));
-	app.post('/api/create_formfactor', (req, res) => formFactorManager.createFormFactor(req, res));
-	app.post('/api/create_chemistry', (req, res) => chemistryManager.createChemistry(req, res));
-	app.post('/api/create_battery', createBattery(db));
-	app.put('/api/battery/:batteryId', updateBattery(db));
-	app.delete('/api/battery/:batteryId', deleteBattery(db));
-	app.post('/api/battery_test', addBatteryTestRunInfo(db));
+	app.get('/api/data', batteryHandler.getData);
+	app.get('/api/model_map', modelHandler.getModelMap);
+	app.get('/api/model_details', modelHandler.getModelDetails);
+	app.get('/api/chemistry_details', chemistryHandler.getChemistriesMap);
+	app.get('/api/formfactor_details', formFactorHandler.getFormFactorMap);
+	app.get('/api/model_details_data/:guid', modelHandler.getModelDetailsForId);
+	app.get('/api/battery_tests/:batteryId', testHandler.getBatteryTests);
+	app.get('/api/battery/:batteryId', batteryHandler.getBattery);
+	app.get('/api/battery_details_data/:batteryId', batteryHandler.getBatteryDetailsForId);
+
+	app.post('/api/create_model', modelHandler.createModel);
+	app.post('/api/create_formfactor', formFactorHandler.createFormFactor);
+	app.post('/api/create_chemistry', chemistryHandler.createChemistry);
+	app.post('/api/create_battery', batteryHandler.createBattery);
+	app.put('/api/battery/:batteryId', batteryHandler.updateBattery);
+	app.delete('/api/battery/:batteryId', batteryHandler.deleteBattery);
+	app.post('/api/battery_test', testHandler.addBatteryTestRunInfo);
 
 }
