@@ -6,6 +6,7 @@ import { setupPageRoutes } from './pageRoutes.js';
 import { setupApiRoutes } from './apiRoutes.js';
 import { ChemistryManager } from './chemistryManager.js';
 import { FormFactorManager } from './formfactorManager.js';
+import { ModelManager } from './modelManager.js';
 
 const app: any = express();
 
@@ -25,11 +26,14 @@ chemistryManager.setDb(db);
 const formFactorManager = FormFactorManager.getInstance();
 formFactorManager.setDb(db);
 
+const modelManager = ModelManager.getInstance();
+modelManager.setDb(db);
+
 const frontendPath = path.join(import.meta.dirname, '..', '..', 'dist', 'frontend');
 app.use(express.static(frontendPath));
 app.use(express.json()); // Enable JSON body parsing
 
-setupApiRoutes(app, db, chemistryManager, formFactorManager);
+setupApiRoutes(app, db, chemistryManager, formFactorManager, modelManager);
 setupPageRoutes(app);
 
 app.listen(port, () => {

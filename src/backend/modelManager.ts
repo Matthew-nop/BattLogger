@@ -3,120 +3,213 @@ import sqlite3 from 'sqlite3';
 
 import { ModelData, CreateModelParams } from '../interfaces/interfaces.js';
 import { randomUUID } from 'crypto';
-import { stmtRunAsync, loadModelDetails, loadModelMap } from './utils/dbUtils.js';
+import { stmtRunAsync } from './utils/dbUtils.js';
 import { FormFactorManager } from './formfactorManager.js';
 import { ChemistryManager } from './chemistryManager.js';
 
-export async function populateModelsTable(db: sqlite3.Database, models: Map<string, ModelData>): Promise<void> {
-	const stmt = db.prepare("INSERT OR REPLACE INTO models (id, name, design_capacity, manufacturer, chemistry_id, formfactor_id) VALUES (?, ?, ?, ?, ?, ?)");
-	for (const [guid, model] of models.entries()) {
-		await stmtRunAsync(stmt, [
-			model.id,
-			model.name,
-			model.designCapacity,
-			model.manufacturer,
-			model.chemistryId,
-			model.formFactorId
-		]);
+export class ModelManager {
+	private static instance: ModelManager;
+	private db: sqlite3.Database | null = null;
+	private cachedModels: Map<string, ModelData> | null = null;
+
+	private constructor() { }
+
+	public static getInstance(): ModelManager {
+		if (!ModelManager.instance) {
+			ModelManager.instance = new ModelManager();
+		}
+		return ModelManager.instance;
 	}
-	stmt.finalize();
-	console.log('Models table populated.');
-}
 
-export const getModelMap = (req: Request, res: Response<Record<string, string>>) => {
-	res.json(Object.fromEntries(loadModelMap()));
-};
+	public setDb(db: sqlite3.Database): void {
+		this.db = db;
+	}
 
-export const getModelDetails = (req: Request, res: Response<Record<string, ModelData>>) => {
-	res.json(Object.fromEntries(loadModelDetails()));
-};
+	private getDb(): sqlite3.Database {
+		if (!this.db) {
+			throw new Error("Database not set for ModelManager.");
+		}
+		return this.db;
+	}
 
-export const getModelDetailsForId = (db: sqlite3.Database) => (req: Request<{ guid: string }>, res: Response<ModelData | { error: string }>) => {
-	const guid = req.params.guid;
-	db.get<ModelData>(
-		`SELECT
-			m.id,
-			m.name,
-			m.design_capacity AS designCapacity,
-			m.manufacturer,
-			m.chemistry_id AS chemistryId,
-			m.formfactor_id AS formFactorId,
-			c.name AS chemistry_name,
-			ff.name AS formfactor_name
-		FROM
-			models m
-		LEFT JOIN chemistries c ON m.chemistry_id = c.id
-		LEFT JOIN formfactors ff ON m.formfactor_id = ff.id
-		WHERE m.id = ?`,
-		[guid],
-		(err: Error | null, row: ModelData) => {
-			if (err) {
-				console.error(err.message);
-				res.status(500).json({ error: 'Failed to retrieve model details.' });
-				return;
+	private async _loadModelsFromDb(): Promise<Map<string, ModelData>> {
+		const db = this.getDb();
+		const modelsMap: Map<string, ModelData> = new Map<string, ModelData>();
+		try {
+			const rows = await new Promise<Array<ModelData>>((resolve, reject) => {
+				db.all(
+					`SELECT
+						m.id,
+						m.name,
+						m.design_capacity AS designCapacity,
+						m.manufacturer,
+						m.chemistry_id AS chemistryId,
+						m.formfactor_id AS formFactorId,
+						c.name AS chemistry_name,
+						ff.name AS formfactor_name
+					FROM
+						models m
+					LEFT JOIN chemistries c ON m.chemistry_id = c.id
+					LEFT JOIN formfactors ff ON m.formfactor_id = ff.id
+					`,
+					[],
+					(err: Error | null, rows: Array<ModelData>) => {
+						if (err) {
+							reject(err);
+						} else {
+							resolve(rows);
+						}
+					}
+				);
+			});
+
+			for (const row of rows) {
+				modelsMap.set(row.id, {
+					id: row.id,
+					name: row.name,
+					designCapacity: Number(row.designCapacity),
+					manufacturer: row.manufacturer,
+					chemistryId: row.chemistryId,
+					formFactorId: row.formFactorId,
+					chemistry_name: row.chemistry_name,
+					formfactor_name: row.formfactor_name,
+				});
 			}
-			if (row) {
-				res.json(row);
+			this.cachedModels = modelsMap;
+			return modelsMap;
+		} catch (error) {
+			console.error('Error fetching models from database:', error);
+			throw new Error('Failed to fetch models from database.');
+		}
+	}
+
+	public async populateModelsTable(models: Map<string, ModelData>): Promise<void> {
+		const db = this.getDb();
+		const stmt = db.prepare("INSERT OR REPLACE INTO models (id, name, design_capacity, manufacturer, chemistry_id, formfactor_id) VALUES (?, ?, ?, ?, ?, ?)");
+		for (const [guid, model] of models.entries()) {
+			await stmtRunAsync(stmt, [
+				model.id,
+				model.name,
+				model.designCapacity,
+				model.manufacturer,
+				model.chemistryId,
+				model.formFactorId
+			]);
+		}
+		stmt.finalize();
+		console.log('Models table populated.');
+		this.cachedModels = null; // Invalidate cache
+	}
+
+	public getModelMap = async (req: Request, res: Response<Record<string, string>>) => {
+		try {
+			if (!this.cachedModels) {
+				await this._loadModelsFromDb();
+			}
+			const modelMap = new Map<string, string>();
+			this.cachedModels!.forEach((model) => {
+				modelMap.set(model.id, model.name);
+			});
+			res.json(Object.fromEntries(modelMap));
+		} catch (error) {
+			console.error('Error fetching model map:', error);
+			res.status(500).json({ error: 'Failed to fetch model map.' });
+		}
+	};
+
+	public getModelDetails = async (req: Request, res: Response<Record<string, ModelData> | { error: string }>) => {
+		try {
+			if (!this.cachedModels) {
+				await this._loadModelsFromDb();
+			}
+			res.json(Object.fromEntries(this.cachedModels!));
+		} catch (error) {
+			console.error('Error fetching model details:', error);
+			res.status(500).json({ error: 'Failed to fetch model details.' });
+		}
+	};
+
+	public getModelDetailsForId = async (req: Request<{ guid: string }>, res: Response<ModelData | { error: string }>) => {
+		const guid = req.params.guid;
+		try {
+			if (!this.cachedModels) {
+				await this._loadModelsFromDb();
+			}
+			const model = this.cachedModels!.get(guid);
+			if (model) {
+				res.json(model);
 			} else {
 				res.status(404).json({ error: 'Model not found' });
 			}
+		} catch (error) {
+			console.error('Error retrieving model details:', error);
+			res.status(500).json({ error: 'Failed to retrieve model details.' });
 		}
-	);
-};
-
-export const createModel = async (db: sqlite3.Database, req: Request<{}, {}, CreateModelParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
-	const { name, designCapacity, formFactorId, chemistryId, manufacturer } = req.body;
-
-	if (!name || !formFactorId) {
-		res.status(400).json({ error: 'Missing required fields: Name and Formfactor are required.' });
-		return;
-	}
-
-	if (designCapacity !== undefined && designCapacity !== null && typeof designCapacity !== 'number') {
-		res.status(400).json({ error: 'Design capacity must be a number if provided.' });
-		return;
-	}
-
-	const formFactorManager = FormFactorManager.getInstance();
-	const chemistryManager = ChemistryManager.getInstance();
-
-	const formFactor = await formFactorManager.getFormFactorById(formFactorId);
-	const chemistry = await chemistryManager.getChemistryById(chemistryId);
-
-	if (!formFactor) {
-		res.status(400).json({ error: 'Invalid formFactorId.' });
-		return;
-	}
-
-	if (!chemistry) {
-		res.status(400).json({ error: 'Invalid chemistryId.' });
-		return;
-	}
-
-	const newGuid = randomUUID();
-	const newModel = {
-		id: newGuid,
-		name,
-		designCapacity,
-		formFactorId,
-		chemistryId,
-		manufacturer
 	};
 
-	try {
-		const stmt = db.prepare("INSERT INTO models (id, name, design_capacity, manufacturer, chemistry_id, formfactor_id) VALUES (?, ?, ?, ?, ?, ?)");
-		await stmtRunAsync(stmt, [
-			newModel.id,
-			newModel.name,
-			newModel.designCapacity,
-			newModel.manufacturer,
-			newModel.chemistryId,
-			newModel.formFactorId
-		]);
-		stmt.finalize();
-		res.status(201).json({ message: 'Model created successfully', id: newGuid });
-	} catch (error) {
-		console.error('Error inserting new model into database:', error);
-		res.status(500).json({ error: 'Failed to save model.' });
+	public async getModelById(id: string): Promise<ModelData | null> {
+			if (!this.cachedModels) {
+				await this._loadModelsFromDb();
+			}
+			return this.cachedModels!.get(id) || null;
 	}
-};
+
+	public createModel = async (req: Request<{}, {}, CreateModelParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
+		const db = this.getDb();
+		const { name, designCapacity, formFactorId, chemistryId, manufacturer } = req.body;
+
+		if (!name || !formFactorId) {
+			res.status(400).json({ error: 'Missing required fields: Name and Formfactor are required.' });
+			return;
+		}
+
+		if (designCapacity !== undefined && designCapacity !== null && typeof designCapacity !== 'number') {
+			res.status(400).json({ error: 'Design capacity must be a number if provided.' });
+			return;
+		}
+
+		const formFactorManager = FormFactorManager.getInstance();
+		const chemistryManager = ChemistryManager.getInstance();
+
+		const formFactor = await formFactorManager.getFormFactorById(formFactorId);
+		const chemistry = await chemistryManager.getChemistryById(chemistryId);
+
+		if (!formFactor) {
+			res.status(400).json({ error: 'Invalid formFactorId.' });
+			return;
+		}
+
+		if (!chemistry) {
+			res.status(400).json({ error: 'Invalid chemistryId.' });
+			return;
+		}
+
+		const newGuid = randomUUID();
+		const newModel = {
+			id: newGuid,
+			name,
+			designCapacity,
+			formFactorId,
+			chemistryId,
+			manufacturer
+		};
+
+		try {
+			const stmt = db.prepare("INSERT INTO models (id, name, design_capacity, manufacturer, chemistry_id, formfactor_id) VALUES (?, ?, ?, ?, ?, ?)");
+			await stmtRunAsync(stmt, [
+				newModel.id,
+				newModel.name,
+				newModel.designCapacity,
+				newModel.manufacturer,
+				newModel.chemistryId,
+				newModel.formFactorId
+			]);
+			stmt.finalize();
+			this.cachedModels = null; // Invalidate cache
+			res.status(201).json({ message: 'Model created successfully', id: newGuid });
+		} catch (error) {
+			console.error('Error inserting new model into database:', error);
+			res.status(500).json({ error: 'Failed to save model.' });
+		}
+	};
+}

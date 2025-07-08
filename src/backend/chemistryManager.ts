@@ -8,6 +8,7 @@ import { stmtRunAsync } from './utils/dbUtils.js';
 export class ChemistryManager {
 	private static instance: ChemistryManager;
 	private db: sqlite3.Database | null = null;
+	private cachedChemistries: Map<string, Chemistry> | null = null;
 
 	private constructor() { }
 
@@ -29,22 +30,7 @@ export class ChemistryManager {
 		return this.db;
 	}
 
-	public async populateChemistriesTable(chemistries: Map<string, Chemistry>): Promise<void> {
-		const db = this.getDb();
-		const stmt = db.prepare("INSERT OR REPLACE INTO chemistries (id, name, short_name, nominal_voltage) VALUES (?, ?, ?, ?)");
-		for (const [guid, chemistry] of chemistries.entries()) {
-			await stmtRunAsync(stmt, [
-				chemistry.id,
-				chemistry.name,
-				chemistry.shortName,
-				chemistry.nominalVoltage
-			]);
-		}
-		stmt.finalize();
-		console.log('Chemistries table populated.');
-	}
-
-	public getChemistriesMap = async (req: Request, res: Response<Record<string, Chemistry> | { error: string }>) => {
+	private async _loadChemistriesFromDb(): Promise<Map<string, Chemistry>> {
 		const db = this.getDb();
 		const chemistriesMap = new Map<string, Chemistry>();
 
@@ -67,7 +53,36 @@ export class ChemistryManager {
 					nominalVoltage: row.nominal_voltage
 				});
 			}
-			res.json(Object.fromEntries(chemistriesMap));
+			this.cachedChemistries = chemistriesMap;
+			return chemistriesMap;
+		} catch (error) {
+			console.error('Error fetching chemistries from database:', error);
+			throw new Error('Failed to fetch chemistries from database.');
+		}
+	}
+
+	public async populateChemistriesTable(chemistries: Map<string, Chemistry>): Promise<void> {
+		const db = this.getDb();
+		const stmt = db.prepare("INSERT OR REPLACE INTO chemistries (id, name, short_name, nominal_voltage) VALUES (?, ?, ?, ?)");
+		for (const [guid, chemistry] of chemistries.entries()) {
+			await stmtRunAsync(stmt, [
+				chemistry.id,
+				chemistry.name,
+				chemistry.shortName,
+				chemistry.nominalVoltage
+			]);
+		}
+		stmt.finalize();
+		console.log('Chemistries table populated.');
+		this.cachedChemistries = null; // Invalidate cache
+	}
+
+	public getChemistriesMap = async (req: Request, res: Response<Record<string, Chemistry> | { error: string }>) => {
+		try {
+			if (!this.cachedChemistries) {
+				await this._loadChemistriesFromDb();
+			}
+			res.json(Object.fromEntries(this.cachedChemistries!));
 		} catch (error) {
 			console.error('Error fetching chemistries from database:', error);
 			res.status(500).json({ error: 'Failed to fetch chemistries map.' });
@@ -75,39 +90,20 @@ export class ChemistryManager {
 	};
 
 	public async getChemistryById(id: string): Promise<Chemistry | null> {
-		const db = this.getDb();
-		try {
-			const row = await new Promise<any>((resolve, reject) => {
-				db.get("SELECT * FROM chemistries WHERE id = ?", [id], (err, row) => {
-					if (err) {
-						reject(err);
-					} else {
-						resolve(row);
-					}
-				});
-			});
-
-			if (row) {
-				return {
-					id: row.id,
-					name: row.name,
-					shortName: row.short_name,
-					nominalVoltage: row.nominal_voltage
-				};
-			} else {
-				return null;
-			}
-		} catch (error) {
-			console.error('Error fetching chemistry from database:', error);
-			throw new Error('Failed to fetch chemistry.');
+		if (!this.cachedChemistries) {
+			await this._loadChemistriesFromDb();
 		}
+		return this.cachedChemistries!.get(id) || null;
 	}
 
 	public getChemistryForId = async (req: Request, res: Response<Chemistry | { error: string }>) => {
 		const { id } = req.params;
 
 		try {
-			const chemistry = await this.getChemistryById(id);
+			if (!this.cachedChemistries) {
+				await this._loadChemistriesFromDb();
+			}
+			const chemistry = this.cachedChemistries!.get(id);
 
 			if (chemistry) {
 				res.json(chemistry);
@@ -121,25 +117,11 @@ export class ChemistryManager {
 	};
 
 	public async getAllChemistries(): Promise<Chemistry[]> {
-		const db = this.getDb();
 		try {
-			const rows = await new Promise<any[]>((resolve, reject) => {
-				db.all("SELECT * FROM chemistries", [], (err, rows) => {
-					if (err) {
-						reject(err);
-					} else {
-						resolve(rows);
-					}
-				});
-			});
-
-			const chemistries: Chemistry[] = rows.map(row => ({
-				id: row.id,
-				name: row.name,
-				shortName: row.short_name,
-				nominalVoltage: row.nominal_voltage
-			}));
-			return chemistries;
+			if (!this.cachedChemistries) {
+				await this._loadChemistriesFromDb();
+			}
+			return Array.from(this.cachedChemistries!.values());
 		} catch (error) {
 			console.error('Error fetching chemistries from database:', error);
 			throw new Error('Failed to fetch chemistries.');
@@ -184,6 +166,7 @@ export class ChemistryManager {
 				newChemistry.nominalVoltage
 			]);
 			stmt.finalize();
+			this.cachedChemistries = null; // Invalidate cache
 			res.status(201).json({ message: 'Chemistry created successfully', id: newGuid });
 		} catch (error) {
 			console.error('Error inserting new chemistry into database:', error);

@@ -7,7 +7,7 @@ const dataPath = path.join(import.meta.dirname, '..', '..', '..', 'data');
 import { createTables } from './createTables.js';
 import { ChemistryManager } from '../chemistryManager.js';
 import { FormFactorManager } from '../formfactorManager.js';
-import { populateModelsTable } from '../modelManager.js';
+import { ModelManager } from '../modelManager.js';
 
 import { Chemistry, FormFactor, ModelData } from '../../interfaces/interfaces.js';
 
@@ -92,13 +92,16 @@ export const initializeDatabase = async (db: sqlite3.Database): Promise<void> =>
 		const chemistryManager = ChemistryManager.getInstance();
 		chemistryManager.setDb(db);
 
+		const modelManager = ModelManager.getInstance();
+		modelManager.setDb(db);
+
 		const modelDetails: Map<string, ModelData> = loadModelDetails();
 		
 		const formFactorDetails: Map<string, FormFactor> = loadFormFactorDetails();
 
 		const chemistryDetails: Map<string, Chemistry> = loadChemistryDetails();
 
-		await populateModelsTable(db, modelDetails);
+		await modelManager.populateModelsTable(modelDetails);
 		await chemistryManager.populateChemistriesTable(chemistryDetails);
 		const formFactorManager = FormFactorManager.getInstance();
 		formFactorManager.setDb(db);
