@@ -9,7 +9,8 @@
 		"build:backend": "tsc -p tsconfig.json",
 		"build:frontend": "parcel build",
 		"start": "node dist/backend/server.js",
-		"setup": "npm run build && node dist/backend/setup_database.js"
+		"setup": "npm run build && node dist/backend/setup_database.js",
+		"lint": "eslint ."
 	},
 	"targets": {
 		"@mainPage": {
@@ -60,6 +61,10 @@
 		"@types/node": "^24.0.10",
 		"@types/sqlite3": "^5.1.0",
 		"@types/supertest": "^6.0.3",
+		"@typescript-eslint/eslint-plugin": "^8.36.0",
+		"@typescript-eslint/parser": "^8.36.0",
+		"eslint": "^9.30.1",
+		"eslint-plugin-jsonc": "^2.20.1",
 		"jest": "^30.0.4",
 		"parcel": "^2.15.4",
 		"sass": "^1.89.2",
