@@ -45,18 +45,18 @@ export const insertDummyValues = async (db: sqlite3.Database): Promise<void> => 
 };
 
 export async function setupTestDatabase(db: sqlite3.Database): Promise<void> {
-    await createTables(db);
-    await initializeDatabase(db);
-    await insertDummyValues(db);
+	await createTables(db);
+	await initializeDatabase(db);
+	await insertDummyValues(db);
 }
 
 export function teardownTestDatabase(db: sqlite3.Database): Promise<void> {
-    return new Promise((resolve, reject) => {
-        db.close((err) => {
-            if (err) {
-                return reject(err);
-            }
-            resolve();
-        });
-    });
+	return new Promise((resolve, reject) => {
+		db.close((err) => {
+			if (err) {
+				return reject(err);
+			}
+			resolve();
+		});
+	});
 }

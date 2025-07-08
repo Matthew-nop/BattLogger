@@ -11,20 +11,20 @@ interface TestSetup {
 }
 
 export async function setupTestEnvironment(): Promise<TestSetup> {
-    const app = express();
-    app.use(express.json());
+	const app = express();
+	app.use(express.json());
 
-    const db = new Database(':memory:');
-    await setupTestDatabase(db);
-    const chemistryManager = ChemistryManager.getInstance();
-    chemistryManager.setDb(db);
-    const formFactorManager = FormFactorManager.getInstance();
-    formFactorManager.setDb(db);
-    setupApiRoutes(app, db, chemistryManager, formFactorManager);
+	const db = new Database(':memory:');
+	await setupTestDatabase(db);
+	const chemistryManager = ChemistryManager.getInstance();
+	chemistryManager.setDb(db);
+	const formFactorManager = FormFactorManager.getInstance();
+	formFactorManager.setDb(db);
+	setupApiRoutes(app, db, chemistryManager, formFactorManager);
 
-    return { app, db };
+	return { app, db };
 }
 
 export function teardownTestEnvironment(db: Database): Promise<void> {
-    return teardownTestDatabase(db);
+	return teardownTestDatabase(db);
 }

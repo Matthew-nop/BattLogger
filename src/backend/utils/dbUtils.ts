@@ -12,8 +12,8 @@ import { populateModelsTable } from '../modelManager';
 import { Chemistry, FormFactor, ModelData } from '../../interfaces/interfaces';
 
 export const isValidUUID = (uuid: string): boolean => {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  return uuidRegex.test(uuid);
+	const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+	return uuidRegex.test(uuid);
 };
 
 export const stmtRunAsync = (stmt: sqlite3.Statement, params: any[] = []): Promise<sqlite3.RunResult> => {
@@ -29,18 +29,18 @@ export const stmtRunAsync = (stmt: sqlite3.Statement, params: any[] = []): Promi
 };
 
 export function loadChemistryDetails(): Map<string, Chemistry> {
-    const chemistryDetails = new Map<string, Chemistry>();
-    const chemistriesFilePath = path.join(dataPath, 'chemistries.json');
-    try {
-        const data = fs.readFileSync(chemistriesFilePath, 'utf8');
-        const chemistries: Chemistry[] = JSON.parse(data);
-        for (const chemistry of chemistries) {
-            chemistryDetails.set(chemistry.id, chemistry);
-        }
-    } catch (error) {
-        console.error('Error reading chemistries.json:', error);
-    }
-    return chemistryDetails;
+	const chemistryDetails = new Map<string, Chemistry>();
+	const chemistriesFilePath = path.join(dataPath, 'chemistries.json');
+	try {
+		const data = fs.readFileSync(chemistriesFilePath, 'utf8');
+		const chemistries: Chemistry[] = JSON.parse(data);
+		for (const chemistry of chemistries) {
+			chemistryDetails.set(chemistry.id, chemistry);
+		}
+	} catch (error) {
+		console.error('Error reading chemistries.json:', error);
+	}
+	return chemistryDetails;
 }
 
 export function loadFormFactorDetails(): Map<string, FormFactor> {
