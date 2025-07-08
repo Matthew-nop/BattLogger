@@ -10,13 +10,12 @@ export default [
   },
   pluginJs.configs.recommended,
   {
-    files: ["**/*.ts"],
+    files: ["src/**/*.ts", "tests/**/*.ts"],
     languageOptions: {
       parser: tsParser,
       globals: {
         ...globals.browser,
         ...globals.node,
-        ...globals.jest,
       },
     },
     plugins: {
@@ -36,15 +35,12 @@ export default [
     }
   },
   {
-    files: ["jest.config.js"],
+    files: ["tests/**/*.ts"],
     languageOptions: {
       globals: {
-        ...globals.node,
+        ...globals.jest,
       },
     },
-    rules: {
-      "no-undef": "error",
-    }
   },
   {
     files: ["data/**/*.json", "data/**/*.jsonc"],
