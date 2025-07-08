@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('chemistryName')!.textContent = battery.chemistryName || 'N/A';
         document.getElementById('formfactorName')!.textContent = battery.formfactorName || 'N/A';
         document.getElementById('lastTestedCapacity')!.textContent = battery.lastTestedCapacity !== null ? battery.lastTestedCapacity : 'N/A';
-        document.getElementById('lastTestedTimestamp')!.textContent = battery.lastTestedTimestamp !== null ? battery.lastTestedTimestamp : 'N/A';
+        document.getElementById('lastTestedTimestamp')!.textContent = battery.lastTestedTimestamp !== null ? new Date(battery.lastTestedTimestamp).toLocaleString() : 'N/A';
 
 	} catch (error) {
 		console.error('Error fetching battery details:', error);

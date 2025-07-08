@@ -1,6 +1,6 @@
 import sqlite3 from 'sqlite3';
 
-import { TestRunInfo } from '../interfaces/interfaces.js';
+import { TestRunInfo, CreateTestRunInfoParams } from '../interfaces/interfaces.js';
 import { stmtRunAsync } from './utils/dbUtils.js';
 
 export class TestManager {
@@ -40,11 +40,11 @@ export class TestManager {
 		});
 	}
 
-	public async addBatteryTestRunInfo(batteryId: string, capacity: number, timestamp: number): Promise<{ id: number }> {
+	public async addBatteryTestRunInfo(params: CreateTestRunInfoParams): Promise<{ id: number }> {
 		const db = this.getDb();
 		try {
 			const stmt = db.prepare("INSERT INTO battery_tests (battery_id, capacity, timestamp) VALUES (?, ?, ?)");
-			const result = await stmtRunAsync(stmt, [batteryId, capacity, timestamp]);
+			const result = await stmtRunAsync(stmt, [params.batteryId, params.capacity, params.timestamp]);
 			stmt.finalize();
 			return { id: result.lastID };
 		} catch {
