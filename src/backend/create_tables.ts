@@ -23,7 +23,7 @@ export async function createTables(db: Database): Promise<void> {
 		await runAsync(`CREATE TABLE IF NOT EXISTS models (
 			id TEXT PRIMARY KEY,
 			name TEXT NOT NULL,
-			design_capacity INTEGER NOT NULL,
+			design_capacity INTEGER,
 			formfactor_id NEXT NOT NULL,
 			chemistry_id TEXT NOT NULL,
 			manufacturer TEXT,

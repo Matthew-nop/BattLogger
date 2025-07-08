@@ -67,8 +67,13 @@ export const getModelDetailsForId = (db: sqlite3.Database) => (req: Request<{ gu
 export const createModel = async (db: sqlite3.Database, req: Request<{}, {}, CreateModelParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
 	const { name, designCapacity, formFactorId, chemistryId, manufacturer } = req.body;
 
-	if (!name || !designCapacity || !formFactorId || !chemistryId) {
-		res.status(400).json({ error: 'Missing required fields.' });
+	if (!name || !formFactorId) {
+		res.status(400).json({ error: 'Missing required fields: Name and Formfactor are required.' });
+		return;
+	}
+
+	if (designCapacity !== undefined && designCapacity !== null && typeof designCapacity !== 'number') {
+		res.status(400).json({ error: 'Design capacity must be a number if provided.' });
 		return;
 	}
 
