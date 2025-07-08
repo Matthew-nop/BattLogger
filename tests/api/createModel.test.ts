@@ -56,7 +56,7 @@ describe('POST /api/create_model', () => {
 		});
 		expect(res.statusCode).toEqual(400);
 		expect(res.body).toHaveProperty('error');
-		expect(res.body.error).toEqual('Missing required fields: name, formFactorId, and chemistryId are required.');
+		expect(res.body.error).toEqual('Invalid formFactorId.');
 	});
 
 	test('should return 400 if chemistryId is invalid', async () => {
@@ -71,6 +71,6 @@ describe('POST /api/create_model', () => {
 		});
 		expect(res.statusCode).toEqual(400);
 		expect(res.body).toHaveProperty('error');
-		expect(res.body.error).toEqual('Invalid chemistry ID.');
+		expect(res.body.error).toEqual('Invalid chemistryId.');
 	});
 });
