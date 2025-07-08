@@ -10,18 +10,63 @@ export class ModelHandler {
 	}
 
 	public getModelMap = async (req: Request, res: Response<Record<string, string>>) => {
-		await this.modelManager.getModelMap(req, res);
+		try {
+			const modelMap = await this.modelManager.getModelMap();
+			res.json(Object.fromEntries(modelMap));
+		} catch (error) {
+			console.error('Error fetching model map:', error);
+			res.status(500).json({ error: 'Failed to fetch model map.' });
+		}
 	};
 
 	public getModelDetails = async (req: Request, res: Response<Record<string, ModelData> | { error: string }>) => {
-		await this.modelManager.getModelDetails(req, res);
+		try {
+			const modelDetails = await this.modelManager.getModelDetails();
+			res.json(Object.fromEntries(modelDetails));
+		} catch (error) {
+			console.error('Error fetching model details:', error);
+			res.status(500).json({ error: 'Failed to fetch model details.' });
+		}
 	};
 
 	public getModelDetailsForId = async (req: Request<{ guid: string }>, res: Response<ModelData | { error: string }>) => {
-		await this.modelManager.getModelDetailsForId(req, res);
+		const guid = req.params.guid;
+		try {
+			const model = await this.modelManager.getModelDetailsForId(guid);
+			if (model) {
+				res.json(model);
+			} else {
+				res.status(404).json({ error: 'Model not found' });
+			}
+		} catch (error) {
+			console.error('Error retrieving model details:', error);
+			res.status(500).json({ error: 'Failed to retrieve model details.' });
+		}
 	};
 
 	public createModel = async (req: Request<{}, {}, CreateModelParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
-		await this.modelManager.createModel(req, res);
+		const params = req.body;
+
+		if (!params.name || !params.formFactorId) {
+			res.status(400).json({ error: 'Missing required fields: Name and Formfactor are required.' });
+			return;
+		}
+
+		if (params.designCapacity !== undefined && params.designCapacity !== null && typeof params.designCapacity !== 'number') {
+			res.status(400).json({ error: 'Design capacity must be a number if provided.' });
+			return;
+		}
+
+		try {
+			const result = await this.modelManager.createModel(params);
+			res.status(201).json({ message: 'Model created successfully', id: result.id });
+		} catch (error: any) {
+			console.error('Error creating model:', error);
+			if (error.message.includes('Invalid formFactorId') || error.message.includes('Invalid chemistryId') || error.message.includes('Missing required fields')) {
+				res.status(400).json({ error: error.message });
+			} else {
+				res.status(500).json({ error: 'Failed to create model.' });
+			}
+		}
 	};
 }

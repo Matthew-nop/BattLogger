@@ -1,4 +1,3 @@
-import { Request, Response } from 'express';
 import sqlite3 from 'sqlite3';
 
 import { ModelData, CreateModelParams } from '../interfaces/interfaces.js';
@@ -86,7 +85,7 @@ export class ModelManager {
 	public async populateModelsTable(models: Map<string, ModelData>): Promise<void> {
 		const db = this.getDb();
 		const stmt = db.prepare("INSERT OR REPLACE INTO models (id, name, design_capacity, manufacturer, chemistry_id, formfactor_id) VALUES (?, ?, ?, ?, ?, ?)");
-		for (const [guid, model] of models.entries()) {
+		for (const [, model] of models.entries()) {
 			await stmtRunAsync(stmt, [
 				model.id,
 				model.name,
@@ -101,71 +100,49 @@ export class ModelManager {
 		this.cachedModels = null; // Invalidate cache
 	}
 
-	public getModelMap = async (req: Request, res: Response<Record<string, string>>) => {
-		try {
-			if (!this.cachedModels) {
-				await this._loadModelsFromDb();
-			}
-			const modelMap = new Map<string, string>();
-			this.cachedModels!.forEach((model) => {
-				modelMap.set(model.id, model.name);
-			});
-			res.json(Object.fromEntries(modelMap));
-		} catch (error) {
-			console.error('Error fetching model map:', error);
-			res.status(500).json({ error: 'Failed to fetch model map.' });
+	public async getModelMap(): Promise<Map<string, string>> {
+		if (!this.cachedModels) {
+			await this._loadModelsFromDb();
 		}
-	};
-
-	public getModelDetails = async (req: Request, res: Response<Record<string, ModelData> | { error: string }>) => {
-		try {
-			if (!this.cachedModels) {
-				await this._loadModelsFromDb();
-			}
-			res.json(Object.fromEntries(this.cachedModels!));
-		} catch (error) {
-			console.error('Error fetching model details:', error);
-			res.status(500).json({ error: 'Failed to fetch model details.' });
-		}
-	};
-
-	public getModelDetailsForId = async (req: Request<{ guid: string }>, res: Response<ModelData | { error: string }>) => {
-		const guid = req.params.guid;
-		try {
-			if (!this.cachedModels) {
-				await this._loadModelsFromDb();
-			}
-			const model = this.cachedModels!.get(guid);
-			if (model) {
-				res.json(model);
-			} else {
-				res.status(404).json({ error: 'Model not found' });
-			}
-		} catch (error) {
-			console.error('Error retrieving model details:', error);
-			res.status(500).json({ error: 'Failed to retrieve model details.' });
-		}
-	};
-
-	public async getModelById(id: string): Promise<ModelData | null> {
-			if (!this.cachedModels) {
-				await this._loadModelsFromDb();
-			}
-			return this.cachedModels!.get(id) || null;
+		const modelMap = new Map<string, string>();
+		this.cachedModels!.forEach((model) => {
+			modelMap.set(model.id, model.name);
+		});
+		return modelMap;
 	}
 
-	public createModel = async (req: Request<{}, {}, CreateModelParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
+	public async getModelDetails(): Promise<Map<string, ModelData>> {
+		if (!this.cachedModels) {
+			await this._loadModelsFromDb();
+		}
+		return this.cachedModels!;
+	}
+
+	public async getModelDetailsForId(guid: string): Promise<ModelData | null> {
+		if (!this.cachedModels) {
+			await this._loadModelsFromDb();
+		}
+		return this.cachedModels!.get(guid) || null;
+	}
+
+	public async getModelById(id: string): Promise<ModelData | null> {
+		if (!this.cachedModels) {
+			await this._loadModelsFromDb();
+		}
+		return this.cachedModels!.get(id) || null;
+	}
+
+	public async createModel(params: CreateModelParams): Promise<{ id: string }> {
 		const db = this.getDb();
-		const { name, designCapacity, formFactorId, chemistryId, manufacturer } = req.body;
+
+		const { name, designCapacity, formFactorId, chemistryId, manufacturer } = params;
 
 		if (!name || !formFactorId) {
-			res.status(400).json({ error: 'Missing required fields: Name and Formfactor are required.' });
-			return;
+			throw new Error('Missing required fields: Name and Formfactor are required.');
 		}
 
 		if (designCapacity !== undefined && designCapacity !== null && typeof designCapacity !== 'number') {
-			res.status(400).json({ error: 'Design capacity must be a number if provided.' });
-			return;
+			throw new Error('Design capacity must be a number if provided.');
 		}
 
 		const formFactorManager = FormFactorManager.getInstance();
@@ -175,13 +152,11 @@ export class ModelManager {
 		const chemistry = await chemistryManager.getChemistryById(chemistryId);
 
 		if (!formFactor) {
-			res.status(400).json({ error: 'Invalid formFactorId.' });
-			return;
+			throw new Error('Invalid formFactorId.');
 		}
 
 		if (!chemistry) {
-			res.status(400).json({ error: 'Invalid chemistryId.' });
-			return;
+			throw new Error('Invalid chemistryId.');
 		}
 
 		const newGuid = randomUUID();
@@ -191,7 +166,7 @@ export class ModelManager {
 			designCapacity,
 			formFactorId,
 			chemistryId,
-			manufacturer
+			manufacturer,
 		};
 
 		try {
@@ -206,10 +181,10 @@ export class ModelManager {
 			]);
 			stmt.finalize();
 			this.cachedModels = null; // Invalidate cache
-			res.status(201).json({ message: 'Model created successfully', id: newGuid });
+			return { id: newGuid };
 		} catch (error) {
 			console.error('Error inserting new model into database:', error);
-			res.status(500).json({ error: 'Failed to save model.' });
+			throw new Error('Failed to save model.');
 		}
-	};
+	}
 }
