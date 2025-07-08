@@ -51,10 +51,15 @@ export class ModelHandler {
 			res.status(400).json({ error: 'Missing required fields: Name and Formfactor are required.' });
 			return;
 		}
-
-		if (params.designCapacity !== undefined && params.designCapacity !== null && typeof params.designCapacity !== 'number') {
-			res.status(400).json({ error: 'Design capacity must be a number if provided.' });
-			return;
+		if (params.designCapacity !== undefined && params.designCapacity !== null) {
+			if (typeof params.designCapacity !== 'number') {
+				res.status(400).json({ error: 'Design capacity must be a number if provided.' });
+				return;
+			}
+			if (params.designCapacity <= 0) {
+				res.status(400).json({ error: 'Design capacity must be a positive number.' });
+				return;
+			}
 		}
 
 		try {

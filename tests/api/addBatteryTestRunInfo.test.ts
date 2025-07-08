@@ -34,15 +34,18 @@ describe('POST /api/battery_test', () => {
 		expect(res.body.error).toEqual('Missing required fields: batteryId, capacity, or a valid timestamp.');
 	});
 
-	test('should return 400 if capacity is not a number', async () => {
+	test.each([
+		['not a number', 'invalid'],
+		['a negative number', -100],
+	])('should return 400 if capacity is %s', async (testName, capacityValue) => {
 		const res = await request(app).post('/api/battery_test').send({
 			batteryId: 'test-battery-1',
-			capacity: 'invalid',
+			capacity: capacityValue,
 			timestamp: Date.now()
 		});
 		expect(res.statusCode).toEqual(400);
 		expect(res.body).toHaveProperty('error');
-		expect(res.body.error).toEqual('Missing required fields: batteryId, capacity, or a valid timestamp.');
+		expect(res.body.error).toEqual('Capacity must be a positive number.');
 	});
 
 	test('should return 400 if timestamp is not a valid number', async () => {

@@ -24,8 +24,13 @@ export class TestHandler {
 	public addBatteryTestRunInfo = async (req: Request<{}, {}, CreateTestRunInfoParams>, res: Response<{ message: string, id: number } | { error: string }>) => {
 		const { batteryId, capacity, timestamp } = req.body;
 
-		if (!batteryId || !capacity || isNaN(Number(capacity)) || !timestamp || isNaN(Number(timestamp))) {
+		if (!batteryId || !capacity || !timestamp || isNaN(Number(timestamp))) {
 			res.status(400).json({ error: 'Missing required fields: batteryId, capacity, or a valid timestamp.' });
+			return;
+		}
+
+		if (capacity === undefined || capacity === null || isNaN(Number(capacity)) || Number(capacity) < 0) {
+			res.status(400).json({ error: 'Capacity must be a positive number.' });
 			return;
 		}
 

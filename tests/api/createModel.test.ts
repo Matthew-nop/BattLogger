@@ -44,6 +44,22 @@ describe('POST /api/create_model', () => {
 		expect(res.body.error).toEqual('Design capacity must be a number if provided.');
 	});
 
+	test('should return 400 if designCapacity is a negative number', async () => {
+		const formFactorId = Object.keys((await request(app).get('/api/formfactor_details')).body)[0];
+		const chemistryId = Object.keys((await request(app).get('/api/chemistry_details')).body)[0];
+
+		const res = await request(app).post('/api/create_model').send({
+			name: 'Test Model',
+			designCapacity: 0,
+			formFactorId: formFactorId,
+			chemistryId: chemistryId,
+			manufacturer: 'Test Manufacturer'
+		});
+		expect(res.statusCode).toEqual(400);
+		expect(res.body).toHaveProperty('error');
+		expect(res.body.error).toEqual('Design capacity must be a positive number.');
+	});
+
 	test('should return 400 if formFactorId is invalid', async () => {
 		const chemistryId = Object.keys((await request(app).get('/api/chemistry_details')).body)[0];
 
