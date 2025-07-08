@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>SQLite Data Table</title>
+	<title>BattLogger</title>
 	<link rel="stylesheet" href="style.scss">
 </head>
 <body>
 
-	<h1>Battery Data</h1>
-
 	<div class="create-options-container">
 		<div class="create-options-left">
-			<button id="addBatteryBtn">Add New Battery</button>
-			<button id="addTestBtn">Add Test Run Info</button>
+			<button id="addBatteryBtn">New Battery</button>
+			<button id="addTestBtn">New Test Run Info</button>
 		</div>
 		<div class="create-options-right">
-			<button id="addBatteryTypeBtn">Add New Battery Type</button>
+			<button id="addBatteryTypeBtn">New Battery Type</button>
 		</div>
 	</div>
 
+	<div class="filters-header">
+		<h3>Filters</h3>
+	</div>
 	<div class="filters">
 		<label for="nameFilter">Model:</label>
 		<input type="text" id="nameFilter" class="filter-input" list="modelNames" placeholder="Molicel M35A">
@@ -33,8 +34,8 @@
 			<option value="">All</option>
 		</select>
 
-		<button id="applyFiltersBtn">Apply Filters</button>
-		<button id="clearFiltersBtn">Clear Filters</button>
+		<button id="applyFiltersBtn">Apply</button>
+		<button id="clearFiltersBtn">Clear</button>
 	</div>
 
 	<table>
