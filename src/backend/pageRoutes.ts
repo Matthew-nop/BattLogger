@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import * as path from 'path';
 
-const frontendPath = path.join(__dirname, '..', '..', 'dist', 'frontend');
+const frontendPath = path.join(import.meta.dirname, '..', '..', 'dist', 'frontend');
 
 export function setupPageRoutes(app: any) {
 	app.get('/model_details', (req: Request, res: Response) => {

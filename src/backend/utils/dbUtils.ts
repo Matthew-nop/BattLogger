@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as sqlite3 from 'sqlite3';
 
-const dataPath = path.join(__dirname, '..', '..', '..', 'data');
+const dataPath = path.join(import.meta.dirname, '..', '..', '..', 'data');
 
 import { createTables } from './createTables.js';
 import { ChemistryManager } from '../chemistryManager.js';

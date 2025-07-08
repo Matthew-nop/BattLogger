@@ -25,7 +25,7 @@ chemistryManager.setDb(db);
 const formFactorManager = FormFactorManager.getInstance();
 formFactorManager.setDb(db);
 
-const frontendPath = path.join(__dirname, '..', '..', 'dist', 'frontend');
+const frontendPath = path.join(import.meta.dirname, '..', '..', 'dist', 'frontend');
 app.use(express.static(frontendPath));
 app.use(express.json()); // Enable JSON body parsing
 
