@@ -19,12 +19,23 @@ describe('DELETE /api/battery/:batteryId', () => {
         const modelMap = (await request(app).get('/api/model_map')).body;
         const firstModelId = Object.keys(modelMap)[0];
         const batteryIdToDelete = randomUUID();
-        await request(app).post('/api/create_battery').send({
+        const createRes = await request(app).post('/api/create_battery').send({
             batteryId: batteryIdToDelete,
             modelIdentifier: firstModelId
         });
+        expect(createRes.statusCode).toEqual(201);
 
-        const res = await request(app).delete(`/api/battery/${batteryIdToDelete}`);
-        expect(res.statusCode).toEqual(200);
+        // Verify the battery exists before deletion
+        const getBeforeDeleteRes = await request(app).get(`/api/battery/${batteryIdToDelete}`);
+        expect(getBeforeDeleteRes.statusCode).toEqual(200);
+        expect(getBeforeDeleteRes.body.id).toEqual(batteryIdToDelete);
+
+        // Delete the battery
+        const deleteRes = await request(app).delete(`/api/battery/${batteryIdToDelete}`);
+        expect(deleteRes.statusCode).toEqual(200);
+
+        // Verify the battery no longer exists after deletion
+        const getAfterDeleteRes = await request(app).get(`/api/battery/${batteryIdToDelete}`);
+        expect(getAfterDeleteRes.statusCode).toEqual(404);
     });
 });
