@@ -3,8 +3,9 @@
 	"version": "0.0.1",
 	"description": "Logging and tracking app for batteries",
 	"main": "dist/backend/server.js",
+	"type": "module",
 	"scripts": {
-		"test": "jest",
+		"test": "node --experimental-vm-modules node_modules/.bin/jest",
 		"build": "build/build.sh && npm run build:backend && npm run build:frontend",
 		"build:backend": "tsc -p tsconfig.json",
 		"build:frontend": "parcel build",

@@ -1,9 +1,8 @@
 const config: import('ts-jest').JestConfigWithTsJest = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  transform: {
-    '^.+\.ts$': 'ts-jest',
-  },
+  transform: { },
+  extensionsToTreatAsEsm: [ '.ts' ],
   moduleNameMapper: {
     '^(\.\.?/.*)\.js$': '$1',
   },
