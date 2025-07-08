@@ -2,6 +2,8 @@ import * as sqlite3 from 'sqlite3';
 
 import { loadChemistryDetails, loadFormFactorDetails, loadModelDetails } from '../../src/backend/utils/dbUtils';
 import { stmtRunAsync } from '../../src/backend/utils/dbUtils';
+import { createTables } from '../../src/backend/create_tables';
+import { initializeDatabase } from '../../src/backend/utils/dbUtils';
 
 import { Chemistry, FormFactor, ModelData } from '../../src/interfaces/interfaces';
 import { randomUUID } from 'crypto';
@@ -41,3 +43,20 @@ export const insertDummyValues = async (db: sqlite3.Database): Promise<void> => 
 		console.error(err.message);
 	}
 };
+
+export async function setupTestDatabase(db: sqlite3.Database): Promise<void> {
+    await createTables(db);
+    await initializeDatabase(db);
+    await insertDummyValues(db);
+}
+
+export function teardownTestDatabase(db: sqlite3.Database): Promise<void> {
+    return new Promise((resolve, reject) => {
+        db.close((err) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve();
+        });
+    });
+}

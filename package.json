@@ -59,6 +59,7 @@
 		"@types/jest": "^30.0.0",
 		"@types/node": "^24.0.10",
 		"@types/sqlite3": "^5.1.0",
+		"@types/supertest": "^6.0.3",
 		"jest": "^30.0.4",
 		"parcel": "^2.15.4",
 		"sass": "^1.89.2",
