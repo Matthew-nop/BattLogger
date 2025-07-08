@@ -1,38 +1,54 @@
-import { Request, Response } from 'express';
 import sqlite3 from 'sqlite3';
 
-import { TestRunInfo, CreateTestRunInfoParams } from '../interfaces/interfaces.js';
+import { TestRunInfo } from '../interfaces/interfaces.js';
+import { stmtRunAsync } from './utils/dbUtils.js';
 
-export const getBatteryTests = (db: sqlite3.Database) => (req: Request<{ batteryId: string }>, res: Response<TestRunInfo[] | { error: string }>) => {
-	const batteryId = req.params.batteryId;
-	db.all<TestRunInfo>("SELECT capacity, timestamp FROM battery_tests WHERE battery_id = ? ORDER BY timestamp DESC", [batteryId], (err: Error | null, rows: TestRunInfo[]) => {
-		if (err) {
-			console.error(err.message);
-			res.status(500).json({ error: err.message });
-			return;
+export class TestManager {
+	private static instance: TestManager;
+	private db: sqlite3.Database | null = null;
+
+	private constructor() { }
+
+	public static getInstance(): TestManager {
+		if (!TestManager.instance) {
+			TestManager.instance = new TestManager();
 		}
-		res.json(rows);
-	});
-};
-
-export const addBatteryTestRunInfo = (db: sqlite3.Database) => (req: Request<{}, {}, CreateTestRunInfoParams>, res: Response<{ message: string, id: number } | { error: string }>) => {
-	const { batteryId, capacity, timestamp } = req.body;
-
-	if (!batteryId || !capacity || !timestamp) {
-		res.status(400).json({ error: 'Missing required fields: batteryId, capacity, or timestamp.' });
-		return;
+		return TestManager.instance;
 	}
 
-	db.run(
-		"INSERT INTO battery_tests (battery_id, capacity, timestamp) VALUES (?, ?, ?)",
-		[batteryId, capacity, timestamp],
-		function(this: sqlite3.RunResult, err: Error | null) {
-			if (err) {
-				console.error('Error adding battery test:', err.message);
-				res.status(500).json({ error: 'Failed to add battery test.' });
-				return;
-			}
-			res.status(201).json({ message: 'Battery test added successfully.', id: this.lastID });
+	public setDb(db: sqlite3.Database): void {
+		this.db = db;
+	}
+
+	private getDb(): sqlite3.Database {
+		if (!this.db) {
+			throw new Error("Database not set for TestManager.");
 		}
-	);
-};
+		return this.db;
+	}
+
+	public async getBatteryTests(batteryId: string): Promise<TestRunInfo[]> {
+		const db = this.getDb();
+		return new Promise<TestRunInfo[]>((resolve, reject) => {
+			db.all<TestRunInfo>("SELECT capacity, timestamp FROM battery_tests WHERE battery_id = ? ORDER BY timestamp DESC", [batteryId], (err: Error | null, rows: TestRunInfo[]) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(rows);
+				}
+			});
+		});
+	}
+
+	public async addBatteryTestRunInfo(batteryId: string, capacity: number, timestamp: number): Promise<{ id: number }> {
+		const db = this.getDb();
+		try {
+			const stmt = db.prepare("INSERT INTO battery_tests (battery_id, capacity, timestamp) VALUES (?, ?, ?)");
+			const result = await stmtRunAsync(stmt, [batteryId, capacity, timestamp]);
+			stmt.finalize();
+			return { id: result.lastID };
+		} catch {
+			throw new Error('Failed to add battery test.');
+		}
+	}
+}
