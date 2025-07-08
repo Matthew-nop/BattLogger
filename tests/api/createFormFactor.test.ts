@@ -20,4 +20,18 @@ describe('POST /api/create_formfactor', () => {
         expect(res.statusCode).toEqual(201);
         expect(res.body).toHaveProperty('id');
     });
+
+    test('should return 400 if name is missing', async () => {
+        const res = await request(app).post('/api/create_formfactor').send({});
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Form factor name is required and cannot be empty.');
+    });
+
+    test('should return 400 if name is an empty string', async () => {
+        const res = await request(app).post('/api/create_formfactor').send({ name: '' });
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Form factor name is required and cannot be empty.');
+    });
 });

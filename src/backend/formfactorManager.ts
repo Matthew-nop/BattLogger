@@ -104,8 +104,8 @@ export class FormFactorManager {
         const db = this.getDb();
         const { name } = req.body;
 
-        if (!name) {
-            res.status(400).json({ error: 'Missing required fields.' });
+        if (name === undefined || name === null || name.trim() === '') {
+            res.status(400).json({ error: 'Form factor name is required and cannot be empty.' });
             return;
         }
 
