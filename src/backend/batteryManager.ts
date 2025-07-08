@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
-import { Database, RunResult } from 'sqlite3';
+import sqlite3 from 'sqlite3';
 
 import { BatteryData, CreateBatteryParams, GetDataQueryParams } from '../interfaces/interfaces.js';
 
 import { loadModelDetails } from './utils/dbUtils.js';
 
-export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryParams>, res: Response<BatteryData[]>) => {
+export const getData = (db: sqlite3.Database) => (req: Request<{}, {}, {}, GetDataQueryParams>, res: Response<BatteryData[]>) => {
 	const { sortBy, order = 'asc', name, formfactor, chemistry } = req.query as GetDataQueryParams;
 	let query = `
 	SELECT
@@ -62,7 +62,7 @@ export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryP
 	});
 };
 
-export const getBattery = (db: Database) => (req: Request<{ batteryId: string }>, res: Response<BatteryData | { error: string }>) => {
+export const getBattery = (db: sqlite3.Database) => (req: Request<{ batteryId: string }>, res: Response<BatteryData | { error: string }>) => {
 	const batteryId = req.params.batteryId;
 	db.get<BatteryData>("SELECT id, model_id AS modelId FROM batteries WHERE id = ?", [batteryId], (err: Error | null, row: BatteryData) => {
 		if (err) {
@@ -78,7 +78,7 @@ export const getBattery = (db: Database) => (req: Request<{ batteryId: string }>
 	});
 };
 
-export const getBatteryDetailsForId = (db: Database) => (req: Request<{ batteryId: string }>, res: Response<BatteryData | { error: string }>) => {
+export const getBatteryDetailsForId = (db: sqlite3.Database) => (req: Request<{ batteryId: string }>, res: Response<BatteryData | { error: string }>) => {
 	const batteryId = req.params.batteryId;
 	const query = `
 		SELECT
@@ -119,7 +119,7 @@ export const getBatteryDetailsForId = (db: Database) => (req: Request<{ batteryI
 	});
 };
 
-export const createBattery = (db: Database) => (req: Request<{}, {}, CreateBatteryParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
+export const createBattery = (db: sqlite3.Database) => (req: Request<{}, {}, CreateBatteryParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
 	const { batteryId, modelIdentifier } = req.body;
 
 	if (!batteryId || !modelIdentifier) {
@@ -146,7 +146,7 @@ export const createBattery = (db: Database) => (req: Request<{}, {}, CreateBatte
 
 		db.run("INSERT INTO batteries (id, model_id) VALUES (?, ?)",
 			[batteryId, modelIdentifier],
-			function (this: RunResult, err: Error | null) {
+			function (this: sqlite3.RunResult, err: Error | null) {
 				if (err) {
 					console.error('Error inserting battery:', err.message);
 					res.status(500).json({ error: 'Failed to add battery.' });
@@ -158,7 +158,7 @@ export const createBattery = (db: Database) => (req: Request<{}, {}, CreateBatte
 	});
 };
 
-export const updateBattery = (db: Database) => (req: Request<{ batteryId: string }, {}, CreateBatteryParams>, res: Response<{ message: string } | { error: string }>) => {
+export const updateBattery = (db: sqlite3.Database) => (req: Request<{ batteryId: string }, {}, CreateBatteryParams>, res: Response<{ message: string } | { error: string }>) => {
 	const batteryId = req.params.batteryId;
 	const { modelIdentifier } = req.body;
 
@@ -176,7 +176,7 @@ export const updateBattery = (db: Database) => (req: Request<{ batteryId: string
 	db.run(
 		"UPDATE batteries SET model_id = ? WHERE id = ?",
 		[modelIdentifier, batteryId],
-		function (this: RunResult, err: Error | null) {
+		function (this: sqlite3.RunResult, err: Error | null) {
 			if (err) {
 				console.error('Error updating battery:', err.message);
 				res.status(500).json({ error: 'Failed to update battery.' });
@@ -191,10 +191,10 @@ export const updateBattery = (db: Database) => (req: Request<{ batteryId: string
 	);
 };
 
-export const deleteBattery = (db: Database) => (req: Request<{ batteryId: string }>, res: Response<{ message: string } | { error: string }>) => {
+export const deleteBattery = (db: sqlite3.Database) => (req: Request<{ batteryId: string }>, res: Response<{ message: string } | { error: string }>) => {
 	const batteryId = req.params.batteryId;
 
-	db.run("DELETE FROM batteries WHERE id = ?", [batteryId], function (this: RunResult, err: Error | null) {
+	db.run("DELETE FROM batteries WHERE id = ?", [batteryId], function (this: sqlite3.RunResult, err: Error | null) {
 		if (err) {
 			console.error('Error deleting battery:', err.message);
 			res.status(500).json({ error: 'Failed to delete battery.' });

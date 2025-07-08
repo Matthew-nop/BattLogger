@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { Database, RunResult } from 'sqlite3';
+import sqlite3 from 'sqlite3';
 
 import { TestRunInfo, CreateTestRunInfoParams } from '../interfaces/interfaces.js';
 
-export const getBatteryTests = (db: Database) => (req: Request<{ batteryId: string }>, res: Response<TestRunInfo[] | { error: string }>) => {
+export const getBatteryTests = (db: sqlite3.Database) => (req: Request<{ batteryId: string }>, res: Response<TestRunInfo[] | { error: string }>) => {
 	const batteryId = req.params.batteryId;
 	db.all<TestRunInfo>("SELECT capacity, timestamp FROM battery_tests WHERE battery_id = ? ORDER BY timestamp DESC", [batteryId], (err: Error | null, rows: TestRunInfo[]) => {
 		if (err) {
@@ -15,7 +15,7 @@ export const getBatteryTests = (db: Database) => (req: Request<{ batteryId: stri
 	});
 };
 
-export const addBatteryTestRunInfo = (db: Database) => (req: Request<{}, {}, CreateTestRunInfoParams>, res: Response<{ message: string, id: number } | { error: string }>) => {
+export const addBatteryTestRunInfo = (db: sqlite3.Database) => (req: Request<{}, {}, CreateTestRunInfoParams>, res: Response<{ message: string, id: number } | { error: string }>) => {
 	const { batteryId, capacity, timestamp } = req.body;
 
 	if (!batteryId || !capacity || !timestamp) {
@@ -26,7 +26,7 @@ export const addBatteryTestRunInfo = (db: Database) => (req: Request<{}, {}, Cre
 	db.run(
 		"INSERT INTO battery_tests (battery_id, capacity, timestamp) VALUES (?, ?, ?)",
 		[batteryId, capacity, timestamp],
-		function(this: RunResult, err: Error | null) {
+		function(this: sqlite3.RunResult, err: Error | null) {
 			if (err) {
 				console.error('Error adding battery test:', err.message);
 				res.status(500).json({ error: 'Failed to add battery test.' });

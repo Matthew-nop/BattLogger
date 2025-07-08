@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import * as sqlite3 from 'sqlite3';
+import sqlite3 from 'sqlite3';
 
 import { ModelData, CreateModelParams } from '../interfaces/interfaces.js';
 import { randomUUID } from 'crypto';

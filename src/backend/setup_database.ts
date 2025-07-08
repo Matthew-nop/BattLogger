@@ -2,7 +2,7 @@
 // It creates necessary tables and populates them with initial data,
 // including dummy battery and test run information for demonstration purposes.
 
-import * as sqlite3 from 'sqlite3';
+import sqlite3 from 'sqlite3';
 import { initializeDatabase } from './utils/dbUtils.js';
 import { ChemistryManager } from './chemistryManager.js';
 

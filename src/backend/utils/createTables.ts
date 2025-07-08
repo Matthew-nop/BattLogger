@@ -1,6 +1,6 @@
-import { Database } from 'sqlite3';
+import sqlite3 from 'sqlite3';
 
-export async function createTables(db: Database): Promise<void> {
+export async function createTables(db: sqlite3.Database): Promise<void> {
 	const runAsync = (query: string, params: any[] = []): Promise<any> => {
 		return new Promise((resolve, reject) => {
 			db.run(query, params, function (err: Error | null) {

@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import * as sqlite3 from 'sqlite3';
+import sqlite3 from 'sqlite3';
 import { Request, Response } from 'express';
 
 import { Chemistry, CreateChemistryParams } from '../interfaces/interfaces.js';

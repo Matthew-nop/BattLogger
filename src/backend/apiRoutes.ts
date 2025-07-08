@@ -1,5 +1,5 @@
 import { Application } from 'express';
-import { Database } from 'sqlite3';
+import sqlite3 from 'sqlite3';
 
 import { createBattery, deleteBattery, getBattery, getData, updateBattery, getBatteryDetailsForId } from './batteryManager.js';
 import { addBatteryTestRunInfo, getBatteryTests } from './testManager.js';
@@ -7,7 +7,7 @@ import { ChemistryManager } from './chemistryManager.js';
 import { FormFactorManager } from './formfactorManager.js';
 import { createModel, getModelDetails, getModelDetailsForId, getModelMap } from './modelManager.js';
 
-export function setupApiRoutes(app: Application, db: Database, chemistryManager: ChemistryManager, formFactorManager: FormFactorManager) {
+export function setupApiRoutes(app: Application, db: sqlite3.Database, chemistryManager: ChemistryManager, formFactorManager: FormFactorManager) {
 	
 	app.get('/api/data', getData(db));
 	app.get('/api/model_map', getModelMap);

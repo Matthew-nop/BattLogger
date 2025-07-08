@@ -1,4 +1,4 @@
-import * as sqlite3 from 'sqlite3';
+import sqlite3 from 'sqlite3';
 import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 
