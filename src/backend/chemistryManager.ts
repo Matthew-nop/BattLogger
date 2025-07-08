@@ -1,8 +1,8 @@
 import { randomUUID } from 'crypto';
 import sqlite3 from 'sqlite3';
-import { Request, Response } from 'express';
 
-import { Chemistry, CreateChemistryParams } from '../interfaces/interfaces.js';
+
+import { Chemistry } from '../interfaces/interfaces.js';
 import { stmtRunAsync } from './utils/dbUtils.js';
 
 export class ChemistryManager {
@@ -64,7 +64,7 @@ export class ChemistryManager {
 	public async populateChemistriesTable(chemistries: Map<string, Chemistry>): Promise<void> {
 		const db = this.getDb();
 		const stmt = db.prepare("INSERT OR REPLACE INTO chemistries (id, name, short_name, nominal_voltage) VALUES (?, ?, ?, ?)");
-		for (const [guid, chemistry] of chemistries.entries()) {
+		for (const [, chemistry] of chemistries.entries()) {
 			await stmtRunAsync(stmt, [
 				chemistry.id,
 				chemistry.name,
@@ -77,17 +77,12 @@ export class ChemistryManager {
 		this.cachedChemistries = null; // Invalidate cache
 	}
 
-	public getChemistriesMap = async (req: Request, res: Response<Record<string, Chemistry> | { error: string }>) => {
-		try {
-			if (!this.cachedChemistries) {
-				await this._loadChemistriesFromDb();
-			}
-			res.json(Object.fromEntries(this.cachedChemistries!));
-		} catch (error) {
-			console.error('Error fetching chemistries from database:', error);
-			res.status(500).json({ error: 'Failed to fetch chemistries map.' });
+	public async getChemistriesMap(): Promise<Map<string, Chemistry>> {
+		if (!this.cachedChemistries) {
+			await this._loadChemistriesFromDb();
 		}
-	};
+		return this.cachedChemistries!;
+	}
 
 	public async getChemistryById(id: string): Promise<Chemistry | null> {
 		if (!this.cachedChemistries) {
@@ -96,25 +91,7 @@ export class ChemistryManager {
 		return this.cachedChemistries!.get(id) || null;
 	}
 
-	public getChemistryForId = async (req: Request, res: Response<Chemistry | { error: string }>) => {
-		const { id } = req.params;
-
-		try {
-			if (!this.cachedChemistries) {
-				await this._loadChemistriesFromDb();
-			}
-			const chemistry = this.cachedChemistries!.get(id);
-
-			if (chemistry) {
-				res.json(chemistry);
-			} else {
-				res.status(404).json({ error: 'Chemistry not found.' });
-			}
-		} catch (error) {
-			console.error('Error fetching chemistry from database:', error);
-			res.status(500).json({ error: 'Failed to fetch chemistry.' });
-		}
-	};
+	
 
 	public async getAllChemistries(): Promise<Chemistry[]> {
 		try {
@@ -128,25 +105,11 @@ export class ChemistryManager {
 		}
 	}
 
-	public getChemistries = async (req: Request, res: Response<Chemistry[] | { error: string }>) => {
-		try {
-			const chemistries = await this.getAllChemistries();
-			res.json(chemistries);
-		} catch (error) {
-			console.error('Error fetching chemistries from database:', error);
-			res.status(500).json({ error: 'Failed to fetch chemistries.' });
-		}
-	};
-
-    
-
-	public createChemistry = async (req: Request<{}, {}, CreateChemistryParams>, res: Response) => {
+	public async createChemistry(name: string, shortName: string, nominalVoltage: number): Promise<{ id: string }> {
 		const db = this.getDb();
-		const { name, shortName, nominalVoltage } = req.body;
 
 		if (!name || !shortName || isNaN(nominalVoltage)) {
-			res.status(400).json({ error: 'Missing required fields.' });
-			return;
+			throw new Error('Missing required fields.');
 		}
 
 		const newGuid = randomUUID();
@@ -167,10 +130,10 @@ export class ChemistryManager {
 			]);
 			stmt.finalize();
 			this.cachedChemistries = null; // Invalidate cache
-			res.status(201).json({ message: 'Chemistry created successfully', id: newGuid });
+			return { id: newGuid };
 		} catch (error) {
 			console.error('Error inserting new chemistry into database:', error);
-			res.status(500).json({ error: 'Failed to save chemistry.' });
+			throw new Error('Failed to save chemistry.');
 		}
-	};
+	}
 }
