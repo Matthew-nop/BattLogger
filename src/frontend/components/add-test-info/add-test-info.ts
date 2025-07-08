@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const data: CreateTestRunInfoParams = {
 			batteryId: formData.get('batteryId') as string,
 			capacity: Number(formData.get('capacity')),
-			timestamp: formData.get('timestamp') as string,
+			timestamp: new Date(formData.get('timestamp') as string).getTime(),
 		};
 
 		try {
