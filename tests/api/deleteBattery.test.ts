@@ -14,7 +14,7 @@ describe('DELETE /api/battery/:batteryId', () => {
         await teardownTestEnvironment(db);
     });
 
-    test('should return 200', async () => {
+    test('should return 200 when deleting an existing battery', async () => {
         // First, create a battery to delete
         const modelMap = (await request(app).get('/api/model_map')).body;
         const firstModelId = Object.keys(modelMap)[0];
@@ -37,5 +37,13 @@ describe('DELETE /api/battery/:batteryId', () => {
         // Verify the battery no longer exists after deletion
         const getAfterDeleteRes = await request(app).get(`/api/battery/${batteryIdToDelete}`);
         expect(getAfterDeleteRes.statusCode).toEqual(404);
+    });
+
+    test('should return 404 for a non-existent battery ID', async () => {
+        const nonExistentBatteryId = randomUUID();
+        const res = await request(app).delete(`/api/battery/${nonExistentBatteryId}`);
+        expect(res.statusCode).toEqual(404);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Battery not found.');
     });
 });
