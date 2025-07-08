@@ -10,10 +10,29 @@ export class FormFactorHandler {
 	}
 
 	public getFormFactorMap = async (req: Request, res: Response<Record<string, FormFactor> | { error: string }>) => {
-		await this.formFactorManager.getFormFactorMap(req, res);
+		try {
+			const formFactorMap = await this.formFactorManager.getFormFactorMap();
+			res.json(Object.fromEntries(formFactorMap));
+		} catch (error) {
+			console.error('Error fetching form factors from database:', error);
+			res.status(500).json({ error: 'Failed to fetch form factor map.' });
+		}
 	};
 
-	public createFormFactor = async (req: Request<{}, {}, CreateFormFactorParams>, res: Response) => {
-		await this.formFactorManager.createFormFactor(req, res);
+	public createFormFactor = async (req: Request<{}, {}, CreateFormFactorParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
+		const { name } = req.body;
+
+		if (name === undefined || name === null || name.trim() === '') {
+			res.status(400).json({ error: 'Form factor name is required and cannot be empty.' });
+			return;
+		}
+
+		try {
+			const result = await this.formFactorManager.createFormFactor(name);
+			res.status(201).json({ message: 'Form factor created successfully', id: result.id });
+		} catch (error: any) {
+			console.error('Error inserting new form factor into database:', error);
+			res.status(500).json({ error: error.message });
+		}
 	};
 }

@@ -1,8 +1,7 @@
 import sqlite3 from 'sqlite3';
 import { randomUUID } from 'crypto';
-import { Request, Response } from 'express';
 
-import { FormFactor, CreateFormFactorParams } from '../interfaces/interfaces.js';
+import { FormFactor } from '../interfaces/interfaces.js';
 
 import { stmtRunAsync } from './utils/dbUtils.js';
 
@@ -62,7 +61,7 @@ export class FormFactorManager {
 	public async populateFormFactorsTable(formFactors: Map<string, FormFactor>): Promise<void> {
 		const db = this.getDb();
 		const stmt = db.prepare("INSERT OR REPLACE INTO formfactors (id, name) VALUES (?, ?)");
-		for (const [guid, formfactor] of formFactors.entries()) {
+		for (const [, formfactor] of formFactors.entries()) {
 			await stmtRunAsync(stmt, [
 				formfactor.id,
 				formfactor.name
@@ -73,17 +72,12 @@ export class FormFactorManager {
 		this.cachedFormFactors = null; // Invalidate cache
 	}
 
-	public getFormFactorMap = async (req: Request, res: Response<Record<string, FormFactor> | { error: string }>) => {
-		try {
-			if (!this.cachedFormFactors) {
-				await this._loadFormFactorsFromDb();
-			}
-			res.json(Object.fromEntries(this.cachedFormFactors!));
-		} catch (error) {
-			console.error('Error fetching form factors from database:', error);
-			res.status(500).json({ error: 'Failed to fetch Formfactor map.' });
+	public async getFormFactorMap(): Promise<Map<string, FormFactor>> {
+		if (!this.cachedFormFactors) {
+			await this._loadFormFactorsFromDb();
 		}
-	};
+		return this.cachedFormFactors!;
+	}
 
 	public async getFormFactorById(id: string): Promise<FormFactor | null> {
 		if (!this.cachedFormFactors) {
@@ -92,13 +86,11 @@ export class FormFactorManager {
 		return this.cachedFormFactors!.get(id) || null;
 	}
 
-	public createFormFactor = async (req: Request<{}, {}, CreateFormFactorParams>, res: Response) => {
+	public async createFormFactor(name: string): Promise<{ id: string }> {
 		const db = this.getDb();
-		const { name } = req.body;
 
 		if (name === undefined || name === null || name.trim() === '') {
-			res.status(400).json({ error: 'Form factor name is required and cannot be empty.' });
-			return;
+			throw new Error('Form factor name is required and cannot be empty.');
 		}
 
 		const newGuid = randomUUID();
@@ -115,10 +107,10 @@ export class FormFactorManager {
 			]);
 			stmt.finalize();
 			this.cachedFormFactors = null; // Invalidate cache
-			res.status(201).json({ message: 'Form Factor created successfully', id: newGuid });
+			return { id: newGuid };
 		} catch (error) {
 			console.error('Error inserting new form factor into database:', error);
-			res.status(500).json({ error: 'Failed to save form factor.' });
+			throw new Error('Failed to save form factor.');
 		}
-	};
+	}
 }
