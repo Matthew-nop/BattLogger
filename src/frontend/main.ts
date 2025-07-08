@@ -232,6 +232,25 @@ document.addEventListener('DOMContentLoaded', () => {
 		batteryDetailsIframe.src = ''; // Clear iframe content
 	});
 
+	// Close popups on Escape key press
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape') {
+			addBatteryTypeOverlay.classList.remove('visible');
+			addBatteryTypeIframe.src = '';
+			addBatteryOverlay.classList.remove('visible');
+			addBatteryIframe.src = '';
+			addTestOverlay.classList.remove('visible');
+			addTestIframe.src = '';
+			modelDetailsOverlay.classList.remove('visible');
+			modelDetailsIframe.src = '';
+			batterySummaryOverlay.classList.remove('visible');
+			batterySummaryIframe.src = '';
+			batteryDetailsOverlay.classList.remove('visible');
+			batteryDetailsIframe.src = '';
+			fetchData(); // Refresh data after closing any popup
+		}
+	});
+
 	// Populate filter options on page load
 	async function populateFilterOptions() {
 		console.log('Populating filter options...');
