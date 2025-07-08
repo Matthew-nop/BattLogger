@@ -2,7 +2,7 @@ import * as sqlite3 from 'sqlite3';
 
 import { loadChemistryDetails, loadFormFactorDetails, loadModelDetails } from '../../src/backend/utils/dbUtils';
 import { stmtRunAsync } from '../../src/backend/utils/dbUtils';
-import { createTables } from '../../src/backend/create_tables';
+import { createTables } from '../../src/backend/utils/createTables';
 import { initializeDatabase } from '../../src/backend/utils/dbUtils';
 
 import { Chemistry, FormFactor, ModelData } from '../../src/interfaces/interfaces';

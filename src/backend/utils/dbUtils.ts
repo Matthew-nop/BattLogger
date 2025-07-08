@@ -4,7 +4,7 @@ import * as sqlite3 from 'sqlite3';
 
 const dataPath = path.join(__dirname, '..', '..', '..', 'data');
 
-import { createTables } from '../create_tables';
+import { createTables } from './createTables';
 import { ChemistryManager } from '../chemistryManager';
 import { FormFactorManager } from '../formfactorManager';
 import { populateModelsTable } from '../modelManager';
