@@ -20,7 +20,7 @@ export function setupApiRoutes(app: Application, db: Database) {
 	app.get('/api/battery_details_data/:batteryId', getBatteryDetailsForId(db));
 
 	app.post('/api/create_model', createModel);
-	app.post('/api/create_form_factor', createFormFactor);
+	app.post('/api/create_formfactor', createFormFactor);
 	app.post('/api/create_chemistry', createChemistry);
 	app.post('/api/create_battery', createBattery(db));
 	app.put('/api/battery/:batteryId', updateBattery(db));

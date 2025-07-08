@@ -17,25 +17,15 @@
 			"distDir": "dist/frontend",
 			"publicUrl": "."
 		},
-		"@addModel": {
-			"source": "src/frontend/components/add-model/add_model.html",
-			"distDir": "dist/frontend/add-model",
-			"publicUrl": "/add-model/"
+		"@addBatteryType": {
+			"source": "src/frontend/components/add-battery-type/add-battery-type.html",
+			"distDir": "dist/frontend/add-battery-type",
+			"publicUrl": "/add-battery-type/"
 		},
 		"@addBattery": {
 			"source": "src/frontend/components/add-battery/add_battery.html",
 			"distDir": "dist/frontend/add-battery",
 			"publicUrl": "/add-battery/"
-		},
-		"@addChemistry": {
-			"source": "src/frontend/components/add-chemistry/add_chemistry.html",
-			"distDir": "dist/frontend/add-chemistry",
-			"publicUrl": "/add-chemistry/"
-		},
-		"@addFormfactor": {
-			"source": "src/frontend/components/add-formfactor/add_formfactor.html",
-			"distDir": "dist/frontend/add-formfactor",
-			"publicUrl": "/add-formfactor/"
 		},
 		"@batteryDetails": {
 			"source": "src/frontend/components/battery-details/battery_details.html",

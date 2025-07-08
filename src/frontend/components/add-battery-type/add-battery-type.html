@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Battery Type</title>
+  <link rel="stylesheet" href="../../style.scss">
+</head>
+<body>
+
+  <h1>Add Battery Type</h1>
+
+  <div class="form-container">
+    <div class="form-group">
+      <label for="entityType">Select Type:</label>
+      <select id="entityType" class="text-input">
+        <option value="model">Model</option>
+        <option value="chemistry">Chemistry</option>
+        <option value="formfactor">Form Factor</option>
+      </select>
+    </div>
+
+    <div id="model-fields">
+      <div class="form-group">
+        <label for="name">Model Name:</label>
+        <input type="text" id="model-name" class="text-input" required>
+      </div>
+      <div class="form-group">
+        <label for="designCapacity">Design Capacity:</label>
+        <input type="number" id="designCapacity" class="text-input" required>
+      </div>
+      <div class="form-group">
+        <label for="formFactorId">Form Factor:</label>
+        <select id="formFactorId" class="text-input" required>
+          <option value="">Select Form Factor</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="chemistryId">Chemistry:</label>
+        <select id="chemistryId" class="text-input" required>
+          <option value="">Select Chemistry</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="manufacturer">Manufacturer:</label>
+        <input type="text" id="manufacturer" class="text-input">
+      </div>
+    </div>
+
+    <div id="chemistry-fields" style="display: none;">
+      <div class="form-group">
+        <label for="name">Chemistry Name:</label>
+        <input type="text" id="chemistry-name" class="text-input" required>
+      </div>
+      <div class="form-group">
+        <label for="shortName">Short Name:</label>
+        <input type="text" id="shortName" class="text-input" required>
+      </div>
+      <div class="form-group">
+        <label for="nominalVoltage">Nominal Voltage:</label>
+        <input type="number" id="nominalVoltage" class="text-input" step="0.1" required>
+      </div>
+    </div>
+
+    <div id="formfactor-fields" style="display: none;">
+      <div class="form-group">
+        <label for="formfactor">Name:</label>
+        <input type="text" id="formfactor-name" class="text-input" required>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button id="createEntitySubmit">Create</button>
+    </div>
+  </div>
+  <br>
+
+  <script type="module" src="./add-battery-type.ts"></script>
+
+</body>
+</html>

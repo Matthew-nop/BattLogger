@@ -7,57 +7,21 @@ document.addEventListener('DOMContentLoaded', () => {
 	let formfactorFilter: string = '';
 	let chemistryFilter: string = '';
 
-	const addModelBtn = document.getElementById('addModelBtn');
-	const addModelOverlay = document.getElementById('addModelOverlay') as HTMLElement;
-	const addModelIframe = document.getElementById('addModelIframe') as HTMLIFrameElement;
-	const closeAddModelPopupBtn = document.getElementById('closeAddModelPopupBtn') as HTMLButtonElement;
+	const addBatteryTypeBtn = document.getElementById('addBatteryTypeBtn');
+	const addBatteryTypeOverlay = document.getElementById('addBatteryTypeOverlay') as HTMLElement;
+	const addBatteryTypeIframe = document.getElementById('addBatteryTypeIframe') as HTMLIFrameElement;
+	const closeAddBatteryTypePopupBtn = document.getElementById('closeAddBatteryTypePopupBtn') as HTMLButtonElement;
 
-	if (addModelBtn) {
-		addModelBtn.addEventListener('click', () => {
-			addModelIframe.src = '/add_model';
-			addModelOverlay.classList.add('visible');
+	if (addBatteryTypeBtn) {
+		addBatteryTypeBtn.addEventListener('click', () => {
+			addBatteryTypeIframe.src = '/add_battery_type';
+			addBatteryTypeOverlay.classList.add('visible');
 		});
 	}
 
-	closeAddModelPopupBtn.addEventListener('click', () => {
-		addModelOverlay.classList.remove('visible');
-		addModelIframe.src = ''; // Clear iframe content
-		fetchData(); // Refresh data after closing popup
-	});
-
-	const addFormFactorBtn = document.getElementById('addFormFactorBtn');
-	const addFormFactorOverlay = document.getElementById('addFormFactorOverlay') as HTMLElement;
-	const addFormFactorIframe = document.getElementById('addFormFactorIframe') as HTMLIFrameElement;
-	const closeAddFormFactorPopupBtn = document.getElementById('closeAddFormFactorPopupBtn') as HTMLButtonElement;
-
-	if (addFormFactorBtn) {
-		addFormFactorBtn.addEventListener('click', () => {
-			addFormFactorIframe.src = '/add_formfactor';
-			addFormFactorOverlay.classList.add('visible');
-		});
-	}
-
-	closeAddFormFactorPopupBtn.addEventListener('click', () => {
-		addFormFactorOverlay.classList.remove('visible');
-		addFormFactorIframe.src = ''; // Clear iframe content
-		fetchData(); // Refresh data after closing popup
-	});
-
-	const addChemistryBtn = document.getElementById('addChemistryBtn');
-	const addChemistryOverlay = document.getElementById('addChemistryOverlay') as HTMLElement;
-	const addChemistryIframe = document.getElementById('addChemistryIframe') as HTMLIFrameElement;
-	const closeAddChemistryPopupBtn = document.getElementById('closeAddChemistryPopupBtn') as HTMLButtonElement;
-
-	if (addChemistryBtn) {
-		addChemistryBtn.addEventListener('click', () => {
-			addChemistryIframe.src = '/add_chemistry';
-			addChemistryOverlay.classList.add('visible');
-		});
-	}
-
-	closeAddChemistryPopupBtn.addEventListener('click', () => {
-		addChemistryOverlay.classList.remove('visible');
-		addChemistryIframe.src = ''; // Clear iframe content
+	closeAddBatteryTypePopupBtn.addEventListener('click', () => {
+		addBatteryTypeOverlay.classList.remove('visible');
+		addBatteryTypeIframe.src = ''; // Clear iframe content
 		fetchData(); // Refresh data after closing popup
 	});
 

@@ -103,8 +103,8 @@ describe('API Route Integration Smoke Tests', () => {
         expect(res.body).toHaveProperty('id');
     });
 
-    test('POST /api/create_form_factor should return 201 with valid data', async () => {
-        const res = await request(app).post('/api/create_form_factor').send({
+    test('POST /api/create_formfactor should return 201 with valid data', async () => {
+        const res = await request(app).post('/api/create_formfactor').send({
             name: 'Test Form Factor'
         });
         expect(res.statusCode).toEqual(201);

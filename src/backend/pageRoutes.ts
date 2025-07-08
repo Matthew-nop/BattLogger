@@ -12,16 +12,8 @@ export function setupPageRoutes(app: any) {
 		res.sendFile(path.join(frontendPath, 'battery-details', 'battery_details.html'));
 	});
 
-	app.get('/add_model', (req: Request, res: Response) => {
-		res.sendFile(path.join(frontendPath, 'add-model', 'add_model.html'));
-	});
-
-	app.get('/add_formfactor', (req: Request, res: Response) => {
-		res.sendFile(path.join(frontendPath, 'add-formfactor', 'add_formfactor.html'));
-	});
-
-	app.get('/add_chemistry', (req: Request, res: Response) => {
-		res.sendFile(path.join(frontendPath, 'add-chemistry', 'add_chemistry.html'));
+	app.get('/add_battery_type', (req: Request, res: Response) => {
+		res.sendFile(path.join(frontendPath, 'add-battery-type', 'add-battery-type.html'));
 	});
 
 	app.get('/add_battery', (req: Request, res: Response) => {
