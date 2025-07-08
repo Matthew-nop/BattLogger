@@ -1,7 +1,9 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as sqlite3 from 'sqlite3';
 
 import { createTables } from '../create_tables';
-import { loadChemistryDetails, populateChemistriesTable } from '../chemistryManager';
+import { populateChemistriesTable, loadChemistryDetails } from '../chemistryManager';
 import { loadFormFactorDetails, populateFormFactorsTable } from '../formfactorManager';
 import { loadModelDetails, populateModelsTable } from '../modelManager';
 
@@ -29,8 +31,10 @@ export const initializeDatabase = async (db: sqlite3.Database): Promise<void> =>
 		await createTables(db);
 
 		const modelDetails: Map<string, ModelData> = loadModelDetails();
-		const chemistryDetails: Map<string, Chemistry> = loadChemistryDetails();
+		
 		const formFactorDetails: Map<string, FormFactor> = loadFormFactorDetails();
+
+		const chemistryDetails: Map<string, Chemistry> = loadChemistryDetails();
 
 		await populateModelsTable(db, modelDetails);
 		await populateChemistriesTable(db, chemistryDetails);

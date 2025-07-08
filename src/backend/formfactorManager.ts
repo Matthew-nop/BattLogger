@@ -26,10 +26,10 @@ export function loadFormFactorDetails(): Map<string, FormFactor> {
 	return formFactorDetails;
 }
 
-export let formFactorDetails = loadFormFactorDetails();
+
 
 export async function populateFormFactorsTable(db: sqlite3.Database, formFactors: Map<string, FormFactor>): Promise<void> {
-	const stmt = db.prepare("INSERT OR IGNORE INTO formfactors (id, name) VALUES (?, ?)");
+	const stmt = db.prepare("INSERT OR REPLACE INTO formfactors (id, name) VALUES (?, ?)");
 	for (const [guid, formfactor] of formFactors.entries()) {
 		await stmtRunAsync(stmt, [
 			formfactor.id,
@@ -40,11 +40,34 @@ export async function populateFormFactorsTable(db: sqlite3.Database, formFactors
 	console.log('Form Factors table populated.');
 }
 
-export const getFormFactorDetails = (req: Request, res: Response<Record<string, FormFactor>>) => {
-	res.json(Object.fromEntries(formFactorDetails));
+export const getFormFactorMap = async (db: sqlite3.Database, req: Request, res: Response<Record<string, FormFactor> | { error: string }>) => {
+	const formFactorsMap = new Map<string, FormFactor>();
+
+	try {
+		const rows = await new Promise<any[]>((resolve, reject) => {
+			db.all("SELECT * FROM formfactors", [], (err, rows) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(rows);
+				}
+			});
+		});
+
+		for (const row of rows) {
+			formFactorsMap.set(row.id, {
+				id: row.id,
+				name: row.name,
+			});
+		}
+		res.json(Object.fromEntries(formFactorsMap));
+	} catch (error) {
+		console.error('Error fetching form factors from database:', error);
+		res.status(500).json({ error: 'Failed to fetch Formfactor map.' });;
+	}
 };
 
-export const createFormFactor = (req: Request<{}, {}, CreateFormFactorParams>, res: Response) => {
+export const createFormFactor = async (db: sqlite3.Database, req: Request<{}, {}, CreateFormFactorParams>, res: Response) => {
 	const { name } = req.body;
 
 	if (!name) {
@@ -58,30 +81,16 @@ export const createFormFactor = (req: Request<{}, {}, CreateFormFactorParams>, r
 		name: name,
 	};
 
-	const formFactorsFilePath = path.join(dataPath, 'formfactors.json');
-	fs.readFile(formFactorsFilePath, 'utf8', (err, data) => {
-		if (err && err.code !== 'ENOENT') {
-			console.error('Error reading formfactors.json:', err);
-			res.status(500).json({ error: 'Failed to save form factor.' });
-			return;
-		}
-
-		let formFactors: FormFactor[] = [];
-		if (data) {
-			formFactors = JSON.parse(data);
-		}
-
-		formFactors.push(newFormFactor);
-
-		fs.writeFile(formFactorsFilePath, JSON.stringify(formFactors, null, 2), (err) => {
-			if (err) {
-				console.error('Error writing formfactors.json:', err);
-				res.status(500).json({ error: 'Failed to save form factor.' });
-				return;
-			}
-			// Reload form factor details after adding a new form factor
-			formFactorDetails = loadFormFactorDetails();
-			res.status(201).json({ message: 'Form Factor created successfully', id: newGuid });
-		});
-	});
+	try {
+		const stmt = db.prepare("INSERT INTO formfactors (id, name) VALUES (?, ?)");
+		await stmtRunAsync(stmt, [
+			newFormFactor.id,
+			newFormFactor.name
+		]);
+		stmt.finalize();
+		res.status(201).json({ message: 'Form Factor created successfully', id: newGuid });
+	} catch (error) {
+		console.error('Error inserting new form factor into database:', error);
+		res.status(500).json({ error: 'Failed to save form factor.' });
+	}
 };

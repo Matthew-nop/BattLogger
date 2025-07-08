@@ -27,7 +27,7 @@ export function loadModelDetails(): Map<string, ModelData> {
 }
 
 export async function populateModelsTable(db: sqlite3.Database, models: Map<string, ModelData>): Promise<void> {
-	const stmt = db.prepare("INSERT OR IGNORE INTO models (id, name, design_capacity, manufacturer, chemistry_id, formfactor_id) VALUES (?, ?, ?, ?, ?, ?)");
+	const stmt = db.prepare("INSERT OR REPLACE INTO models (id, name, design_capacity, manufacturer, chemistry_id, formfactor_id) VALUES (?, ?, ?, ?, ?, ?)");
 	for (const [guid, model] of models.entries()) {
 		await stmtRunAsync(stmt, [
 			model.id,
@@ -96,7 +96,7 @@ export const getModelDetailsForId = (db: sqlite3.Database) => (req: Request<{ gu
 	);
 };
 
-export const createModel = (req: Request<{}, {}, CreateModelParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
+export const createModel = async (db: sqlite3.Database, req: Request<{}, {}, CreateModelParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
 	const { name, designCapacity, formFactorId, chemistryId, manufacturer } = req.body;
 
 	if (!name || !designCapacity || !formFactorId || !chemistryId) {
@@ -114,31 +114,20 @@ export const createModel = (req: Request<{}, {}, CreateModelParams>, res: Respon
 		manufacturer
 	};
 
-	const modelsFilePath = path.join(dataPath, 'models.json');
-	fs.readFile(modelsFilePath, 'utf8', (err, data) => {
-		if (err && err.code !== 'ENOENT') {
-			console.error('Error reading models.json:', err);
-			res.status(500).json({ error: 'Failed to save model.' });
-			return;
-		}
-
-		let models: ModelData[] = [];
-		if (data) {
-			models = JSON.parse(data);
-		}
-
-		models.push(newModel);
-
-		fs.writeFile(modelsFilePath, JSON.stringify(models, null, 2), (err) => {
-			if (err) {
-				console.error('Error writing models.json:', err);
-				res.status(500).json({ error: 'Failed to save model.' });
-				return;
-			}
-			// Reload model details after adding a new model
-			modelDetails = loadModelDetails();
-			modelMap = loadModelMap();
-			res.status(201).json({ message: 'Model created successfully', id: newGuid });
-		});
-	});
+	try {
+		const stmt = db.prepare("INSERT INTO models (id, name, design_capacity, manufacturer, chemistry_id, formfactor_id) VALUES (?, ?, ?, ?, ?, ?)");
+		await stmtRunAsync(stmt, [
+			newModel.id,
+			newModel.name,
+			newModel.designCapacity,
+			newModel.manufacturer,
+			newModel.chemistryId,
+			newModel.formFactorId
+		]);
+		stmt.finalize();
+		res.status(201).json({ message: 'Model created successfully', id: newGuid });
+	} catch (error) {
+		console.error('Error inserting new model into database:', error);
+		res.status(500).json({ error: 'Failed to save model.' });
+	}
 };

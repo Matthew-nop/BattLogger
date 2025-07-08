@@ -9,8 +9,6 @@ import { stmtRunAsync } from './utils/dbUtils';
 
 const dataPath = path.join(__dirname, '..', '..', 'data');
 
-export let chemistryDetails = loadChemistryDetails();
-
 export async function populateChemistriesTable(db: sqlite3.Database, chemistries: Map<string, Chemistry>): Promise<void> {
 	const stmt = db.prepare("INSERT OR IGNORE INTO chemistries (id, name, short_name, nominal_voltage) VALUES (?, ?, ?, ?)");
 	for (const [guid, chemistry] of chemistries.entries()) {
@@ -25,9 +23,35 @@ export async function populateChemistriesTable(db: sqlite3.Database, chemistries
 	console.log('Chemistries table populated.');
 }
 
-export const getChemistryDetails = (req: Request, res: Response<Record<string, Chemistry>>) => {
-	res.json(Object.fromEntries(chemistryDetails));
+export const getChemistriesMap = async (db: sqlite3.Database, req: Request, res: Response<Record<string, Chemistry> | { error: string }>) => {
+	const chemistriesMap = new Map<string, Chemistry>();
+
+	try {
+		const rows = await new Promise<any[]>((resolve, reject) => {
+			db.all("SELECT * FROM chemistries", [], (err, rows) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(rows);
+				}
+			});
+		});
+
+		for (const row of rows) {
+			chemistriesMap.set(row.id, {
+				id: row.id,
+				name: row.name,
+				shortName: row.short_name,
+				nominalVoltage: row.nominal_voltage
+			});
+		}
+		res.json(Object.fromEntries(chemistriesMap));
+	} catch (error) {
+		console.error('Error fetching chemistries from database:', error);
+		res.status(500).json({ error: 'Failed to fetch chemistries map.' });
+	}
 };
+
 
 // Function to load chemistry details from JSON files
 export function loadChemistryDetails(): Map<string, Chemistry> {
@@ -45,7 +69,9 @@ export function loadChemistryDetails(): Map<string, Chemistry> {
 	return chemistryDetails;
 }
 
-export const createChemistry = (req: Request<{}, {}, CreateChemistryParams>, res: Response) => {
+
+
+export const createChemistry = async (db: sqlite3.Database, req: Request<{}, {}, CreateChemistryParams>, res: Response) => {
 	const { name, shortName, nominalVoltage } = req.body;
 
 	if (!name || !shortName || isNaN(nominalVoltage)) {
@@ -61,33 +87,18 @@ export const createChemistry = (req: Request<{}, {}, CreateChemistryParams>, res
 		nominalVoltage
 	};
 
-	const chemistriesFilePath = path.join(dataPath, 'chemistries.json');
-	fs.readFile(chemistriesFilePath, 'utf8', (err, data) => {
-		if (err && err.code !== 'ENOENT') {
-			console.error('Error reading chemistries.json:', err);
-			res.status(500).json({ error: 'Failed to save chemistry.' });
-			return;
-		}
-
-		let chemistries: Chemistry[] = [];
-		if (data) {
-			chemistries = JSON.parse(data);
-		}
-
-		chemistries.push(newChemistry);
-
-		fs.writeFile(chemistriesFilePath, JSON.stringify(chemistries, null, 2), (err) => {
-			if (err) {
-				console.error('Error writing chemistries.json:', err);
+	try {
+		const stmt = db.prepare("INSERT INTO chemistries (id, name, short_name, nominal_voltage) VALUES (?, ?, ?, ?)");
+		await stmtRunAsync(stmt, [
+			newChemistry.id,
+			newChemistry.name,
+			newChemistry.shortName,
+			newChemistry.nominalVoltage
+		]);
+		stmt.finalize();
+		res.status(201).json({ message: 'Chemistry created successfully', id: newGuid });
+	} catch (error) {
+		console.error('Error inserting new chemistry into database:', error);
 				res.status(500).json({ error: 'Failed to save chemistry.' });
-				return;
 			}
-			// Reload chemistry details after adding a new chemistry
-			chemistryDetails = loadChemistryDetails();
-			res.status(201).json({ message: 'Chemistry created successfully', id: newGuid });
-		});
-	});
 };
-
-
-// Function to populate the chemistries table
