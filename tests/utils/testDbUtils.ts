@@ -1,8 +1,6 @@
 import * as sqlite3 from 'sqlite3';
 
-import { loadChemistryDetails } from '../../src/backend/chemistryManager';
-import { loadFormFactorDetails } from '../../src/backend/formfactorManager';
-import { loadModelDetails } from '../../src/backend/modelManager';
+import { loadChemistryDetails, loadFormFactorDetails, loadModelDetails } from '../../src/backend/utils/dbUtils';
 import { stmtRunAsync } from '../../src/backend/utils/dbUtils';
 
 import { Chemistry, FormFactor, ModelData } from '../../src/interfaces/interfaces';

@@ -1,30 +1,11 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { randomUUID } from 'crypto';
-
 import { Request, Response } from 'express';
 import * as sqlite3 from 'sqlite3';
 
 import { ModelData, CreateModelParams } from '../interfaces/interfaces';
-import { stmtRunAsync } from './utils/dbUtils';
-
-const dataPath = path.join(__dirname, '..', '..', 'data');
-
-// Function to load model details from JSON files
-export function loadModelDetails(): Map<string, ModelData> {
-	const modelDetails = new Map<string, ModelData>();
-	const modelsFilePath = path.join(dataPath, 'models.json');
-	try {
-		const data = fs.readFileSync(modelsFilePath, 'utf8');
-		const models: ModelData[] = JSON.parse(data);
-		for (const model of models) {
-			modelDetails.set(model.id, model);
-		}
-	} catch (error) {
-		console.error('Error reading models.json:', error);
-	}
-	return modelDetails;
-}
+import { randomUUID } from 'crypto';
+import { stmtRunAsync, loadModelDetails, loadModelMap } from './utils/dbUtils';
+import { FormFactorManager } from './formfactorManager';
+import { ChemistryManager } from './chemistryManager';
 
 export async function populateModelsTable(db: sqlite3.Database, models: Map<string, ModelData>): Promise<void> {
 	const stmt = db.prepare("INSERT OR REPLACE INTO models (id, name, design_capacity, manufacturer, chemistry_id, formfactor_id) VALUES (?, ?, ?, ?, ?, ?)");
@@ -42,25 +23,12 @@ export async function populateModelsTable(db: sqlite3.Database, models: Map<stri
 	console.log('Models table populated.');
 }
 
-// Function to load model map (guid to model name)
-export function loadModelMap(): Map<string, string> {
-	const modelMap = new Map<string, string>();
-	const modelDetails = loadModelDetails();
-	for (const [guid, details] of modelDetails.entries()) {
-		modelMap.set(guid, details.name);
-	}
-	return modelMap;
-}
-
-export let modelMap = loadModelMap();
-export let modelDetails = loadModelDetails();
-
 export const getModelMap = (req: Request, res: Response<Record<string, string>>) => {
-	res.json(Object.fromEntries(modelMap));
+	res.json(Object.fromEntries(loadModelMap()));
 };
 
 export const getModelDetails = (req: Request, res: Response<Record<string, ModelData>>) => {
-	res.json(Object.fromEntries(modelDetails));
+	res.json(Object.fromEntries(loadModelDetails()));
 };
 
 export const getModelDetailsForId = (db: sqlite3.Database) => (req: Request<{ guid: string }>, res: Response<ModelData | { error: string }>) => {
@@ -101,6 +69,22 @@ export const createModel = async (db: sqlite3.Database, req: Request<{}, {}, Cre
 
 	if (!name || !designCapacity || !formFactorId || !chemistryId) {
 		res.status(400).json({ error: 'Missing required fields.' });
+		return;
+	}
+
+	const formFactorManager = FormFactorManager.getInstance();
+	const chemistryManager = ChemistryManager.getInstance();
+
+	const formFactor = await formFactorManager.getFormFactorById(formFactorId);
+	const chemistry = await chemistryManager.getChemistryById(chemistryId);
+
+	if (!formFactor) {
+		res.status(400).json({ error: 'Invalid formFactorId.' });
+		return;
+	}
+
+	if (!chemistry) {
+		res.status(400).json({ error: 'Invalid chemistryId.' });
 		return;
 	}
 

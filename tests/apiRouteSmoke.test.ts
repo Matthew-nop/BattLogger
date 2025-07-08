@@ -1,6 +1,8 @@
 import request from 'supertest';
 import express from 'express';
 import { setupApiRoutes } from '../src/backend/apiRoutes';
+import { ChemistryManager } from '../src/backend/chemistryManager';
+import { FormFactorManager } from '../src/backend/formfactorManager';
 import { Database } from 'sqlite3';
 import { createTables } from '../src/backend/create_tables';
 import { initializeDatabase } from '../src/backend/utils/dbUtils';
@@ -21,7 +23,11 @@ describe('API Route Integration Smoke Tests', () => {
         await createTables(db);
         await initializeDatabase(db);
         await insertDummyValues(db);
-        setupApiRoutes(app, db);
+        const chemistryManager = ChemistryManager.getInstance();
+        chemistryManager.setDb(db);
+        const formFactorManager = FormFactorManager.getInstance();
+        formFactorManager.setDb(db);
+        setupApiRoutes(app, db, chemistryManager, formFactorManager);
 
         // Fetch created batteries to use in tests
         const res = await request(app).get('/api/data');

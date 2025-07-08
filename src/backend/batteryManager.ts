@@ -3,7 +3,7 @@ import { Database, RunResult } from 'sqlite3';
 
 import { BatteryData, CreateBatteryParams, GetDataQueryParams } from '../interfaces/interfaces';
 
-import { modelDetails } from './modelManager';
+import { loadModelDetails } from './utils/dbUtils';
 
 export const getData = (db: Database) => (req: Request<{}, {}, {}, GetDataQueryParams>, res: Response<BatteryData[]>) => {
 	const { sortBy, order = 'asc', name, formfactor, chemistry } = req.query as GetDataQueryParams;
@@ -127,7 +127,7 @@ export const createBattery = (db: Database) => (req: Request<{}, {}, CreateBatte
 		return;
 	}
 
-	const model = modelDetails.get(modelIdentifier);
+	const model = loadModelDetails().get(modelIdentifier);
 	if (!model) {
 		res.status(400).json({ error: 'Invalid model identifier.' });
 		return;
@@ -167,7 +167,7 @@ export const updateBattery = (db: Database) => (req: Request<{ batteryId: string
 		return;
 	}
 
-	const model = modelDetails.get(modelIdentifier);
+	const model = loadModelDetails().get(modelIdentifier);
 	if (!model) {
 		res.status(400).json({ error: 'Invalid model identifier.' });
 		return;
