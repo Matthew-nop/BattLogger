@@ -302,7 +302,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			const formFactorSelect = document.getElementById('formfactorFilter');
 			if (formFactorSelect instanceof HTMLSelectElement) {
-				formFactors.forEach((name, guid) => {
+				const sortedFormFactors = [...formFactors.entries()].sort((a, b) => a[1].localeCompare(b[1]));
+				sortedFormFactors.forEach(([guid, name]) => {
 					const option = document.createElement('option');
 					option.value = guid;
 					option.textContent = name;
@@ -312,7 +313,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			const chemistrySelect = document.getElementById('chemistryFilter');
 			if (chemistrySelect instanceof HTMLSelectElement) {
-				chemistries.forEach((name, guid) => {
+				const sortedChemistries = [...chemistries.entries()].sort((a, b) => a[1].localeCompare(b[1]));
+				sortedChemistries.forEach(([guid, name]) => {
 					const option = document.createElement('option');
 					option.value = guid;
 					option.textContent = name;
@@ -322,7 +324,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			const modelDatalist = document.getElementById('modelNames');
 			if (modelDatalist) {
-				models.forEach((name, guid) => {
+				const sortedModels = [...models.entries()].sort((a, b) => a[1].localeCompare(b[1]));
+				sortedModels.forEach(([guid, name]) => {
 					const option = document.createElement('option');
 					option.value = name;
 					option.dataset.guid = guid;
