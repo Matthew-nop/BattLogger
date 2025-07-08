@@ -17,7 +17,7 @@ describe('POST /api/battery_test', () => {
 		const res = await request(app).post('/api/battery_test').send({
 			batteryId: 1, // Assuming battery with ID 1 exists
 			capacity: 1500,
-			timestamp: new Date().toISOString()
+			timestamp: Date.now()
 		});
 		expect(res.statusCode).toEqual(201);
 		expect(res.body).toHaveProperty('id');
