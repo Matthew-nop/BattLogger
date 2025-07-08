@@ -4,14 +4,9 @@ import { setupTestEnvironment, teardownTestEnvironment } from '../utils/testSetu
 describe('PUT /api/battery/:batteryId', () => {
 	let app: any;
 	let db: any;
-	let batteries: any[];
 
 	beforeAll(async () => {
 		({ app, db } = await setupTestEnvironment());
-
-		// Fetch created batteries to use in tests
-		const res = await request(app).get('/api/data');
-		batteries = res.body;
 	});
 
 	afterAll(async () => {

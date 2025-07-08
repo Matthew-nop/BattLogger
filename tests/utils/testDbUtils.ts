@@ -1,26 +1,24 @@
 import * as sqlite3 from 'sqlite3';
 
-import { loadChemistryDetails, loadFormFactorDetails, loadModelDetails } from '../../src/backend/utils/dbUtils.js';
+import { loadModelDetails } from '../../src/backend/utils/dbUtils.js';
 import { stmtRunAsync } from '../../src/backend/utils/dbUtils.js';
 import { createTables } from '../../src/backend/utils/createTables.js';
 import { initializeDatabase } from '../../src/backend/utils/dbUtils.js';
 
-import { Chemistry, FormFactor, ModelData } from '../../src/interfaces/interfaces.js';
+import { ModelData } from '../../src/interfaces/interfaces.js';
 import { randomUUID } from 'crypto';
 
 export const insertDummyValues = async (db: sqlite3.Database): Promise<void> => {
 	try {
 		const modelDetails: Map<string, ModelData> = loadModelDetails();
-		const chemistryDetails: Map<string, Chemistry> = loadChemistryDetails();
-		const formFactorDetails: Map<string, FormFactor> = loadFormFactorDetails();
+		
 
 		// Insert dummy battery and test data as part of application setup
 		const batteryStmt = db.prepare("INSERT INTO batteries (id, model_id) VALUES (?, ?)");
 		const testStmt = db.prepare("INSERT INTO battery_tests (battery_id, capacity, timestamp) VALUES (?, ?, ?)");
 
 		const modelKeys = Array.from(modelDetails.keys());
-		const chemistryKeys = Array.from(chemistryDetails.keys());
-		const formFactorKeys = Array.from(formFactorDetails.keys());
+		
 
 		for (let i = 0; i < 11; i++) {
 			const randomModelKey = modelKeys[Math.floor(Math.random() * modelKeys.length)];
