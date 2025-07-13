@@ -1,7 +1,5 @@
 import sqlite3 from 'sqlite3';
-
 import { BatteryData, BatteryDTO, GetDataQueryParams } from '../interfaces/interfaces.js';
-
 import { LOG_LEVEL, LoggingManager } from './loggingManager.js';
 import { ModelManager } from './modelManager.js';
 import { stmtRunAsync } from './utils/dbUtils.js';
@@ -71,7 +69,7 @@ export class BatteryManager {
 			params.push(name);
 		}
 		if (formfactor) {
-			conditions.push(`m.formfactor_id = ?`);			
+			conditions.push(`m.formfactor_id = ?`);
 			params.push(formfactor);
 		}
 		if (chemistry) {
@@ -190,7 +188,7 @@ export class BatteryManager {
 		});
 	}
 
-	public async populateBatteriesTable( batteries: BatteryDTO[] ): Promise<{ id: string }[]> {
+	public async populateBatteriesTable(batteries: BatteryDTO[]): Promise<{ id: string }[]> {
 		this.logger.log(LOG_LEVEL.INFO, `Attempting to populate battery table with ${batteries.length} entries.`);
 		const db = this.getDb();
 		const insertedBatteries: { id: string }[] = [];
@@ -251,7 +249,7 @@ export class BatteryManager {
 						this.logger.log(LOG_LEVEL.INFO, `Successfully created battery with ID: ${batteryId}`);
 						resolve({ id: batteryId });
 					})
-					.catch ((err) => {
+					.catch((err) => {
 						this.logger.log(LOG_LEVEL.ERROR, `Failed to add battery with ID ${batteryId}: ${err.message}`);
 						reject(new Error('Failed to add battery.'));
 					});

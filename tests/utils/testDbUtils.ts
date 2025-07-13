@@ -1,9 +1,6 @@
-import * as sqlite3 from 'sqlite3';
-
-import { createTables } from '../../src/backend/utils/createTables.js';
-import { initializeDatabase, loadBuiltinModelDetails, stmtRunAsync } from '../../src/backend/utils/dbUtils.js';
-
 import { randomUUID } from 'crypto';
+import * as sqlite3 from 'sqlite3';
+import { loadBuiltinModelDetails, stmtRunAsync } from '../../src/backend/utils/dbUtils.js';
 import { ModelData } from '../../src/interfaces/interfaces.js';
 
 export const insertDummyValues = async (db: sqlite3.Database): Promise<void> => {
@@ -33,12 +30,6 @@ export const insertDummyValues = async (db: sqlite3.Database): Promise<void> => 
 		console.error(err.message);
 	}
 };
-
-export async function setupTestDatabase(db: sqlite3.Database): Promise<void> {
-	await createTables(db);
-	await initializeDatabase(db);
-	await insertDummyValues(db);
-}
 
 export function teardownTestDatabase(db: sqlite3.Database | undefined): Promise<void> {
 	return new Promise((resolve, reject) => {

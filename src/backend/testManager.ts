@@ -1,5 +1,4 @@
 import sqlite3 from 'sqlite3';
-
 import { CreateTestRunInfoParams, TestRunInfo } from '../interfaces/interfaces.js';
 import { LOG_LEVEL, LoggingManager } from './loggingManager.js';
 import { stmtRunAsync } from './utils/dbUtils.js';
