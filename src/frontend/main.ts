@@ -1,155 +1,128 @@
 import { BatteryData, ModelData } from '../interfaces/interfaces.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-	let sortColumn: string = 'id';
-	let sortOrder: string = 'asc';
-	let nameFilter: string = '';
-	let formfactorFilter: string = '';
-	let chemistryFilter: string = '';
+// Type definitions for state and elements to make it cleaner
+interface AppState {
+	sortColumn: string;
+	sortOrder: string;
+	nameFilter: string;
+	formfactorFilter: string;
+	chemistryFilter: string;
+}
 
-	const addBatteryTypeBtn = document.getElementById('addBatteryTypeBtn');
-	const addBatteryTypeOverlay = document.getElementById('addBatteryTypeOverlay') as HTMLElement;
-	const addBatteryTypeIframe = document.getElementById('addBatteryTypeIframe') as HTMLIFrameElement;
-	const closeAddBatteryTypePopupBtn = document.getElementById('closeAddBatteryTypePopupBtn') as HTMLButtonElement;
+interface PopupElements {
+	overlay: HTMLElement;
+	iframe: HTMLIFrameElement;
+}
 
-	if (addBatteryTypeBtn) {
-		addBatteryTypeBtn.addEventListener('click', () => {
-			addBatteryTypeIframe.src = '/add_battery_type';
-			addBatteryTypeOverlay.classList.add('visible');
+interface AppElements {
+	addBatteryType: PopupElements;
+	addBattery: PopupElements;
+	addTest: PopupElements;
+	modelDetails: PopupElements;
+	batterySummary: PopupElements;
+	batteryDetails: PopupElements;
+	closePopupBtn: HTMLButtonElement;
+}
+
+function getPopupElements(id: string): PopupElements {
+	return {
+		overlay: document.getElementById(`${id}Overlay`) as HTMLElement,
+		iframe: document.getElementById(`${id}Iframe`) as HTMLIFrameElement,
+	};
+}
+
+function setupPopup(
+	openBtnId: string,
+	closeBtnId: string,
+	overlay: HTMLElement,
+	iframe: HTMLIFrameElement,
+	iframeSrc: string,
+	onClose: () => void,
+) {
+	const openBtn = document.getElementById(openBtnId);
+	const closeBtn = document.getElementById(closeBtnId) as HTMLButtonElement;
+
+	if (openBtn) {
+		openBtn.addEventListener('click', () => {
+			iframe.src = iframeSrc;
+			overlay.classList.add('visible');
 		});
 	}
 
-	closeAddBatteryTypePopupBtn.addEventListener('click', () => {
-		addBatteryTypeOverlay.classList.remove('visible');
-		addBatteryTypeIframe.src = ''; // Clear iframe content
-		fetchData(); // Refresh data after closing popup
-	});
-
-	const addBatteryBtn = document.getElementById('addBatteryBtn');
-	const addBatteryOverlay = document.getElementById('addBatteryOverlay') as HTMLElement;
-	const addBatteryIframe = document.getElementById('addBatteryIframe') as HTMLIFrameElement;
-	const closeAddBatteryPopupBtn = document.getElementById('closeAddBatteryPopupBtn') as HTMLButtonElement;
-
-	if (addBatteryBtn) {
-		addBatteryBtn.addEventListener('click', () => {
-			addBatteryIframe.src = '/add_battery';
-			addBatteryOverlay.classList.add('visible');
+	if (closeBtn) {
+		closeBtn.addEventListener('click', () => {
+			overlay.classList.remove('visible');
+			iframe.src = '';
+			onClose();
 		});
 	}
+}
 
-	closeAddBatteryPopupBtn.addEventListener('click', () => {
-		addBatteryOverlay.classList.remove('visible');
-		addBatteryIframe.src = ''; // Clear iframe content
-		fetchData(); // Refresh data after closing popup
-	});
+function setupMenuButtons(elements: AppElements, onClose: () => void) {
+	setupPopup(
+		'addBatteryTypeBtn',
+		'closeAddBatteryTypePopupBtn',
+		elements.addBatteryType.overlay,
+		elements.addBatteryType.iframe,
+		'/add_battery_type',
+		onClose,
+	);
 
-	const addTestBtn = document.getElementById('addTestBtn');
-	const addTestOverlay = document.getElementById('addTestOverlay') as HTMLElement;
-	const addTestIframe = document.getElementById('addTestIframe') as HTMLIFrameElement;
-	const closeAddTestPopupBtn = document.getElementById('closeAddTestPopupBtn') as HTMLButtonElement;
+	setupPopup(
+		'addBatteryBtn',
+		'closeAddBatteryPopupBtn',
+		elements.addBattery.overlay,
+		elements.addBattery.iframe,
+		'/add_battery',
+		onClose,
+	);
 
-	if (addTestBtn) {
-		addTestBtn.addEventListener('click', () => {
-			addTestIframe.src = '/add_test_info';
-			addTestOverlay.classList.add('visible');
-		});
-	}
+	setupPopup(
+		'addTestBtn',
+		'closeAddTestPopupBtn',
+		elements.addTest.overlay,
+		elements.addTest.iframe,
+		'/add_test_info',
+		onClose,
+	);
+}
 
-	closeAddTestPopupBtn.addEventListener('click', () => {
-		addTestOverlay.classList.remove('visible');
-		addTestIframe.src = ''; // Clear iframe content
-		fetchData(); // Refresh data after closing popup
-	});
-
-	const applyFiltersBtn = document.getElementById('applyFiltersBtn');
-	if (applyFiltersBtn) {
-		applyFiltersBtn.addEventListener('click', () => {
-			const nameFilterElement = document.getElementById('nameFilter') as HTMLInputElement;
-			const selectedModelName = nameFilterElement.value;
-			// Find the GUID for the selected model name
-			const modelNamesDatalist = document.getElementById('modelNames') as HTMLDataListElement;
-			const selectedOption = Array.from(modelNamesDatalist.options).find(option => option.value === selectedModelName);
-			nameFilter = selectedOption?.dataset.guid || '';
-
-			const formFactorFilterElement = document.getElementById('formfactorFilter');
-			formfactorFilter = (formFactorFilterElement instanceof HTMLSelectElement) ? formFactorFilterElement.value : '';
-
-			const chemistryFilterElement = document.getElementById('chemistryFilter');
-			chemistryFilter = (chemistryFilterElement instanceof HTMLSelectElement) ? chemistryFilterElement.value : '';
-			fetchData();
-		});
-	}
-
-	const clearFiltersBtn = document.getElementById('clearFiltersBtn');
-	if (clearFiltersBtn) {
-		clearFiltersBtn.addEventListener('click', () => {
-			nameFilter = '';
-			formfactorFilter = '';
-			chemistryFilter = '';
-
-			(document.getElementById('nameFilter') as HTMLInputElement).value = '';
-			(document.getElementById('formfactorFilter') as HTMLSelectElement).value = '';
-			(document.getElementById('chemistryFilter') as HTMLSelectElement).value = '';
-
-			fetchData();
-		});
-	}
-
-	const tableHead = document.querySelector('thead');
-	if (tableHead) {
-		tableHead.addEventListener('click', e => {
-			const target = e.target as HTMLElement;
-			if (target.tagName === 'TH') {
-				const newSortColumn = target.dataset.sort;
-				if (sortColumn === newSortColumn) {
-					sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-				} else {
-					sortColumn = newSortColumn || 'id';
-					sortOrder = 'asc';
-				}
-				fetchData();
-			}
-		});
-	}
-
-	async function fetchData() {
-		try {
-			let url = `/api/data?sortBy=${sortColumn}&order=${sortOrder}`;
-			if (nameFilter) {
-				url += `&name=${nameFilter}`;
-			}
-
-
-			if (formfactorFilter) {
-				url += `&formfactor=${formfactorFilter}`;
-			}
-			if (chemistryFilter) {
-				url += `&chemistry=${chemistryFilter}`;
-			}
-
-			const [dataResponse, modelDetailsResponse] = await Promise.all([
-				fetch(url),
-				fetch('/api/model_details')
-			]);
-			const data: BatteryData[] = await dataResponse.json();
-			const modelDetails = await modelDetailsResponse.json();
-			renderTable(data, modelDetails);
-		} catch (error) {
-			console.error('Error fetching data:', error);
-			document.querySelector('tbody')!.innerHTML = '<tr><td colspan="6">Error loading data.</td></tr>';
+async function fetchData(state: AppState) {
+	try {
+		let url = `/api/data?sortBy=${state.sortColumn}&order=${state.sortOrder}`;
+		if (state.nameFilter) {
+			url += `&name=${state.nameFilter}`;
 		}
-	}
-
-	function renderTable(data: BatteryData[], modelDetails: Record<string, ModelData>) {
-		const tableBody = document.querySelector('tbody');
-		if (!tableBody) {
-			return;
+		if (state.formfactorFilter) {
+			url += `&formfactor=${state.formfactorFilter}`;
+		}
+		if (state.chemistryFilter) {
+			url += `&chemistry=${state.chemistryFilter}`;
 		}
 
-		tableBody.innerHTML = data.map(row => {
-			const modelName = modelDetails[row.modelId]?.name || 'N/A';
+		const [dataResponse, modelDetailsResponse] = await Promise.all([
+			fetch(url),
+			fetch('/api/model_details')
+		]);
+		const data: BatteryData[] = await dataResponse.json();
+		const modelDetails = await modelDetailsResponse.json();
+		renderTable(data, modelDetails, state);
+	} catch (error) {
+		console.error('Error fetching data:', error);
+		document.querySelector('tbody')!.innerHTML = '<tr><td colspan="6">Error loading data.</td></tr>';
+	}
+}
 
-			return `
+function renderTable(data: BatteryData[], modelDetails: Record<string, ModelData>, state: Pick<AppState, 'sortColumn' | 'sortOrder'>) {
+	const tableBody = document.querySelector('tbody');
+	if (!tableBody) {
+		return;
+	}
+
+	tableBody.innerHTML = data.map(row => {
+		const modelName = modelDetails[row.modelId]?.name || 'N/A';
+
+		return `
 				<tr>
 					<td><a href="#" class="battery-summary-link" data-id="${row.id}" title="ID: ${row.id}">${row.id}</a></td>
 					<td><a href="#" class="model-link" data-guid="${row.modelId}">${modelName}</a></td>
@@ -159,19 +132,33 @@ document.addEventListener('DOMContentLoaded', () => {
 					<td>${row.formfactorName}</td>
 				</tr>
 			`;
-		}).join('');
+	}).join('');
 
-		document.querySelectorAll('th').forEach(th => {
-			th.classList.remove('sort-asc', 'sort-desc');
-			if (th.dataset.sort === sortColumn) {
-				th.classList.add(`sort-${sortOrder}`);
+	document.querySelectorAll('th').forEach(th => {
+		th.classList.remove('sort-asc', 'sort-desc');
+		if (th.dataset.sort === state.sortColumn) {
+			th.classList.add(`sort-${state.sortOrder}`);
+		}
+	});
+}
+
+function setupPopupListeners(elements: AppElements) {
+	if (elements.closePopupBtn) {
+		elements.closePopupBtn.addEventListener('click', (event) => {
+			const targetButton = event.target as HTMLElement;
+			const popup = targetButton.closest('.popup');
+			if (popup) {
+				const overlay = popup.parentElement;
+				if (overlay) {
+					overlay.classList.remove('visible');
+					const iframe = overlay.querySelector('iframe');
+					if (iframe) {
+						iframe.src = ''; // Clear iframe content
+					}
+				}
 			}
 		});
 	}
-
-	const modelDetailsOverlay = document.getElementById('modelDetailsOverlay') as HTMLElement;
-	const modelDetailsIframe = document.getElementById('modelDetailsIframe') as HTMLIFrameElement;
-	const closePopupBtn = document.getElementById('closePopupBtn') as HTMLButtonElement;
 
 	document.addEventListener('click', (e) => {
 		const target = e.target as HTMLElement;
@@ -179,148 +166,196 @@ document.addEventListener('DOMContentLoaded', () => {
 			e.preventDefault();
 			const guid = target.dataset.guid;
 			if (guid) {
-				modelDetailsIframe.src = `/model_details?guid=${guid}`;
-				modelDetailsOverlay.classList.add('visible');
+				elements.modelDetails.iframe.src = `/model_details?guid=${guid}`;
+				elements.modelDetails.overlay.classList.add('visible');
 			}
-		}
-	});
-
-	closePopupBtn.addEventListener('click', () => {
-		modelDetailsOverlay.classList.remove('visible');
-		modelDetailsIframe.src = ''; // Clear iframe content
-	});
-
-	const batterySummaryOverlay = document.getElementById('batterySummaryOverlay') as HTMLElement;
-	const batterySummaryIframe = document.getElementById('batterySummaryIframe') as HTMLIFrameElement;
-	const closeBatterySummaryPopupBtn = document.getElementById('closeBatterySummaryPopupBtn') as HTMLButtonElement;
-
-	document.addEventListener('click', (e) => {
-		const target = e.target as HTMLElement;
-		if (target.classList.contains('battery-summary-link')) {
+		} else if (target.classList.contains('battery-summary-link')) {
 			e.preventDefault();
 			const id = target.dataset.id;
 			if (id) {
-				batterySummaryIframe.src = `/battery_summary?batteryId=${id}`;
-				batterySummaryOverlay.classList.add('visible');
+				elements.batterySummary.iframe.src = `/battery_summary?batteryId=${id}`;
+				elements.batterySummary.overlay.classList.add('visible');
 			}
-		}
-	});
-
-	closeBatterySummaryPopupBtn.addEventListener('click', () => {
-		batterySummaryOverlay.classList.remove('visible');
-		batterySummaryIframe.src = ''; // Clear iframe content
-	});
-
-	const batteryDetailsOverlay = document.getElementById('batteryDetailsOverlay') as HTMLElement;
-	const batteryDetailsIframe = document.getElementById('batteryDetailsIframe') as HTMLIFrameElement;
-	const closeBatteryPopupBtn = document.getElementById('closeBatteryPopupBtn') as HTMLButtonElement;
-
-	document.addEventListener('click', (e) => {
-		const target = e.target as HTMLElement;
-		if (target.classList.contains('battery-link')) {
+		} else if (target.classList.contains('battery-link')) {
 			e.preventDefault();
 			const id = target.dataset.id;
 			if (id) {
-				batteryDetailsIframe.src = `/battery_details/${id}`;
-				batteryDetailsOverlay.classList.add('visible');
+				elements.batteryDetails.iframe.src = `/battery_details/${id}`;
+				elements.batteryDetails.overlay.classList.add('visible');
 			}
 		}
 	});
+}
 
-	closeBatteryPopupBtn.addEventListener('click', () => {
-		batteryDetailsOverlay.classList.remove('visible');
-		batteryDetailsIframe.src = ''; // Clear iframe content
-	});
-
-	// Close popups on Escape key press
+function setupEscapeKey(elements: AppElements, fetchData: () => void) {
 	document.addEventListener('keydown', (event) => {
 		if (event.key === 'Escape') {
-			addBatteryTypeOverlay.classList.remove('visible');
-			addBatteryTypeIframe.src = '';
-			addBatteryOverlay.classList.remove('visible');
-			addBatteryIframe.src = '';
-			addTestOverlay.classList.remove('visible');
-			addTestIframe.src = '';
-			modelDetailsOverlay.classList.remove('visible');
-			modelDetailsIframe.src = '';
-			batterySummaryOverlay.classList.remove('visible');
-			batterySummaryIframe.src = '';
-			batteryDetailsOverlay.classList.remove('visible');
-			batteryDetailsIframe.src = '';
+			elements.addBatteryType.overlay.classList.remove('visible');
+			elements.addBatteryType.iframe.src = '';
+			elements.addBattery.overlay.classList.remove('visible');
+			elements.addBattery.iframe.src = '';
+			elements.addTest.overlay.classList.remove('visible');
+			elements.addTest.iframe.src = '';
+			elements.modelDetails.overlay.classList.remove('visible');
+			elements.modelDetails.iframe.src = '';
+			elements.batterySummary.overlay.classList.remove('visible');
+			elements.batterySummary.iframe.src = '';
+			elements.batteryDetails.overlay.classList.remove('visible');
+			elements.batteryDetails.iframe.src = '';
 			fetchData(); // Refresh data after closing any popup
 		}
 	});
+}
 
-	// Populate filter options on page load
-	async function populateFilterOptions() {
-		console.log('Populating filter options...');
-		try {
-			const [modelDetailsResponse, chemistryDetailsResponse, formFactorDetailsResponse] = await Promise.all([
-				fetch('/api/model_details'),
-				fetch('/api/chemistry_details'),
-				fetch('/api/formfactor_details')
-			]);
-			console.log('API responses received.');
-			const modelDetails = await modelDetailsResponse.json();
-			const chemistryDetails = await chemistryDetailsResponse.json();
-			const formFactorDetails = await formFactorDetailsResponse.json();
+async function populateFilterOptions() {
+	console.log('Populating filter options...');
+	try {
+		const [modelDetailsResponse, chemistryDetailsResponse, formFactorDetailsResponse] = await Promise.all([
+			fetch('/api/model_details'),
+			fetch('/api/chemistry_details'),
+			fetch('/api/formfactor_details')
+		]);
+		console.log('API responses received.');
+		const modelDetails = await modelDetailsResponse.json();
+		const chemistryDetails = await chemistryDetailsResponse.json();
+		const formFactorDetails = await formFactorDetailsResponse.json();
 
-			console.log('Model Details:', modelDetails);
-			console.log('Chemistry Details:', chemistryDetails);
-			console.log('Form Factor Details:', formFactorDetails);
+		console.log('Model Details:', modelDetails);
+		console.log('Chemistry Details:', chemistryDetails);
+		console.log('Form Factor Details:', formFactorDetails);
 
-			const formFactors = new Map<string, string>();
-			const chemistries = new Map<string, string>();
-			const models = new Map<string, string>();
+		const formFactors = new Map<string, string>();
+		const chemistries = new Map<string, string>();
+		const models = new Map<string, string>();
 
-			for (const guid in formFactorDetails) {
-				formFactors.set(guid, formFactorDetails[guid].name);
-			}
-			for (const guid in chemistryDetails) {
-				chemistries.set(guid, chemistryDetails[guid].shortName);
-			}
-			for (const guid in modelDetails) {
-				models.set(guid, modelDetails[guid].name);
-			}
-
-			const formFactorSelect = document.getElementById('formfactorFilter');
-			if (formFactorSelect instanceof HTMLSelectElement) {
-				const sortedFormFactors = [...formFactors.entries()].sort((a, b) => a[1].localeCompare(b[1]));
-				sortedFormFactors.forEach(([guid, name]) => {
-					const option = document.createElement('option');
-					option.value = guid;
-					option.textContent = name;
-					formFactorSelect.appendChild(option);
-				});
-			}
-
-			const chemistrySelect = document.getElementById('chemistryFilter');
-			if (chemistrySelect instanceof HTMLSelectElement) {
-				const sortedChemistries = [...chemistries.entries()].sort((a, b) => a[1].localeCompare(b[1]));
-				sortedChemistries.forEach(([guid, name]) => {
-					const option = document.createElement('option');
-					option.value = guid;
-					option.textContent = name;
-					chemistrySelect.appendChild(option);
-				});
-			}
-
-			const modelDatalist = document.getElementById('modelNames');
-			if (modelDatalist) {
-				const sortedModels = [...models.entries()].sort((a, b) => a[1].localeCompare(b[1]));
-				sortedModels.forEach(([guid, name]) => {
-					const option = document.createElement('option');
-					option.value = name;
-					option.dataset.guid = guid;
-					modelDatalist.appendChild(option);
-				});
-			}
-
-		} catch (error) {
-			console.error('Error populating filter options:', error);
+		for (const guid in formFactorDetails) {
+			formFactors.set(guid, formFactorDetails[guid].name);
 		}
+		for (const guid in chemistryDetails) {
+			chemistries.set(guid, chemistryDetails[guid].shortName);
+		}
+		for (const guid in modelDetails) {
+			models.set(guid, modelDetails[guid].name);
+		}
+
+		const formFactorSelect = document.getElementById('formfactorFilter');
+		if (formFactorSelect instanceof HTMLSelectElement) {
+			const sortedFormFactors = [...formFactors.entries()].sort((a, b) => a[1].localeCompare(b[1]));
+			sortedFormFactors.forEach(([guid, name]) => {
+				const option = document.createElement('option');
+				option.value = guid;
+				option.textContent = name;
+				formFactorSelect.appendChild(option);
+			});
+		}
+
+		const chemistrySelect = document.getElementById('chemistryFilter');
+		if (chemistrySelect instanceof HTMLSelectElement) {
+			const sortedChemistries = [...chemistries.entries()].sort((a, b) => a[1].localeCompare(b[1]));
+			sortedChemistries.forEach(([guid, name]) => {
+				const option = document.createElement('option');
+				option.value = guid;
+				option.textContent = name;
+				chemistrySelect.appendChild(option);
+			});
+		}
+
+		const modelDatalist = document.getElementById('modelNames');
+		if (modelDatalist) {
+			const sortedModels = [...models.entries()].sort((a, b) => a[1].localeCompare(b[1]));
+			sortedModels.forEach(([guid, name]) => {
+				const option = document.createElement('option');
+				option.value = name;
+				option.dataset.guid = guid;
+				modelDatalist.appendChild(option);
+			});
+		}
+
+	} catch (error) {
+		console.error('Error populating filter options:', error);
+	}
+}
+
+function setupFilterButtons(state: AppState, fetchData: () => void) {
+	const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+	if (applyFiltersBtn) {
+		applyFiltersBtn.addEventListener('click', () => {
+			const nameFilterElement = document.getElementById('nameFilter') as HTMLInputElement;
+			const selectedModelName = nameFilterElement.value;
+			// Find the GUID for the selected model name
+			const modelNamesDatalist = document.getElementById('modelNames') as HTMLDataListElement;
+			const selectedOption = Array.from(modelNamesDatalist.options).find(option => option.value === selectedModelName);
+			state.nameFilter = selectedOption?.dataset.guid || '';
+
+			const formFactorFilterElement = document.getElementById('formfactorFilter');
+			state.formfactorFilter = (formFactorFilterElement instanceof HTMLSelectElement) ? formFactorFilterElement.value : '';
+
+			const chemistryFilterElement = document.getElementById('chemistryFilter');
+			state.chemistryFilter = (chemistryFilterElement instanceof HTMLSelectElement) ? chemistryFilterElement.value : '';
+			fetchData();
+		});
+	}
+
+	const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+	if (clearFiltersBtn) {
+		clearFiltersBtn.addEventListener('click', () => {
+			state.nameFilter = '';
+			state.formfactorFilter = '';
+			state.chemistryFilter = '';
+
+			(document.getElementById('nameFilter') as HTMLInputElement).value = '';
+			(document.getElementById('formfactorFilter') as HTMLSelectElement).value = '';
+			(document.getElementById('chemistryFilter') as HTMLSelectElement).value = '';
+
+			fetchData();
+		});
+	}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+	const state: AppState = {
+		sortColumn: 'id',
+		sortOrder: 'asc',
+		nameFilter: '',
+		formfactorFilter: '',
+		chemistryFilter: '',
+	};
+
+	const elements: AppElements = {
+		addBatteryType: getPopupElements('addBatteryType'),
+		addBattery: getPopupElements('addBattery'),
+		addTest: getPopupElements('addTest'),
+		modelDetails: getPopupElements('modelDetails'),
+		batterySummary: getPopupElements('batterySummary'),
+		batteryDetails: getPopupElements('batteryDetails'),
+		closePopupBtn: document.getElementById('closePopupBtn') as HTMLButtonElement,
+	};
+
+	const fetchDataWithState = () => fetchData(state);
+
+	setupMenuButtons(elements, fetchDataWithState);
+	setupPopupListeners(elements);
+	setupEscapeKey(elements, fetchDataWithState);
+	setupFilterButtons(state, fetchDataWithState);
+
+
+	const tableHead = document.querySelector('thead');
+	if (tableHead) {
+		tableHead.addEventListener('click', e => {
+			const target = e.target as HTMLElement;
+			if (target.tagName === 'TH') {
+				const newSortColumn = target.dataset.sort;
+				if (state.sortColumn === newSortColumn) {
+					state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc';
+				} else {
+					state.sortColumn = newSortColumn || 'id';
+					state.sortOrder = 'asc';
+				}
+				fetchDataWithState();
+			}
+		});
 	}
 
 	populateFilterOptions();
-	fetchData(); // Initial data fetch
+	fetchDataWithState(); // Initial data fetch
 });
