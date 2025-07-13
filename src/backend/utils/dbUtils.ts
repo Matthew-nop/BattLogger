@@ -8,6 +8,7 @@ import { createTables } from './createTables.js';
 import { ChemistryManager } from '../chemistryManager.js';
 import { FormFactorManager } from '../formfactorManager.js';
 import { ModelManager } from '../modelManager.js';
+import { LoggingManager, LOG_LEVEL } from '../loggingManager.js';
 
 import { Chemistry, FormFactor, ModelData } from '../../interfaces/interfaces.js';
 
@@ -38,7 +39,7 @@ export function loadChemistryDetails(): Map<string, Chemistry> {
 			chemistryDetails.set(chemistry.id, chemistry);
 		}
 	} catch (error) {
-		console.error('Error reading chemistries.json:', error);
+		LoggingManager.getInstance().log(LOG_LEVEL.ERROR, `Error reading chemistries.json: ${error}`);
 	}
 	return chemistryDetails;
 }
@@ -53,7 +54,7 @@ export function loadFormFactorDetails(): Map<string, FormFactor> {
 			formFactorDetails.set(formFactor.id, formFactor);
 		}
 	} catch (error) {
-		console.error('Error reading formfactors.json:', error);
+		LoggingManager.getInstance().log(LOG_LEVEL.ERROR, `Error reading formfactors.json: ${error}`);
 	}
 	return formFactorDetails;
 }
@@ -70,7 +71,7 @@ export function loadModelDetails(): Map<string, ModelData> {
 			modelDetails.set(model.id, model);
 		}
 	} catch (error) {
-		console.error('Error reading models.json:', error);
+		LoggingManager.getInstance().log(LOG_LEVEL.ERROR, `Error reading models.json: ${error}`);
 	}
 	return modelDetails;
 }
@@ -108,6 +109,6 @@ export const initializeDatabase = async (db: sqlite3.Database): Promise<void> =>
 		await formFactorManager.populateFormFactorsTable(formFactorDetails);
 
 	} catch (err: any) {
-		console.error(err.message);
+		LoggingManager.getInstance().log(LOG_LEVEL.ERROR, err.message);
 	}
 };

@@ -1,4 +1,5 @@
 import sqlite3 from 'sqlite3';
+import { LoggingManager, LOG_LEVEL } from '../loggingManager.js';
 
 export async function createTables(db: sqlite3.Database): Promise<void> {
 	const runAsync = (query: string, params: any[] = []): Promise<any> => {
@@ -56,9 +57,9 @@ export async function createTables(db: sqlite3.Database): Promise<void> {
 			timestamp TEXT NOT NULL,
 			FOREIGN KEY (battery_id) REFERENCES batteries(id)
 		)`);
-		console.log('Tables created successfully.');
+		LoggingManager.getInstance().log(LOG_LEVEL.INFO, 'Tables created successfully.');
 	} catch (err: any) {
-		console.error('Error creating tables:', err.message);
+		LoggingManager.getInstance().log(LOG_LEVEL.ERROR, `Error creating tables: ${err.message}`);
 		throw err;
 	}
 }
