@@ -5,13 +5,15 @@
 	"main": "dist/backend/server.js",
 	"type": "module",
 	"scripts": {
-		"test": "node --experimental-vm-modules node_modules/.bin/jest",
+		"start": "node dist/backend/server.js",
+		"start:dev": "NODE_ENV=dev npm run start",
+		"setup": "npm run build && node dist/backend/setup_database.js",
 		"build": "build/build.sh && npm run build:backend && npm run build:frontend",
 		"build:backend": "tsc -p tsconfig.json",
 		"build:frontend": "parcel build",
-		"start": "node dist/backend/server.js",
-		"setup": "npm run build && node dist/backend/setup_database.js",
 		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"test": "node --experimental-vm-modules node_modules/.bin/jest",
 		"test:e2e": "playwright test"
 	},
 	"targets": {
