@@ -30,7 +30,7 @@ export const stmtRunAsync = (stmt: sqlite3.Statement, params: any[] = []): Promi
 	});
 };
 
-export function loadChemistryDetails(): Chemistry[] {
+export function loadBuiltInChemistries(): Chemistry[] {
 	let chemistries: Chemistry[] = [];
 	const chemistriesFilePath = path.join(dataPath, 'chemistries.json');
 	try {
@@ -42,7 +42,7 @@ export function loadChemistryDetails(): Chemistry[] {
 	return chemistries;
 }
 
-export function loadFormFactorDetails(): FormFactor[] {
+export function loadBuiltInFormFactors(): FormFactor[] {
 	let formfactors: FormFactor[] = [];
 	const formFactorsFilePath = path.join(dataPath, 'formfactors.json');
 	try {
@@ -54,7 +54,7 @@ export function loadFormFactorDetails(): FormFactor[] {
 	return formfactors;
 }
 
-export function loadModelDetails(): ModelDTO[] {
+export function loadBuiltinModelDetails(): ModelDTO[] {
 	let models: ModelDTO[] = [];
 	const modelsFilePath = path.join(dataPath, 'models.json');
 	try {
@@ -76,9 +76,9 @@ export const initializeDatabase = async (db: sqlite3.Database): Promise<void> =>
 		const modelManager = ModelManager.getInstance();
 		modelManager.setDb(db);
 
-		const models: ModelDTO[] = loadModelDetails();
-		const formfactors: FormFactor[] = loadFormFactorDetails();
-		const chemistries: Chemistry[] = loadChemistryDetails();
+		const models: ModelDTO[] = loadBuiltinModelDetails();
+		const formfactors: FormFactor[] = loadBuiltInFormFactors();
+		const chemistries: Chemistry[] = loadBuiltInChemistries();
 
 		await modelManager.populateModelsTable(models);
 		await chemistryManager.populateChemistriesTable(chemistries);

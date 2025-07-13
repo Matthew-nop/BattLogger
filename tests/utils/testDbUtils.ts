@@ -1,14 +1,14 @@
 import * as sqlite3 from 'sqlite3';
 
 import { createTables } from '../../src/backend/utils/createTables.js';
-import { initializeDatabase, loadModelDetails, stmtRunAsync } from '../../src/backend/utils/dbUtils.js';
+import { initializeDatabase, loadBuiltinModelDetails, stmtRunAsync } from '../../src/backend/utils/dbUtils.js';
 
 import { randomUUID } from 'crypto';
 import { ModelData } from '../../src/interfaces/interfaces.js';
 
 export const insertDummyValues = async (db: sqlite3.Database): Promise<void> => {
 	try {
-		const modelDetails: ModelData[] = loadModelDetails();
+		const modelDetails: ModelData[] = loadBuiltinModelDetails();
 
 		const batteryStmt = db.prepare("INSERT INTO batteries (id, model_id) VALUES (?, ?)");
 		const testStmt = db.prepare("INSERT INTO battery_tests (battery_id, capacity, timestamp) VALUES (?, ?, ?)");
