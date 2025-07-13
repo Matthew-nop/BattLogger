@@ -65,11 +65,11 @@ export class FormFactorManager {
 		}
 	}
 
-	public async populateFormFactorsTable(formFactors: Map<string, FormFactor>): Promise<void> {
+	public async populateFormFactorsTable(formFactors: FormFactor[]): Promise<void> {
 		this.logger.log(LOG_LEVEL.INFO, 'Populating form factors table.');
 		const db = this.getDb();
 		const stmt = db.prepare("INSERT OR REPLACE INTO formfactors (id, name) VALUES (?, ?)");
-		for (const [, formfactor] of formFactors.entries()) {
+		for (const formfactor of formFactors) {
 			await stmtRunAsync(stmt, [
 				formfactor.id,
 				formfactor.name
@@ -78,6 +78,20 @@ export class FormFactorManager {
 		stmt.finalize();
 		this.logger.log(LOG_LEVEL.INFO, 'Form Factors table populated.');
 		this.cachedFormFactors = null; // Invalidate cache
+	}
+
+	public async getAllFormFactors(): Promise<FormFactor[]> {
+		this.logger.log(LOG_LEVEL.INFO, 'Attempting to retrieve all form factors.');
+		try {
+			if (!this.cachedFormFactors) {
+				await this._loadFormFactorsFromDb();
+			}
+			this.logger.log(LOG_LEVEL.INFO, `Successfully retrieved ${this.cachedFormFactors!.size} form factors.`);
+			return Array.from(this.cachedFormFactors!.values());
+		} catch (error) {
+			this.logger.log(LOG_LEVEL.ERROR, `Error fetching form factors from database: ${error}`);
+			throw new Error('Failed to fetch form factors.');
+		}
 	}
 
 	public async getFormFactorMap(): Promise<Map<string, FormFactor>> {

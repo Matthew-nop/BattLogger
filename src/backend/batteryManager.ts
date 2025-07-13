@@ -1,16 +1,19 @@
 import sqlite3 from 'sqlite3';
 
-import { BatteryData, GetDataQueryParams } from '../interfaces/interfaces.js';
+import { BatteryData, BatteryDTO, GetDataQueryParams } from '../interfaces/interfaces.js';
 
-import { loadModelDetails, stmtRunAsync } from './utils/dbUtils.js';
+import { stmtRunAsync } from './utils/dbUtils.js';
 import { LoggingManager, LOG_LEVEL } from './loggingManager.js';
+import { ModelManager } from './modelManager.js';
 
 export class BatteryManager {
 	private static instance: BatteryManager;
 	private db: sqlite3.Database | null = null;
+	private modelManager: ModelManager;
 	private logger: LoggingManager;
 
 	private constructor() {
+		this.modelManager = ModelManager.getInstance();
 		this.logger = LoggingManager.getInstance(); 
 	 }
 
@@ -97,17 +100,33 @@ export class BatteryManager {
 		});
 	}
 
-	public async getBattery(batteryId: string): Promise<BatteryData | null> {
+	public async getBattery(batteryId: string): Promise<BatteryDTO | null> {
 		this.logger.log(LOG_LEVEL.INFO, `Attempting to retrieve battery with ID: ${batteryId}`);
 		const db = this.getDb();
-		return new Promise<BatteryData | null>((resolve, reject) => {
-			db.get<BatteryData>("SELECT id, model_id AS modelId FROM batteries WHERE id = ?", [batteryId], (err: Error | null, row: BatteryData) => {
+		return new Promise<BatteryDTO | null>((resolve, reject) => {
+			db.get<BatteryDTO>("SELECT id, model_id AS modelId FROM batteries WHERE id = ?", [batteryId], (err: Error | null, row: BatteryDTO) => {
 				if (err) {
 					this.logger.log(LOG_LEVEL.ERROR, `Error retrieving battery with ID ${batteryId}: ${err.message}`);
 					reject(err);
 				} else {
 					this.logger.log(LOG_LEVEL.INFO, `Successfully retrieved battery with ID: ${batteryId}`);
 					resolve(row || null);
+				}
+			});
+		});
+	}
+
+	public async getAllBatteries(): Promise<BatteryDTO[]> {
+		this.logger.log(LOG_LEVEL.INFO, 'Attempting to retrieve all batteries.');
+		const db = this.getDb();
+		return new Promise<BatteryDTO[]>((resolve, reject) => {
+			db.all<BatteryDTO>("SELECT id, model_id AS modelId FROM batteries", [], (err: Error | null, rows: BatteryDTO[]) => {
+				if (err) {
+					this.logger.log(LOG_LEVEL.ERROR, `Error retrieving all batteries: ${err.message}`);
+					reject(err);
+				} else {
+					this.logger.log(LOG_LEVEL.INFO, `Successfully retrieved ${rows.length} batteries.`);
+					resolve(rows);
 				}
 			});
 		});
@@ -154,11 +173,59 @@ export class BatteryManager {
 		});
 	}
 
+	public async doesBatteryExist(batteryId: string): Promise<{ exists: boolean }> {
+		this.logger.log(LOG_LEVEL.INFO, `Checking if battery with ID: ${batteryId} exists.`);
+		const db = this.getDb();
+		return new Promise<{ exists: boolean }>((resolve, reject) => {
+			db.get("SELECT 1 FROM batteries WHERE id = ?", [batteryId], (err: Error | null, row: any) => {
+				if (err) {
+					this.logger.log(LOG_LEVEL.ERROR, `Error checking for battery existence with ID ${batteryId}: ${err.message}`);
+					reject(err);
+				} else {
+					const exists = !!row;
+					this.logger.log(LOG_LEVEL.INFO, `Battery with ID: ${batteryId} exists: ${exists}`);
+					resolve({ exists });
+				}
+			});
+		});
+	}
+
+	public async populateBatteriesTable( batteries: BatteryDTO[] ): Promise<{ id: string }[]> {
+		this.logger.log(LOG_LEVEL.INFO, `Attempting to populate battery table with ${batteries.length} entries.`);
+		const db = this.getDb();
+		const insertedBatteries: { id: string }[] = [];
+
+		for (const battery of batteries) {
+			try {
+				if (!(await this.modelManager.doesModelExist(battery.modelId))) {
+					this.logger.log(LOG_LEVEL.WARN, `Skipping battery with ID ${battery.id} due to invalid model identifier: ${battery.modelId}`);
+					continue;
+				}
+
+				const stmt = db.prepare("INSERT OR IGNORE INTO batteries (id, model_id) VALUES (?, ?)");
+				const result = await stmtRunAsync(stmt, [battery.id, battery.modelId]);
+				stmt.finalize();
+
+				if (result.changes > 0) {
+					insertedBatteries.push({ id: battery.id });
+					this.logger.log(LOG_LEVEL.INFO, `Successfully inserted battery with ID: ${battery.id}`);
+				} else {
+					this.logger.log(LOG_LEVEL.WARN, `Battery with ID ${battery.id} already exists or was skipped.`);
+				}
+			} catch (error: any) {
+				this.logger.log(LOG_LEVEL.ERROR, `Failed to process battery with ID ${battery.id}: ${error.message}`);
+			}
+		}
+
+		this.logger.log(LOG_LEVEL.INFO, `Finished populating battery table. Inserted ${insertedBatteries.length} new batteries.`);
+		return insertedBatteries;
+	}
+
 	public async createBattery(batteryId: string, modelIdentifier: string): Promise<{ id: string }> {
 		this.logger.log(LOG_LEVEL.INFO, `Attempting to create battery with ID: ${batteryId} and model: ${modelIdentifier}`);
 		const db = this.getDb();
 
-		const model = loadModelDetails().get(modelIdentifier);
+		const model = await this.modelManager.doesModelExist(modelIdentifier);
 		if (!model) {
 			this.logger.log(LOG_LEVEL.ERROR, `Invalid model identifier: ${modelIdentifier}`);
 			throw new Error('Invalid model identifier.');
@@ -195,7 +262,7 @@ export class BatteryManager {
 	public async updateBattery(batteryId: string, modelIdentifier: string): Promise<boolean> {
 		const db = this.getDb();
 
-		const model = loadModelDetails().get(modelIdentifier);
+		const model = await this.modelManager.doesModelExist(modelIdentifier);
 		if (!model) {
 			throw new Error('Invalid model identifier.');
 		}

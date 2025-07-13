@@ -21,7 +21,7 @@ export class TestHandler {
 		}
 	};
 
-	public addBatteryTestRunInfo = async (req: Request<{}, {}, CreateTestRunInfoParams>, res: Response<{ message: string, id: number } | { error: string }>) => {
+	public createTestRun = async (req: Request<{}, {}, CreateTestRunInfoParams>, res: Response<{ message: string, id: number } | { error: string }>) => {
 		const { batteryId, capacity, timestamp } = req.body;
 
 		if (!batteryId) {
@@ -50,7 +50,7 @@ export class TestHandler {
 		}
 
 		try {
-			const result = await this.testManager.addBatteryTestRunInfo({ batteryId, capacity, timestamp });
+			const result = await this.testManager.createTestRun({ batteryId, capacity, timestamp });
 			res.status(201).json({ message: 'Battery test added successfully.', id: result.id });
 		} catch (error: any) {
 			console.error('Error adding battery test:', error);

@@ -6,6 +6,7 @@ import { stmtRunAsync } from './utils/dbUtils.js';
 import { FormFactorManager } from './formfactorManager.js';
 import { ChemistryManager } from './chemistryManager.js';
 import { LoggingManager, LOG_LEVEL } from './loggingManager.js';
+import { ModelDTO } from '../interfaces/tables/ModelDTO.js';
 
 export class ModelManager {
 	private static instance: ModelManager;
@@ -90,11 +91,11 @@ export class ModelManager {
 		}
 	}
 
-	public async populateModelsTable(models: Map<string, ModelData>): Promise<void> {
+	public async populateModelsTable(models: ModelDTO[]): Promise<void> {
 		this.logger.log(LOG_LEVEL.INFO, 'Populating models table.');
 		const db = this.getDb();
 		const stmt = db.prepare("INSERT OR REPLACE INTO models (id, name, design_capacity, manufacturer, chemistry_id, formfactor_id) VALUES (?, ?, ?, ?, ?, ?)");
-		for (const [, model] of models.entries()) {
+		for (const model of models) {
 			await stmtRunAsync(stmt, [
 				model.id,
 				model.name,
@@ -120,6 +121,14 @@ export class ModelManager {
 		return modelMap;
 	}
 
+	public async doesModelExist(id: string): Promise<boolean> {
+		if (!this.cachedModels) {
+			await this._loadModelsFromDb();
+		}
+
+		return this.cachedModels!.has(id);
+	}
+
 	public async getModelDetails(): Promise<Map<string, ModelData>> {
 		if (!this.cachedModels) {
 			await this._loadModelsFromDb();
@@ -132,6 +141,26 @@ export class ModelManager {
 			await this._loadModelsFromDb();
 		}
 		return this.cachedModels!.get(guid) || null;
+	}
+
+	public async getAllModels(): Promise<ModelDTO[]> {
+		this.logger.log(LOG_LEVEL.INFO, 'Fetching all models from database.');
+		if (!this.cachedModels) {
+			await this._loadModelsFromDb();
+		}
+
+		const models: ModelDTO[] = [];
+		this.cachedModels!.forEach((modelData) => {
+			models.push({
+				id: modelData.id,
+				name: modelData.name,
+				designCapacity: modelData.designCapacity,
+				formFactorId: modelData.formFactorId,
+				chemistryId: modelData.chemistryId,
+				manufacturer: modelData.manufacturer,
+			});
+		});
+		return models;
 	}
 
 	public async getModelById(id: string): Promise<ModelData | null> {

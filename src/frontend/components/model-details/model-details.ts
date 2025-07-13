@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('name')!.textContent = model.name;
     document.getElementById('modelId')!.textContent = model.id;
-    document.getElementById('designCapacity')!.textContent = model.designCapacity.toString();
+    document.getElementById('designCapacity')!.textContent = model.designCapacity?.toString() || 'N/A';
     document.getElementById('formfactor')!.textContent = model.formfactor_name || 'N/A';
     document.getElementById('chemistry')!.textContent = model.chemistry_name || 'N/A';
     document.getElementById('manufacturer')!.textContent = model.manufacturer || 'N/A';

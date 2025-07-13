@@ -21,6 +21,7 @@ interface AppElements {
 	modelDetails: PopupElements;
 	batterySummary: PopupElements;
 	batteryDetails: PopupElements;
+	importExport: PopupElements;
 	closePopupBtn: HTMLButtonElement;
 }
 
@@ -83,6 +84,15 @@ function setupMenuButtons(elements: AppElements, onClose: () => void) {
 		elements.addTest.overlay,
 		elements.addTest.iframe,
 		'/add_test_info',
+		onClose,
+	);
+
+	setupPopup(
+		'importExportBtn',
+		'closeImportExportPopupBtn',
+		elements.importExport.overlay,
+		elements.importExport.iframe,
+		'/import_export',
 		onClose,
 	);
 }
@@ -196,6 +206,8 @@ function setupEscapeKey(elements: AppElements, fetchData: () => void) {
 			elements.addBattery.iframe.src = '';
 			elements.addTest.overlay.classList.remove('visible');
 			elements.addTest.iframe.src = '';
+			elements.importExport.overlay.classList.remove('visible');
+			elements.importExport.iframe.src = '';
 			elements.modelDetails.overlay.classList.remove('visible');
 			elements.modelDetails.iframe.src = '';
 			elements.batterySummary.overlay.classList.remove('visible');
@@ -325,6 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		addBatteryType: getPopupElements('addBatteryType'),
 		addBattery: getPopupElements('addBattery'),
 		addTest: getPopupElements('addTest'),
+		importExport: getPopupElements('importExport'),
 		modelDetails: getPopupElements('modelDetails'),
 		batterySummary: getPopupElements('batterySummary'),
 		batteryDetails: getPopupElements('batteryDetails'),

@@ -51,6 +51,11 @@
 			"source": "src/frontend/components/battery-summary/battery_summary.html",
 			"distDir": "dist/frontend/battery-summary",
 			"publicUrl": "/battery-summary/"
+		},
+		"@importExport": {
+			"source": "src/frontend/components/import-export/import_export.html",
+			"distDir": "dist/frontend/import-export",
+			"publicUrl": "/import-export/"
 		}
 	},
 	"dependencies": {

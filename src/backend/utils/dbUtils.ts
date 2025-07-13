@@ -11,6 +11,7 @@ import { ModelManager } from '../modelManager.js';
 import { LoggingManager, LOG_LEVEL } from '../loggingManager.js';
 
 import { Chemistry, FormFactor, ModelData } from '../../interfaces/interfaces.js';
+import { ModelDTO } from '../../interfaces/tables/ModelDTO.js';
 
 export const isValidUUID = (uuid: string): boolean => {
 	const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -29,61 +30,40 @@ export const stmtRunAsync = (stmt: sqlite3.Statement, params: any[] = []): Promi
 	});
 };
 
-export function loadChemistryDetails(): Map<string, Chemistry> {
-	const chemistryDetails = new Map<string, Chemistry>();
+export function loadChemistryDetails(): Chemistry[] {
+	let chemistries: Chemistry[] = [];
 	const chemistriesFilePath = path.join(dataPath, 'chemistries.json');
 	try {
 		const data = fs.readFileSync(chemistriesFilePath, 'utf8');
-		const chemistries: Chemistry[] = JSON.parse(data);
-		for (const chemistry of chemistries) {
-			chemistryDetails.set(chemistry.id, chemistry);
-		}
+		chemistries = JSON.parse(data);
 	} catch (error) {
 		LoggingManager.getInstance().log(LOG_LEVEL.ERROR, `Error reading chemistries.json: ${error}`);
 	}
-	return chemistryDetails;
+	return chemistries;
 }
 
-export function loadFormFactorDetails(): Map<string, FormFactor> {
-	const formFactorDetails = new Map<string, FormFactor>();
+export function loadFormFactorDetails(): FormFactor[] {
+	let formfactors: FormFactor[] = [];
 	const formFactorsFilePath = path.join(dataPath, 'formfactors.json');
 	try {
 		const data = fs.readFileSync(formFactorsFilePath, 'utf8');
-		const formFactors: FormFactor[] = JSON.parse(data);
-		for (const formFactor of formFactors) {
-			formFactorDetails.set(formFactor.id, formFactor);
-		}
+		formfactors = JSON.parse(data);
 	} catch (error) {
 		LoggingManager.getInstance().log(LOG_LEVEL.ERROR, `Error reading formfactors.json: ${error}`);
 	}
-	return formFactorDetails;
+	return formfactors;
 }
 
-
-
-export function loadModelDetails(): Map<string, ModelData> {
-	const modelDetails = new Map<string, ModelData>();
+export function loadModelDetails(): ModelDTO[] {
+	let models: ModelDTO[] = [];
 	const modelsFilePath = path.join(dataPath, 'models.json');
 	try {
 		const data = fs.readFileSync(modelsFilePath, 'utf8');
-		const models: ModelData[] = JSON.parse(data);
-		for (const model of models) {
-			modelDetails.set(model.id, model);
-		}
+		models = JSON.parse(data);
 	} catch (error) {
 		LoggingManager.getInstance().log(LOG_LEVEL.ERROR, `Error reading models.json: ${error}`);
 	}
-	return modelDetails;
-}
-
-// Function to load model map (guid to model name)
-export function loadModelMap(): Map<string, string> {
-	const modelMap = new Map<string, string>();
-	const modelDetails = loadModelDetails();
-	for (const [guid, details] of modelDetails.entries()) {
-		modelMap.set(guid, details.name);
-	}
-	return modelMap;
+	return models;
 }
 
 export const initializeDatabase = async (db: sqlite3.Database): Promise<void> => {
@@ -96,17 +76,15 @@ export const initializeDatabase = async (db: sqlite3.Database): Promise<void> =>
 		const modelManager = ModelManager.getInstance();
 		modelManager.setDb(db);
 
-		const modelDetails: Map<string, ModelData> = loadModelDetails();
-		
-		const formFactorDetails: Map<string, FormFactor> = loadFormFactorDetails();
+		const models: ModelDTO[] = loadModelDetails();
+		const formfactors: FormFactor[] = loadFormFactorDetails();
+		const chemistries: Chemistry[] = loadChemistryDetails();
 
-		const chemistryDetails: Map<string, Chemistry> = loadChemistryDetails();
-
-		await modelManager.populateModelsTable(modelDetails);
-		await chemistryManager.populateChemistriesTable(chemistryDetails);
+		await modelManager.populateModelsTable(models);
+		await chemistryManager.populateChemistriesTable(chemistries);
 		const formFactorManager = FormFactorManager.getInstance();
 		formFactorManager.setDb(db);
-		await formFactorManager.populateFormFactorsTable(formFactorDetails);
+		await formFactorManager.populateFormFactorsTable(formfactors);
 
 	} catch (err: any) {
 		LoggingManager.getInstance().log(LOG_LEVEL.ERROR, err.message);

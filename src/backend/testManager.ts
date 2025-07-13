@@ -47,7 +47,24 @@ export class TestManager {
 		});
 	}
 
-	public async addBatteryTestRunInfo(params: CreateTestRunInfoParams): Promise<{ id: number }> {
+
+	public async getAllTestRuns(): Promise<TestRunInfo[]> {
+		this.logger.log(LOG_LEVEL.INFO, 'Attempting to retrieve all test runs.');
+		const db = this.getDb();
+		return new Promise<TestRunInfo[]>((resolve, reject) => {
+			db.all<TestRunInfo>("SELECT id, battery_id, capacity, timestamp FROM battery_tests", [], (err: Error | null, rows: TestRunInfo[]) => {
+				if (err) {
+					this.logger.log(LOG_LEVEL.ERROR, `Error retrieving all test runs: ${err.message}`);
+					reject(err);
+				} else {
+					this.logger.log(LOG_LEVEL.INFO, `Successfully retrieved ${rows.length} test runs.`);
+					resolve(rows);
+				}
+			});
+		});
+	}
+
+	public async createTestRun(params: CreateTestRunInfoParams): Promise<{ id: number }> {
 		const db = this.getDb();
 		try {
 			const stmt = db.prepare("INSERT INTO battery_tests (battery_id, capacity, timestamp) VALUES (?, ?, ?)");
@@ -57,5 +74,26 @@ export class TestManager {
 		} catch {
 			throw new Error('Failed to add battery test.');
 		}
+	}
+
+	public async populateTestRunsTable(testRuns: CreateTestRunInfoParams[]): Promise<{ id: number }[]> {
+		this.logger.log(LOG_LEVEL.INFO, `Attempting to populate battery tests table with ${testRuns.length} entries.`);
+		const db = this.getDb();
+		const insertedTestRuns: { id: number }[] = [];
+
+		for (const testRun of testRuns) {
+			try {
+				const stmt = db.prepare("INSERT INTO battery_tests (battery_id, capacity, timestamp) VALUES (?, ?, ?)");
+				const result = await stmtRunAsync(stmt, [testRun.batteryId, testRun.capacity, testRun.timestamp]);
+				stmt.finalize();
+				insertedTestRuns.push({ id: result.lastID });
+				this.logger.log(LOG_LEVEL.INFO, `Successfully inserted test run for battery ID: ${testRun.batteryId}`);
+			} catch (error: any) {
+				this.logger.log(LOG_LEVEL.ERROR, `Failed to process test run for battery ID ${testRun.batteryId}: ${error.message}`);
+			}
+		}
+
+		this.logger.log(LOG_LEVEL.INFO, `Finished populating battery tests table. Inserted ${insertedTestRuns.length} new test runs.`);
+		return insertedTestRuns;
 	}
 }

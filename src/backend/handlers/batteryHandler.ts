@@ -22,7 +22,7 @@ export class BatteryHandler {
 	public getBattery = async (req: Request<{ batteryId: string }>, res: Response<BatteryData | { error: string }>) => {
 		const batteryId = req.params.batteryId;
 		try {
-			const battery = await this.batteryManager.getBattery(batteryId);
+			const battery = await this.batteryManager.getBatteryDetailsForId(batteryId);
 			if (battery) {
 				res.json(battery);
 			} else {

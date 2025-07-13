@@ -68,11 +68,11 @@ export class ChemistryManager {
 		}
 	}
 
-	public async populateChemistriesTable(chemistries: Map<string, Chemistry>): Promise<void> {
+	public async populateChemistriesTable(chemistries: Chemistry[]): Promise<void> {
 		this.logger.log(LOG_LEVEL.INFO, 'Populating chemistries table.');
 		const db = this.getDb();
 		const stmt = db.prepare("INSERT OR REPLACE INTO chemistries (id, name, short_name, nominal_voltage) VALUES (?, ?, ?, ?)");
-		for (const [, chemistry] of chemistries.entries()) {
+		for (const chemistry of chemistries) {
 			await stmtRunAsync(stmt, [
 				chemistry.id,
 				chemistry.name,
@@ -107,8 +107,6 @@ export class ChemistryManager {
 		}
 		return chemistry;
 	}
-
-	
 
 	public async getAllChemistries(): Promise<Chemistry[]> {
 		this.logger.log(LOG_LEVEL.INFO, 'Attempting to retrieve all chemistries.');

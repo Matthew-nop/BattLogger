@@ -1,30 +1,21 @@
 import { Application } from 'express';
-import sqlite3 from 'sqlite3';
-
-import { ChemistryManager } from './chemistryManager.js';
-import { FormFactorManager } from './formfactorManager.js';
-import { ModelManager } from './modelManager.js';
-import { BatteryManager } from './batteryManager.js';
-import { TestManager } from './testManager.js';
 
 import { ChemistryHandler } from './handlers/chemistryHandler.js';
 import { FormFactorHandler } from './handlers/formfactorHandler.js';
 import { ModelHandler } from './handlers/modelHandler.js';
 import { BatteryHandler } from './handlers/batteryHandler.js';
 import { TestHandler } from './handlers/testHandler.js';
+import { ImportExportHandler } from './handlers/importExportHandler.js';
 
-export function setupApiRoutes(app: Application, db: sqlite3.Database, chemistryManager: ChemistryManager, formFactorManager: FormFactorManager, modelManager: ModelManager) {
-	const batteryManager = BatteryManager.getInstance();
-	batteryManager.setDb(db);
-	const testManager = TestManager.getInstance();
-	testManager.setDb(db);
-
-	const chemistryHandler = new ChemistryHandler(chemistryManager);
-	const formFactorHandler = new FormFactorHandler(formFactorManager);
-	const modelHandler = new ModelHandler(modelManager);
-	const batteryHandler = new BatteryHandler(batteryManager);
-	const testHandler = new TestHandler(testManager);
-
+export function setupApiRoutes(
+	app: Application, 
+	batteryHandler: BatteryHandler,
+	chemistryHandler: ChemistryHandler, 
+	formFactorHandler: FormFactorHandler,
+	modelHandler: ModelHandler, 
+	testHandler: TestHandler, 
+	importExportHandler: ImportExportHandler
+) {
 	app.get('/api/data', batteryHandler.getData);
 	app.get('/api/model_map', modelHandler.getModelMap);
 	app.get('/api/model_details', modelHandler.getModelDetails);
@@ -41,6 +32,14 @@ export function setupApiRoutes(app: Application, db: sqlite3.Database, chemistry
 	app.post('/api/create_battery', batteryHandler.createBattery);
 	app.put('/api/battery/:batteryId', batteryHandler.updateBattery);
 	app.delete('/api/battery/:batteryId', batteryHandler.deleteBattery);
-	app.post('/api/battery_test', testHandler.addBatteryTestRunInfo);
+	app.post('/api/battery_test', testHandler.createTestRun);
 
+	app.get('/api/export', importExportHandler.exportAll);
+	app.post('/api/import', importExportHandler.importAll);
+	app.get('/api/export/chemistries', importExportHandler.exportChemistries);
+	app.post('/api/import/chemistries', importExportHandler.importChemistries);
+	app.get('/api/export/formfactors', importExportHandler.exportFormFactors);
+	app.post('/api/import/formfactors', importExportHandler.importFormFactors);
+	app.get('/api/export/models', importExportHandler.exportModels);
+	app.post('/api/import/models', importExportHandler.importModels);
 }
