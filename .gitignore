@@ -1,4 +1,5 @@
 dist/
+logs/
 node_modules/
 .parcel-cache/
 playwright-report/
