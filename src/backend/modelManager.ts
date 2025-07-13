@@ -5,13 +5,18 @@ import { randomUUID } from 'crypto';
 import { stmtRunAsync } from './utils/dbUtils.js';
 import { FormFactorManager } from './formfactorManager.js';
 import { ChemistryManager } from './chemistryManager.js';
+import { LoggingManager, LOG_LEVEL } from './loggingManager.js';
 
 export class ModelManager {
 	private static instance: ModelManager;
 	private db: sqlite3.Database | null = null;
 	private cachedModels: Map<string, ModelData> | null = null;
+	private logger: LoggingManager;
 
-	private constructor() { }
+	private constructor() {
+		this.logger = LoggingManager.getInstance();
+	}
+
 
 	public static getInstance(): ModelManager {
 		if (!ModelManager.instance) {
@@ -32,6 +37,7 @@ export class ModelManager {
 	}
 
 	private async _loadModelsFromDb(): Promise<Map<string, ModelData>> {
+		this.logger.log(LOG_LEVEL.INFO, 'Loading models from database.');
 		const db = this.getDb();
 		const modelsMap: Map<string, ModelData> = new Map<string, ModelData>();
 		try {
@@ -54,8 +60,10 @@ export class ModelManager {
 					[],
 					(err: Error | null, rows: Array<ModelData>) => {
 						if (err) {
+							this.logger.log(LOG_LEVEL.ERROR, `Error loading models from database: ${err.message}`);
 							reject(err);
 						} else {
+							this.logger.log(LOG_LEVEL.INFO, `Successfully loaded ${rows.length} models from database.`);
 							resolve(rows);
 						}
 					}
@@ -77,12 +85,13 @@ export class ModelManager {
 			this.cachedModels = modelsMap;
 			return modelsMap;
 		} catch (error) {
-			console.error('Error fetching models from database:', error);
+			this.logger.log(LOG_LEVEL.ERROR, `Error fetching models from database: ${error}`);
 			throw new Error('Failed to fetch models from database.');
 		}
 	}
 
 	public async populateModelsTable(models: Map<string, ModelData>): Promise<void> {
+		this.logger.log(LOG_LEVEL.INFO, 'Populating models table.');
 		const db = this.getDb();
 		const stmt = db.prepare("INSERT OR REPLACE INTO models (id, name, design_capacity, manufacturer, chemistry_id, formfactor_id) VALUES (?, ?, ?, ?, ?, ?)");
 		for (const [, model] of models.entries()) {
@@ -96,7 +105,7 @@ export class ModelManager {
 			]);
 		}
 		stmt.finalize();
-		console.log('Models table populated.');
+		this.logger.log(LOG_LEVEL.INFO, 'Models table populated.');
 		this.cachedModels = null; // Invalidate cache
 	}
 
@@ -183,7 +192,7 @@ export class ModelManager {
 			this.cachedModels = null; // Invalidate cache
 			return { id: newGuid };
 		} catch (error) {
-			console.error('Error inserting new model into database:', error);
+			this.logger.log(LOG_LEVEL.ERROR, `Error inserting new model into database: ${error}`);
 			throw new Error('Failed to save model.');
 		}
 	}

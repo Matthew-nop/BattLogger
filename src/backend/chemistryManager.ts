@@ -4,13 +4,17 @@ import sqlite3 from 'sqlite3';
 
 import { Chemistry } from '../interfaces/interfaces.js';
 import { stmtRunAsync } from './utils/dbUtils.js';
+import { LoggingManager, LOG_LEVEL } from './loggingManager.js';
 
 export class ChemistryManager {
 	private static instance: ChemistryManager;
 	private db: sqlite3.Database | null = null;
 	private cachedChemistries: Map<string, Chemistry> | null = null;
+	private logger: LoggingManager;
 
-	private constructor() { }
+	private constructor() {
+		this.logger = LoggingManager.getInstance();
+	}
 
 	public static getInstance(): ChemistryManager {
 		if (!ChemistryManager.instance) {
@@ -31,6 +35,7 @@ export class ChemistryManager {
 	}
 
 	private async _loadChemistriesFromDb(): Promise<Map<string, Chemistry>> {
+		this.logger.log(LOG_LEVEL.INFO, 'Loading chemistries from database.');
 		const db = this.getDb();
 		const chemistriesMap = new Map<string, Chemistry>();
 
@@ -38,8 +43,10 @@ export class ChemistryManager {
 			const rows = await new Promise<any[]>((resolve, reject) => {
 				db.all("SELECT * FROM chemistries", [], (err, rows) => {
 					if (err) {
+						this.logger.log(LOG_LEVEL.ERROR, `Error loading chemistries from database: ${err.message}`);
 						reject(err);
 					} else {
+						this.logger.log(LOG_LEVEL.INFO, `Successfully loaded ${rows.length} chemistries from database.`);
 						resolve(rows);
 					}
 				});
@@ -56,12 +63,13 @@ export class ChemistryManager {
 			this.cachedChemistries = chemistriesMap;
 			return chemistriesMap;
 		} catch (error) {
-			console.error('Error fetching chemistries from database:', error);
+			this.logger.log(LOG_LEVEL.ERROR, `Error fetching chemistries from database: ${error}`);
 			throw new Error('Failed to fetch chemistries from database.');
 		}
 	}
 
 	public async populateChemistriesTable(chemistries: Map<string, Chemistry>): Promise<void> {
+		this.logger.log(LOG_LEVEL.INFO, 'Populating chemistries table.');
 		const db = this.getDb();
 		const stmt = db.prepare("INSERT OR REPLACE INTO chemistries (id, name, short_name, nominal_voltage) VALUES (?, ?, ?, ?)");
 		for (const [, chemistry] of chemistries.entries()) {
@@ -73,42 +81,55 @@ export class ChemistryManager {
 			]);
 		}
 		stmt.finalize();
-		console.log('Chemistries table populated.');
+		this.logger.log(LOG_LEVEL.INFO, 'Chemistries table populated.');
 		this.cachedChemistries = null; // Invalidate cache
 	}
 
 	public async getChemistriesMap(): Promise<Map<string, Chemistry>> {
+		this.logger.log(LOG_LEVEL.INFO, 'Attempting to retrieve chemistries map.');
 		if (!this.cachedChemistries) {
 			await this._loadChemistriesFromDb();
 		}
+		this.logger.log(LOG_LEVEL.INFO, `Successfully retrieved ${this.cachedChemistries!.size} chemistries for map.`);
 		return this.cachedChemistries!;
 	}
 
 	public async getChemistryById(id: string): Promise<Chemistry | null> {
+		this.logger.log(LOG_LEVEL.INFO, `Attempting to retrieve chemistry by ID: ${id}`);
 		if (!this.cachedChemistries) {
 			await this._loadChemistriesFromDb();
 		}
-		return this.cachedChemistries!.get(id) || null;
+		const chemistry = this.cachedChemistries!.get(id) || null;
+		if (chemistry) {
+			this.logger.log(LOG_LEVEL.INFO, `Successfully retrieved chemistry for ID: ${id}`);
+		} else {
+			this.logger.log(LOG_LEVEL.WARN, `Chemistry with ID: ${id} not found.`);
+		}
+		return chemistry;
 	}
 
 	
 
 	public async getAllChemistries(): Promise<Chemistry[]> {
+		this.logger.log(LOG_LEVEL.INFO, 'Attempting to retrieve all chemistries.');
 		try {
 			if (!this.cachedChemistries) {
 				await this._loadChemistriesFromDb();
 			}
+			this.logger.log(LOG_LEVEL.INFO, `Successfully retrieved ${this.cachedChemistries!.size} chemistries.`);
 			return Array.from(this.cachedChemistries!.values());
 		} catch (error) {
-			console.error('Error fetching chemistries from database:', error);
+			this.logger.log(LOG_LEVEL.ERROR, `Error fetching chemistries from database: ${error}`);
 			throw new Error('Failed to fetch chemistries.');
 		}
 	}
 
 	public async createChemistry(name: string, shortName: string, nominalVoltage: number): Promise<{ id: string }> {
+		this.logger.log(LOG_LEVEL.INFO, `Attempting to create chemistry with name: ${name}, shortName: ${shortName}, nominalVoltage: ${nominalVoltage}`);
 		const db = this.getDb();
 
 		if (!name || !shortName || isNaN(nominalVoltage)) {
+			this.logger.log(LOG_LEVEL.ERROR, 'Missing required fields for chemistry creation.');
 			throw new Error('Missing required fields.');
 		}
 
@@ -130,9 +151,10 @@ export class ChemistryManager {
 			]);
 			stmt.finalize();
 			this.cachedChemistries = null; // Invalidate cache
+			this.logger.log(LOG_LEVEL.INFO, `Successfully created chemistry with ID: ${newGuid}`);
 			return { id: newGuid };
 		} catch (error) {
-			console.error('Error inserting new chemistry into database:', error);
+			this.logger.log(LOG_LEVEL.ERROR, `Error inserting new chemistry into database: ${error}`);
 			throw new Error('Failed to save chemistry.');
 		}
 	}

@@ -2,12 +2,16 @@ import sqlite3 from 'sqlite3';
 
 import { TestRunInfo, CreateTestRunInfoParams } from '../interfaces/interfaces.js';
 import { stmtRunAsync } from './utils/dbUtils.js';
+import { LoggingManager, LOG_LEVEL } from './loggingManager.js';
 
 export class TestManager {
 	private static instance: TestManager;
 	private db: sqlite3.Database | null = null;
+	private logger: LoggingManager;
 
-	private constructor() { }
+	private constructor() {
+		this.logger = LoggingManager.getInstance();
+	}
 
 	public static getInstance(): TestManager {
 		if (!TestManager.instance) {
@@ -28,12 +32,15 @@ export class TestManager {
 	}
 
 	public async getBatteryTests(batteryId: string): Promise<TestRunInfo[]> {
+		this.logger.log(LOG_LEVEL.INFO, `Attempting to retrieve test runs for battery ID: ${batteryId}`);
 		const db = this.getDb();
 		return new Promise<TestRunInfo[]>((resolve, reject) => {
 			db.all<TestRunInfo>("SELECT capacity, timestamp FROM battery_tests WHERE battery_id = ? ORDER BY timestamp DESC", [batteryId], (err: Error | null, rows: TestRunInfo[]) => {
 				if (err) {
+					this.logger.log(LOG_LEVEL.ERROR, `Error retrieving test runs for battery ID ${batteryId}: ${err.message}`);
 					reject(err);
 				} else {
+					this.logger.log(LOG_LEVEL.INFO, `Successfully retrieved ${rows.length} test runs for battery ID: ${batteryId}`);
 					resolve(rows);
 				}
 			});
