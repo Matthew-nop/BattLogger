@@ -6,6 +6,9 @@ const config: import('ts-jest').JestConfigWithTsJest = {
 	moduleNameMapper: {
 		'^(\.\.?/.*)\.js$': '$1',
 	},
+	testPathIgnorePatterns: [
+		"/tests/e2e/",
+	],
 };
 
 export default config;

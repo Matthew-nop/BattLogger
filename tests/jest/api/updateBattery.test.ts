@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { setupTestEnvironment, teardownTestEnvironment } from '../utils/testSetup.js';
+import { setupTestEnvironment, teardownTestEnvironment } from '../../utils/testSetup.js';
 
 describe('PUT /api/battery/:batteryId', () => {
 	let app: any;

@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { randomUUID } from 'crypto';
-import { setupTestEnvironment, teardownTestEnvironment } from '../utils/testSetup.js';
+import { setupTestEnvironment, teardownTestEnvironment } from '../../utils/testSetup.js';
 
 describe('POST /api/create_battery', () => {
 	let app: any;

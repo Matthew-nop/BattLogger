@@ -1,6 +1,8 @@
 dist/
 node_modules/
 .parcel-cache/
+playwright-report/
+test-results/
 
 *.sublime-project
 *.sublime-workspace

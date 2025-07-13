@@ -1,7 +1,7 @@
 import request from 'supertest';
-import { setupTestEnvironment, teardownTestEnvironment } from '../utils/testSetup.js';
+import { setupTestEnvironment, teardownTestEnvironment } from '../../utils/testSetup.js';
 
-describe('GET /api/chemistry_details', () => {
+describe('GET /api/model_map', () => {
 	let app: any;
 	let db: any;
 
@@ -14,7 +14,7 @@ describe('GET /api/chemistry_details', () => {
 	});
 
 	test('should return 200', async () => {
-		const res = await request(app).get('/api/chemistry_details');
+		const res = await request(app).get('/api/model_map');
 		expect(res.statusCode).toEqual(200);
 		expect(res.body).toBeInstanceOf(Object);
 	});

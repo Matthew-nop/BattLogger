@@ -1,5 +1,5 @@
 import express from 'express';
-import { setupApiRoutes } from '../../src/backend/apiRoutes';
+import { setupApiRoutes } from '../../src/backend/apiRoutes.js';
 import { ChemistryManager } from '../../src/backend/chemistryManager.js';
 import { FormFactorManager } from '../../src/backend/formfactorManager.js';
 import { ModelManager } from '../../src/backend/modelManager.js';

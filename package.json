@@ -11,7 +11,8 @@
 		"build:frontend": "parcel build",
 		"start": "node dist/backend/server.js",
 		"setup": "npm run build && node dist/backend/setup_database.js",
-		"lint": "eslint ."
+		"lint": "eslint .",
+		"test:e2e": "playwright test"
 	},
 	"targets": {
 		"@mainPage": {
@@ -57,10 +58,10 @@
 	},
 	"devDependencies": {
 		"@parcel/transformer-sass": "^2.15.4",
+		"@playwright/test": "^1.53.2",
 		"@types/express": "^5.0.3",
 		"@types/jest": "^30.0.0",
 		"@types/node": "^24.0.10",
-		"@types/sqlite3": "^5.1.0",
 		"@types/supertest": "^6.0.3",
 		"@typescript-eslint/eslint-plugin": "^8.36.0",
 		"@typescript-eslint/parser": "^8.36.0",

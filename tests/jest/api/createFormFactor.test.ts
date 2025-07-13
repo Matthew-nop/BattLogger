@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { setupTestEnvironment, teardownTestEnvironment } from '../utils/testSetup.js';
+import { setupTestEnvironment, teardownTestEnvironment } from '../../utils/testSetup.js';
 
 describe('POST /api/create_formfactor', () => {
 	let app: any;
