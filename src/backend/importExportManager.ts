@@ -1,10 +1,10 @@
-import { ChemistryManager } from './chemistryManager.js';
-import { BatteryManager } from './batteryManager.js';
-import { FormFactorManager } from './formfactorManager.js';
-import { TestManager } from './testManager.js';
-import { ModelManager } from './modelManager.js';
 import { Chemistry, FormFactor } from '../interfaces/interfaces.js';
 import { ModelDTO } from '../interfaces/tables/ModelDTO.js';
+import { BatteryManager } from './batteryManager.js';
+import { ChemistryManager } from './chemistryManager.js';
+import { FormFactorManager } from './formfactorManager.js';
+import { ModelManager } from './modelManager.js';
+import { TestManager } from './testManager.js';
 
 export class ImportExportManager {
 	private chemistryManager: ChemistryManager;

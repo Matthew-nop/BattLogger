@@ -4,13 +4,13 @@ import * as sqlite3 from 'sqlite3';
 
 const dataPath = path.join(import.meta.dirname, '..', '..', '..', 'data');
 
-import { createTables } from './createTables.js';
 import { ChemistryManager } from '../chemistryManager.js';
 import { FormFactorManager } from '../formfactorManager.js';
+import { LOG_LEVEL, LoggingManager } from '../loggingManager.js';
 import { ModelManager } from '../modelManager.js';
-import { LoggingManager, LOG_LEVEL } from '../loggingManager.js';
+import { createTables } from './createTables.js';
 
-import { Chemistry, FormFactor, ModelData } from '../../interfaces/interfaces.js';
+import { Chemistry, FormFactor } from '../../interfaces/interfaces.js';
 import { ModelDTO } from '../../interfaces/tables/ModelDTO.js';
 
 export const isValidUUID = (uuid: string): boolean => {

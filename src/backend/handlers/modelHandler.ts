@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
+import { CreateModelParams, ModelData } from '../../interfaces/interfaces.js';
 import { ModelManager } from '../modelManager.js';
-import { ModelData, CreateModelParams } from '../../interfaces/interfaces.js';
 
 export class ModelHandler {
 	private modelManager: ModelManager;

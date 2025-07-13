@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
+import { CreateFormFactorParams, FormFactor } from '../../interfaces/interfaces.js';
 import { FormFactorManager } from '../formfactorManager.js';
-import { FormFactor, CreateFormFactorParams } from '../../interfaces/interfaces.js';
 
 export class FormFactorHandler {
 	private formFactorManager: FormFactorManager;

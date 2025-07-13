@@ -1,22 +1,22 @@
 import express from 'express';
-import sqlite3 from 'sqlite3';
 import path from 'path';
+import sqlite3 from 'sqlite3';
 
-import { setupPageRoutes } from './pageRoutes.js';
 import { setupApiRoutes } from './apiRoutes.js';
+import { BatteryManager } from './batteryManager.js';
 import { ChemistryManager } from './chemistryManager.js';
 import { FormFactorManager } from './formfactorManager.js';
-import { ModelManager } from './modelManager.js';
-import { BatteryManager } from './batteryManager.js';
-import { TestManager } from './testManager.js';
 import { ImportExportManager } from './importExportManager.js';
+import { ModelManager } from './modelManager.js';
+import { setupPageRoutes } from './pageRoutes.js';
+import { TestManager } from './testManager.js';
 
+import { BatteryHandler } from './handlers/batteryHandler.js';
 import { ChemistryHandler } from './handlers/chemistryHandler.js';
 import { FormFactorHandler } from './handlers/formfactorHandler.js';
-import { ModelHandler } from './handlers/modelHandler.js';
-import { BatteryHandler } from './handlers/batteryHandler.js';
-import { TestHandler } from './handlers/testHandler.js';
 import { ImportExportHandler } from './handlers/importExportHandler.js';
+import { ModelHandler } from './handlers/modelHandler.js';
+import { TestHandler } from './handlers/testHandler.js';
 
 const app: any = express();
 const frontendPath = path.join(import.meta.dirname, '..', '..', 'dist', 'frontend');
@@ -65,13 +65,13 @@ const testHandler = new TestHandler(testManager);
 const importExportHandler = new ImportExportHandler(importExportManager);
 
 setupApiRoutes(
-    app, 
-    batteryHandler, 
-    chemistryHandler, 
-    formFactorHandler, 
-    modelHandler, 
-    testHandler, 
-    importExportHandler
+	app, 
+	batteryHandler, 
+	chemistryHandler, 
+	formFactorHandler, 
+	modelHandler, 
+	testHandler, 
+	importExportHandler
 );
 setupPageRoutes(app);
 

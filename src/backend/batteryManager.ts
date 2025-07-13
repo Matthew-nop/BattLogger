@@ -2,9 +2,9 @@ import sqlite3 from 'sqlite3';
 
 import { BatteryData, BatteryDTO, GetDataQueryParams } from '../interfaces/interfaces.js';
 
-import { stmtRunAsync } from './utils/dbUtils.js';
-import { LoggingManager, LOG_LEVEL } from './loggingManager.js';
+import { LOG_LEVEL, LoggingManager } from './loggingManager.js';
 import { ModelManager } from './modelManager.js';
+import { stmtRunAsync } from './utils/dbUtils.js';
 
 export class BatteryManager {
 	private static instance: BatteryManager;

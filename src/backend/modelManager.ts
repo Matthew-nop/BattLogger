@@ -1,12 +1,12 @@
 import sqlite3 from 'sqlite3';
 
-import { ModelData, CreateModelParams } from '../interfaces/interfaces.js';
 import { randomUUID } from 'crypto';
-import { stmtRunAsync } from './utils/dbUtils.js';
-import { FormFactorManager } from './formfactorManager.js';
-import { ChemistryManager } from './chemistryManager.js';
-import { LoggingManager, LOG_LEVEL } from './loggingManager.js';
+import { CreateModelParams, ModelData } from '../interfaces/interfaces.js';
 import { ModelDTO } from '../interfaces/tables/ModelDTO.js';
+import { ChemistryManager } from './chemistryManager.js';
+import { FormFactorManager } from './formfactorManager.js';
+import { LOG_LEVEL, LoggingManager } from './loggingManager.js';
+import { stmtRunAsync } from './utils/dbUtils.js';
 
 export class ModelManager {
 	private static instance: ModelManager;

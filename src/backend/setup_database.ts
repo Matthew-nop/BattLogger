@@ -3,8 +3,8 @@
 // including dummy battery and test run information for demonstration purposes.
 
 import sqlite3 from 'sqlite3';
-import { initializeDatabase } from './utils/dbUtils.js';
 import { ChemistryManager } from './chemistryManager.js';
+import { initializeDatabase } from './utils/dbUtils.js';
 
 // Create a new database file
 const db = new sqlite3.Database('./database.sqlite', (err: Error | null) => {

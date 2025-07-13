@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
+import { CreateTestRunInfoParams, TestRunInfo } from '../../interfaces/interfaces.js';
 import { TestManager } from '../testManager.js';
-import { TestRunInfo, CreateTestRunInfoParams } from '../../interfaces/interfaces.js';
 
 export class TestHandler {
 	private testManager: TestManager;

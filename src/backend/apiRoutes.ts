@@ -1,11 +1,11 @@
 import { Application } from 'express';
 
+import { BatteryHandler } from './handlers/batteryHandler.js';
 import { ChemistryHandler } from './handlers/chemistryHandler.js';
 import { FormFactorHandler } from './handlers/formfactorHandler.js';
-import { ModelHandler } from './handlers/modelHandler.js';
-import { BatteryHandler } from './handlers/batteryHandler.js';
-import { TestHandler } from './handlers/testHandler.js';
 import { ImportExportHandler } from './handlers/importExportHandler.js';
+import { ModelHandler } from './handlers/modelHandler.js';
+import { TestHandler } from './handlers/testHandler.js';
 
 export function setupApiRoutes(
 	app: Application, 

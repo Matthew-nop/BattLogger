@@ -1,5 +1,5 @@
 import sqlite3 from 'sqlite3';
-import { LoggingManager, LOG_LEVEL } from '../loggingManager.js';
+import { LOG_LEVEL, LoggingManager } from '../loggingManager.js';
 
 export async function createTables(db: sqlite3.Database): Promise<void> {
 	const runAsync = (query: string, params: any[] = []): Promise<any> => {

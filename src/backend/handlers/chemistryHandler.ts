@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { ChemistryManager } from '../chemistryManager.js';
 import { Chemistry, CreateChemistryParams } from '../../interfaces/interfaces.js';
+import { ChemistryManager } from '../chemistryManager.js';
 
 export class ChemistryHandler {
 	private chemistryManager: ChemistryManager;

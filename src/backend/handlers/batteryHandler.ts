@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { BatteryManager } from '../batteryManager.js';
 import { BatteryData, CreateBatteryParams, GetDataQueryParams } from '../../interfaces/interfaces.js';
+import { BatteryManager } from '../batteryManager.js';
 
 export class BatteryHandler {
 	private batteryManager: BatteryManager;
