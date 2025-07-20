@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
-
-import { CreateTestRunInfoParams, TestRunInfo } from '../../interfaces/interfaces.js';
+import { CreateTestRunInfoParams, CreateTestRunProcessParams, TestRunInfo, TestRunProcess } from '../../interfaces/interfaces.js';
 import { TestManager } from '../testManager.js';
 
 export class TestHandler {
@@ -21,8 +20,8 @@ export class TestHandler {
 		}
 	};
 
-	public createTestRun = async (req: Request<{}, {}, CreateTestRunInfoParams>, res: Response<{ message: string, id: number } | { error: string }>) => {
-		const { batteryId, capacity, timestamp } = req.body;
+	public createTestRun = async (req: Request<{}, {}, CreateTestRunInfoParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
+		const { batteryId, capacity, timestamp, processId } = req.body;
 
 		if (!batteryId) {
 			res.status(400).json({ error: 'Missing required field: batteryId.' });
@@ -50,11 +49,43 @@ export class TestHandler {
 		}
 
 		try {
-			const result = await this.testManager.createTestRun({ batteryId, capacity, timestamp });
+			const result = await this.testManager.createTestRun({ batteryId, capacity, timestamp, processId });
 			res.status(201).json({ message: 'Battery test added successfully.', id: result.id });
 		} catch (error: any) {
 			console.error('Error adding battery test:', error);
 			res.status(500).json({ error: error.message });
+		}
+	};
+
+	public createTestRunProcess = async (req: Request<{}, {}, CreateTestRunProcessParams>, res: Response<{ message: string, id: string } | { error: string }>) => {
+		const { name, description } = req.body;
+
+		if (!name) {
+			res.status(400).json({ error: 'Missing required field: name.' });
+			return;
+		}
+
+		if (!description) {
+			res.status(400).json({ error: 'Missing required field: description.' });
+			return;
+		}
+
+		try {
+			const result = await this.testManager.createTestRunProcess({ name, description });
+			res.status(201).json({ message: 'Test run process created successfully.', id: result.id });
+		} catch (error: any) {
+			console.error('Error creating test run process:', error);
+			res.status(500).json({ error: error.message });
+		}
+	};
+
+	public getTestRunProcesses = async (req: Request, res: Response<TestRunProcess[] | { error: string }>) => {
+		try {
+			const processes = await this.testManager.getAllTestRunProcesses();
+			res.json(processes);
+		} catch (error) {
+			console.error('Error fetching test run processes:', error);
+			res.status(500).json({ error: 'Failed to fetch test run processes.' });
 		}
 	};
 }

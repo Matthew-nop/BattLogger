@@ -4,5 +4,6 @@ export * from "./CreateChemistryParams.js";
 export * from "./CreateFormFactorParams.js";
 export * from "./CreateModelParams.js";
 export * from "./CreateTestRunInfoParams.js";
+export * from "./CreateTestRunProcessParams.js";
 export * from "./GetDataQueryParams.js";
 export * from "./ModelData.js";

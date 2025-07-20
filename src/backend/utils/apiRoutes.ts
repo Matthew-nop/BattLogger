@@ -31,7 +31,9 @@ export function setupApiRoutes(
 	app.post('/api/create_battery', batteryHandler.createBattery);
 	app.put('/api/battery/:batteryId', batteryHandler.updateBattery);
 	app.delete('/api/battery/:batteryId', batteryHandler.deleteBattery);
-	app.post('/api/battery_test', testHandler.createTestRun);
+	app.post('/api/create_test_run', testHandler.createTestRun);
+	app.post('/api/create_test_run_process', testHandler.createTestRunProcess);
+	app.get('/api/test_run_processes', testHandler.getTestRunProcesses);
 
 	app.get('/api/export/all', importExportHandler.exportAll);
 	app.post('/api/import/all', importExportHandler.importAll);

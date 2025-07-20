@@ -20,6 +20,7 @@ export async function createTables(db: sqlite3.Database): Promise<void> {
 		await runAsync(`DROP TABLE IF EXISTS models`);
 		await runAsync(`DROP TABLE IF EXISTS formfactors`);
 		await runAsync(`DROP TABLE IF EXISTS chemistries`);
+		await runAsync(`DROP TABLE IF EXISTS battery_tests_processes`);
 
 		await runAsync(`CREATE TABLE IF NOT EXISTS models (
 			id TEXT PRIMARY KEY,
@@ -51,11 +52,19 @@ export async function createTables(db: sqlite3.Database): Promise<void> {
 		)`);
 
 		await runAsync(`CREATE TABLE IF NOT EXISTS battery_tests (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			id TEXT PRIMARY KEY,
 			battery_id TEXT NOT NULL,
 			capacity INTEGER NOT NULL,
 			timestamp TEXT NOT NULL,
-			FOREIGN KEY (battery_id) REFERENCES batteries(id)
+			process_id TEXT,
+			FOREIGN KEY (battery_id) REFERENCES batteries(id),
+			FOREIGN KEY (process_id) REFERENCES battery_tests_processes(id)
+		)`);
+
+		await runAsync(`CREATE TABLE IF NOT EXISTS battery_tests_processes (
+			id TEXT PRIMARY KEY,
+			name TEXT NOT NULL,
+			description TEXT NOT NULL
 		)`);
 		LoggingManager.getInstance().log(LOG_LEVEL.INFO, 'Tables created successfully.');
 	} catch (err: any) {

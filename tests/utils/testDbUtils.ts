@@ -7,10 +7,10 @@ export const insertDummyValues = async (db: sqlite3.Database): Promise<void> => 
 	try {
 		const modelDetails: ModelData[] = loadBuiltinModelDetails();
 
-		const batteryStmt = db.prepare("INSERT INTO batteries (id, model_id) VALUES (?, ?)");
-		const testStmt = db.prepare("INSERT INTO battery_tests (battery_id, capacity, timestamp) VALUES (?, ?, ?)");
-
 		for (let i = 0; i < 11; i++) {
+			const batteryStmt = db.prepare("INSERT INTO batteries (id, model_id) VALUES (?, ?)");
+			const testStmt = db.prepare("INSERT INTO battery_tests (battery_id, capacity, timestamp) VALUES (?, ?, ?)");
+
 			const randomModel: ModelData = modelDetails[Math.floor(Math.random() * modelDetails.length)];
 			if (randomModel) {
 				const batteryId = randomUUID();
@@ -21,10 +21,9 @@ export const insertDummyValues = async (db: sqlite3.Database): Promise<void> => 
 					await stmtRunAsync(testStmt, [batteryId, Math.floor(Math.random() * 1000) + 1000, new Date(Date.now() - j * 86400000).toISOString()]);
 				}
 			}
+			batteryStmt.finalize();
+			testStmt.finalize();
 		}
-
-		batteryStmt.finalize();
-		testStmt.finalize();
 
 	} catch (err: any) {
 		console.error(err.message);

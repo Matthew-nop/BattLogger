@@ -7,20 +7,50 @@
 <body>
 	<div class="form-container">
 		<h1>Add Test Run Info</h1>
-		<form id="addTestForm">
-			<label for="batteryId">Battery ID:</label>
-			<input type="text" id="batteryId" name="batteryId" class="text-input" required>
 
-			<label for="capacity">Capacity (mAh):</label>
-			<input type="number" id="capacity" name="capacity" class="text-input" required>
+		<div class="form-group">
+			<label for="entityType">Select Type:</label>
+			<select id="entityType" class="text-input">
+				<option value="testRun">Test Run</option>
+				<option value="testRunProcess">Test Run Process</option>
+			</select>
+		</div>
 
-			<label for="timestamp">Timestamp:</label>
-			<input type="datetime-local" id="timestamp" name="timestamp" class="text-input" required>
+		<div id="test-run-fields">
+			<form id="addTestForm">
+				<label for="batteryId">Battery ID:</label>
+				<input type="text" id="batteryId" name="batteryId" class="text-input" required>
 
-			<div class="form-actions">
-				<button type="submit">Add Test</button>
-			</div>
-		</form>
+				<label for="capacity">Capacity (mAh):</label>
+				<input type="number" id="capacity" name="capacity" class="text-input" required>
+
+				<label for="timestamp">Timestamp:</label>
+				<input type="datetime-local" id="timestamp" name="timestamp" class="text-input" required>
+
+				<label for="processId">Process ID (Optional):</label>
+				<select id="processId" name="processId" class="text-input">
+					<option value="">None</option>
+				</select>
+
+				<div class="form-actions">
+					<button type="submit">Add Test Run</button>
+				</div>
+			</form>
+		</div>
+
+		<div id="test-run-process-fields" style="display: none;">
+			<form id="addTestProcessForm">
+				<label for="process-name">Process Name:</label>
+				<input type="text" id="process-name" name="processName" class="text-input" required>
+
+				<label for="process-description">Description:</label>
+				<textarea id="process-description" name="processDescription" class="text-input"></textarea>
+
+				<div class="form-actions">
+					<button type="submit">Create Process</button>
+				</div>
+			</form>
+		</div>
 	</div>
 	<script type="module" src="./add-test-info.ts"></script>
 </body>
