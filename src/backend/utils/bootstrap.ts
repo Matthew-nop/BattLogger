@@ -54,7 +54,7 @@ export const bootstrap = async (
 	const testHandler = new TestHandler(testManager);
 	const importExportHandler = new ImportExportHandler(importExportManager);
 
-	const frontendPath = path.join(import.meta.dirname, '..', '..', 'dist', 'frontend');
+	const frontendPath = path.join(import.meta.dirname, '..', '..', 'frontend');
 	app.use(express.static(frontendPath));
 	app.use(express.json()); // Enable JSON body parsing
 
