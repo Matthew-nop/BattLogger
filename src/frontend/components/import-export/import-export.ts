@@ -160,4 +160,13 @@ document.addEventListener('DOMContentLoaded', () => {
 		handleImport('/api/import/testruns', 'importTestRunsFile', 'Test Runs imported successfully!');
 	});
 	setupImportFallback('importTestRunsFile', '/api/import/testruns', 'Test Runs imported successfully!');
+
+	// Test Run Processes
+	document.getElementById('exportTestRunProcessesBtn')?.addEventListener('click', () => {
+		handleExport('/api/export/test_run_processes', 'test_run_processes.json', 'Test Run Processes exported successfully!');
+	});
+	document.getElementById('importTestRunProcessesBtn')?.addEventListener('click', () => {
+		handleImport('/api/import/test_run_processes', 'importTestRunProcessesFile', 'Test Run Processes imported successfully!');
+	});
+	setupImportFallback('importTestRunProcessesFile', '/api/import/test_run_processes', 'Test Run Processes imported successfully!');
 });

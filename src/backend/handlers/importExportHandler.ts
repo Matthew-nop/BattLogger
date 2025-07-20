@@ -141,4 +141,26 @@ export class ImportExportHandler {
 			res.status(500).json({ error: 'Failed to import test runs' });
 		}
 	};
+
+	public exportTestRunProcesses = async (req: Request, res: Response) => {
+		try {
+			const json = await this.manager.exportTestRunProcessesToJson();
+			res.setHeader('Content-Type', 'application/json');
+			res.setHeader('Content-Disposition', 'attachment; filename=test_run_processes.json');
+			res.send(json);
+		} catch (error) {
+			console.error('Error exporting test run processes:', error);
+			res.status(500).json({ error: 'Failed to export test run processes' });
+		}
+	};
+
+	public importTestRunProcesses = async (req: Request, res: Response) => {
+		try {
+			await this.manager.importTestRunProcesses(req.body);
+			res.status(200).json({ message: 'Test Run Processes imported successfully!' });
+		} catch (error) {
+			console.error('Error importing test run processes:', error);
+			res.status(500).json({ error: 'Failed to import test run processes' });
+		}
+	};
 }

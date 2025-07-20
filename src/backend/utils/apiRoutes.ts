@@ -47,4 +47,6 @@ export function setupApiRoutes(
 	app.post('/api/import/batteries', importExportHandler.importBatteries);
 	app.get('/api/export/testruns', importExportHandler.exportTestRuns);
 	app.post('/api/import/testruns', importExportHandler.importTestRuns);
+	app.get('/api/export/test_run_processes', importExportHandler.exportTestRunProcesses);
+	app.post('/api/import/test_run_processes', importExportHandler.importTestRunProcesses);
 }

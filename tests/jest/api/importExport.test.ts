@@ -219,4 +219,32 @@ describe('Import/Export API Routes', () => {
 			capacity: newTestRun.capacity,
 		}));
 	});
+
+	it('should export test run processes', async () => {
+		const res = await request(app).get('/api/export/test_run_processes');
+		expect(res.statusCode).toEqual(200);
+		expect(res.headers['content-type']).toContain('application/json');
+		expect(res.headers['content-disposition']).toContain('attachment; filename=test_run_processes.json');
+		const data = JSON.parse(res.text);
+		expect(Array.isArray(data)).toBe(true);
+	});
+
+	it('should import test run processes', async () => {
+		const newTestRunProcess = {
+			id: randomUUID(),
+			name: 'Test Process for Import',
+			description: 'Description for imported test process',
+		};
+
+		const importRes = await request(app)
+			.post('/api/import/test_run_processes')
+			.send([newTestRunProcess]);
+
+		expect(importRes.statusCode).toEqual(200);
+		expect(importRes.body.message).toEqual('Test Run Processes imported successfully!');
+
+		const exportRes = await request(app).get('/api/export/test_run_processes');
+		const testRunProcesses = JSON.parse(exportRes.text);
+		expect(testRunProcesses).toContainEqual(expect.objectContaining(newTestRunProcess));
+	});
 });

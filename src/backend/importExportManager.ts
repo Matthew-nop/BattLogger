@@ -1,4 +1,4 @@
-import { BatteryDTO, Chemistry, FormFactor, TestRunInfo } from '../interfaces/interfaces.js';
+import { BatteryDTO, Chemistry, FormFactor, TestRunInfo, TestRunProcess } from '../interfaces/interfaces.js';
 import { ModelDTO } from '../interfaces/tables/ModelDTO.js';
 import { BatteryManager } from './batteryManager.js';
 import { ChemistryManager } from './chemistryManager.js';
@@ -72,29 +72,40 @@ export class ImportExportManager {
 		await this.testManager.populateTestRunsTable(testRuns);
 	}
 
+	public async exportTestRunProcessesToJson(): Promise<string> {
+		const testRunProcesses: TestRunProcess[] = await this.testManager.getAllTestRunProcesses();
+		return JSON.stringify(testRunProcesses, null, 2);
+	}
+
+	public async importTestRunProcesses(testRunProcesses: TestRunProcess[]): Promise<void> {
+		await this.testManager.populateTestRunProcessesTable(testRunProcesses);
+	}
+
 	public async exportDbToJson(): Promise<string> {
-		const [batteries, chemistries, formfactors, models, testRuns] = await Promise.all([
+		const [batteries, chemistries, formfactors, models, testRuns, testRunProcesses] = await Promise.all([
 			this.batteryManager.getAllBatteries(),
 			this.chemistryManager.getAllChemistries(),
 			this.formFactorManager.getAllFormFactors(),
 			this.modelManager.getAllModels(),
 			this.testManager.getAllTestRuns(),
+			this.testManager.getAllTestRunProcesses(),
 		]);
 		const data = {
-			batteries, chemistries, formfactors, models, testRuns
+			batteries, chemistries, formfactors, models, testRuns, testRunProcesses
 		}
 
 		return JSON.stringify(data, null, 2);
 	}
 
 	public async importAll(data: any): Promise<void> {
-		const { batteries, chemistries, formfactors, models, testRuns } = data;
+		const { batteries, chemistries, formfactors, models, testRuns, testRunProcesses } = data;
 
 		await this.formFactorManager.populateFormFactorsTable(formfactors);
 		await this.chemistryManager.populateChemistriesTable(chemistries);
 		await this.modelManager.populateModelsTable(models);
 		await this.batteryManager.populateBatteriesTable(batteries);
 		await this.testManager.populateTestRunsTable(testRuns);
+		await this.testManager.populateTestRunProcessesTable(testRunProcesses);
 
 	}
 

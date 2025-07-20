@@ -130,4 +130,26 @@ export class TestManager {
 			});
 		});
 	}
+
+	public async populateTestRunProcessesTable(testRunProcesses: TestRunProcess[]): Promise<{ id: string }[]> {
+		this.logger.log(LOG_LEVEL.INFO, `Attempting to populate test run processes table with ${testRunProcesses.length} entries.`);
+		const db = this.getDb();
+		const insertedTestRunProcesses: { id: string }[] = [];
+
+		const stmt = db.prepare("INSERT OR IGNORE INTO battery_tests_processes (id, name, description) VALUES (?, ?, ?)");
+		for (const process of testRunProcesses) {
+			try {
+				const id = process.id || randomUUID();
+				await stmtRunAsync(stmt, [id, process.name, process.description]);
+				insertedTestRunProcesses.push({ id: id });
+				this.logger.log(LOG_LEVEL.INFO, `Successfully inserted test run process with ID: ${id}`);
+			} catch (error: any) {
+				this.logger.log(LOG_LEVEL.ERROR, `Failed to process test run process with ID ${process.id}: ${error.message}`);
+			}
+		}
+		stmt.finalize();
+
+		this.logger.log(LOG_LEVEL.INFO, `Finished populating test run processes table. Inserted ${insertedTestRunProcesses.length} new test run processes.`);
+		return insertedTestRunProcesses;
+	}
 }
