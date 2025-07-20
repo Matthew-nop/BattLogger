@@ -38,5 +38,45 @@
 		"formFactorId": "b2754df8-5791-4e9f-9dad-5257b104acfd",
 		"chemistryId": "c3d3456a-0e1d-4365-85bb-ec9a5230be31",
 		"manufacturer": "Soshine"
+	},
+	{
+		"id": "be8263fe-124d-4ae8-a3b9-8ce9db276c96",
+		"name": "ReyLight 10440",
+		"designCapacity": 350,
+		"formFactorId": "b2754df8-5791-4e9f-9dad-5257b104acfd",
+		"chemistryId": "e3b7edf3-5b64-4b10-86f4-0a11e3ccf6f6",
+		"manufacturer": "ReyLight"
+	},
+	{
+		"id": "f3a46bcb-f207-4202-8f9a-a8eda78bf4e7",
+		"name": "Acebeam 920mAh USB-C",
+		"designCapacity": 920,
+		"formFactorId": "223b27e9-d1af-426b-8a19-83be8722f189",
+		"chemistryId": "e3b7edf3-5b64-4b10-86f4-0a11e3ccf6f6",
+		"manufacturer": "Acebeam"
+	},
+	{
+		"id": "bef4aa5f-0e39-4e1f-b376-22a1c02f272b",
+		"name": "Lumintop 920mAh USB-C",
+		"designCapacity": 920,
+		"formFactorId": "223b27e9-d1af-426b-8a19-83be8722f189",
+		"chemistryId": "e3b7edf3-5b64-4b10-86f4-0a11e3ccf6f6",
+		"manufacturer": "Lumintop"
+	},
+	{
+		"id": "88bfd3ca-99da-4a01-93c8-9689634057cb",
+		"name": "Wurkkos 14500",
+		"designCapacity": 900,
+		"formFactorId": "223b27e9-d1af-426b-8a19-83be8722f189",
+		"chemistryId": "e3b7edf3-5b64-4b10-86f4-0a11e3ccf6f6",
+		"manufacturer": "Wurkkos"
+	},
+	{
+		"id": "780ba632-2693-4d8f-93bb-56051b1f9401",
+		"name": "Acebeam 1000mAh",
+		"designCapacity": 1000,
+		"formFactorId": "223b27e9-d1af-426b-8a19-83be8722f189",
+		"chemistryId": "e3b7edf3-5b64-4b10-86f4-0a11e3ccf6f6",
+		"manufacturer": "Acebeam"
 	}
 ]

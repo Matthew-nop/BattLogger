@@ -22,5 +22,11 @@
 		"name": "Lithium Nickel Manganese Cobalt Oxide",
 		"shortName": "Li-NMC (INR)",
 		"nominalVoltage": 3.7
+	},
+	{
+		"id": "e3b7edf3-5b64-4b10-86f4-0a11e3ccf6f6",
+		"name": "Lithium-ion (3.7V)",
+		"shortName": "Li-ion (3.7V)",
+		"nominalVoltage": 3.7
 	}
 ]
