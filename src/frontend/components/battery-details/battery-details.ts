@@ -1,5 +1,5 @@
 import Chart from 'chart.js/auto'
-import { BatteryData } from '../../../interfaces/interfaces.js';
+import { BatteryData, TestRunProcess } from '../../../interfaces/interfaces.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
 	const batteryId = window.location.pathname.split('/').pop();
@@ -13,21 +13,35 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 	const fetchData = async () => {
 		try {
-			const [testDataResponse, batteryDataResponse] = await Promise.all([
+			const [testDataResponse, batteryDetailsResponse, testRunProcessesResponse] = await Promise.all([
 				fetch(`/api/battery_tests/${batteryId}`),
-				fetch('/api/data')
+				fetch(`/api/battery_details_data/${batteryId}`),
+				fetch('/api/test_run_processes')
 			]);
 
 			if (!testDataResponse.ok) {
 				throw new Error(`Failed to fetch test data: ${testDataResponse.statusText}`);
 			}
-			if (!batteryDataResponse.ok) {
-				throw new Error(`Failed to fetch all batteries data: ${batteryDataResponse.statusText}`);
+			if (!batteryDetailsResponse.ok) {
+				throw new Error(`Failed to fetch battery details: ${batteryDetailsResponse.statusText}`);
+			}
+			if (!testRunProcessesResponse.ok) {
+				throw new Error(`Failed to fetch test run processes: ${testRunProcessesResponse.statusText}`);
 			}
 
 			testData = await testDataResponse.json();
-			const allBatteries: BatteryData[] = await batteryDataResponse.json();
-			const batteryDetails = allBatteries.find(battery => battery.id === batteryId as string);
+			const batteryDetails: BatteryData = await batteryDetailsResponse.json();
+			const testRunProcesses: TestRunProcess[] = await testRunProcessesResponse.json();
+
+			const processMap = new Map<string, string>();
+			testRunProcesses.forEach(process => {
+				processMap.set(process.id, process.name);
+			});
+
+			testData = testData.map(test => ({
+				...test,
+				processName: test.process_id ? processMap.get(test.process_id) : 'N/A'
+			}));
 
 			if (!batteryDetails) {
 				throw new Error('Battery details not found.');
@@ -122,6 +136,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 			<tr>
 				<td>${row.capacity}</td>
 				<td>${new Date(row.timestamp).toISOString()}</td>
+				<td>${row.processName}</td>
 			</tr>
 		`).join('');
 	};
