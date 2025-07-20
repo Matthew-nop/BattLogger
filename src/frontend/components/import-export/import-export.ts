@@ -109,12 +109,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// All Data
 	document.getElementById('exportAllBtn')?.addEventListener('click', () => {
-		handleExport('/api/export', 'battlogger_all_data.json', 'All data exported successfully!');
+		handleExport('/api/export/all', 'battlogger_all_data.json', 'All data exported successfully!');
 	});
 	document.getElementById('importAllBtn')?.addEventListener('click', () => {
-		handleImport('/api/import', 'importAllFile', 'All data imported successfully!');
+		handleImport('/api/import/all', 'importAllFile', 'All data imported successfully!');
 	});
-	setupImportFallback('importAllFile', '/api/import', 'All data imported successfully!');
+	setupImportFallback('importAllFile', '/api/import/all', 'All data imported successfully!');
 
 	// Chemistries
 	document.getElementById('exportChemistriesBtn')?.addEventListener('click', () => {

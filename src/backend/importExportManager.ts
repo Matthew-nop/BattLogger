@@ -32,18 +32,16 @@ export class ImportExportManager {
 		return JSON.stringify(chemistries, null, 2);
 	}
 
-	public async importChemistriesFromJson(json: string): Promise<void> {
-		const chemistries: Chemistry[] = JSON.parse(json);
+	public async importChemistries(chemistries: Chemistry[]): Promise<void> {
 		await this.chemistryManager.populateChemistriesTable(chemistries);
 	}
 
-	public async exportFormFactorsToJson(): Promise<string> {
+	public async exportFormfactorsToJson(): Promise<string> {
 		const formFactors: FormFactor[] = await this.formFactorManager.getAllFormFactors();
 		return JSON.stringify(formFactors, null, 2);
 	}
 
-	public async importFormFactorsFromJson(json: string): Promise<void> {
-		const formfactors: FormFactor[] = JSON.parse(json);
+	public async importFormfactors(formfactors: FormFactor[]): Promise<void> {
 		await this.formFactorManager.populateFormFactorsTable(formfactors);
 	}
 
@@ -52,8 +50,7 @@ export class ImportExportManager {
 		return JSON.stringify(models, null, 2);
 	}
 
-	public async importModelsFromJson(json: string): Promise<void> {
-		const models: ModelDTO[] = JSON.parse(json);
+	public async importModels(models: ModelDTO[]): Promise<void> {
 		await this.modelManager.populateModelsTable(models);
 	}
 
@@ -72,9 +69,7 @@ export class ImportExportManager {
 		return JSON.stringify(data, null, 2);
 	}
 
-	public async importDbFromJson(json: string): Promise<void> {
-		const data = JSON.parse(json);
-
+	public async importAll(data: any): Promise<void> {
 		const { batteries, chemistries, formfactors, models, testRuns } = data;
 
 		await this.formFactorManager.populateFormFactorsTable(formfactors);

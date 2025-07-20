@@ -80,17 +80,17 @@ export class TestManager {
 		const db = this.getDb();
 		const insertedTestRuns: { id: number }[] = [];
 
+		const stmt = db.prepare("INSERT INTO battery_tests (battery_id, capacity, timestamp) VALUES (?, ?, ?)");
 		for (const testRun of testRuns) {
 			try {
-				const stmt = db.prepare("INSERT INTO battery_tests (battery_id, capacity, timestamp) VALUES (?, ?, ?)");
 				const result = await stmtRunAsync(stmt, [testRun.batteryId, testRun.capacity, testRun.timestamp]);
-				stmt.finalize();
 				insertedTestRuns.push({ id: result.lastID });
 				this.logger.log(LOG_LEVEL.INFO, `Successfully inserted test run for battery ID: ${testRun.batteryId}`);
 			} catch (error: any) {
 				this.logger.log(LOG_LEVEL.ERROR, `Failed to process test run for battery ID ${testRun.batteryId}: ${error.message}`);
 			}
 		}
+		stmt.finalize();
 
 		this.logger.log(LOG_LEVEL.INFO, `Finished populating battery tests table. Inserted ${insertedTestRuns.length} new test runs.`);
 		return insertedTestRuns;

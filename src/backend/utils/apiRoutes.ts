@@ -33,8 +33,8 @@ export function setupApiRoutes(
 	app.delete('/api/battery/:batteryId', batteryHandler.deleteBattery);
 	app.post('/api/battery_test', testHandler.createTestRun);
 
-	app.get('/api/export', importExportHandler.exportAll);
-	app.post('/api/import', importExportHandler.importAll);
+	app.get('/api/export/all', importExportHandler.exportAll);
+	app.post('/api/import/all', importExportHandler.importAll);
 	app.get('/api/export/chemistries', importExportHandler.exportChemistries);
 	app.post('/api/import/chemistries', importExportHandler.importChemistries);
 	app.get('/api/export/formfactors', importExportHandler.exportFormFactors);
