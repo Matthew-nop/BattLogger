@@ -30,5 +30,13 @@
 		"formFactorId": "223b27e9-d1af-426b-8a19-83be8722f189",
 		"chemistryId": "c3d3456a-0e1d-4365-85bb-ec9a5230be31",
 		"manufacturer": "Vapcell"
+	},
+	{
+		"id": "a28f813f-e1e6-4acf-8afe-190b7cc0e04b",
+		"name": "Soshine 10440 330mAh",
+		"designCapacity": 330,
+		"formFactorId": "b2754df8-5791-4e9f-9dad-5257b104acfd",
+		"chemistryId": "c3d3456a-0e1d-4365-85bb-ec9a5230be31",
+		"manufacturer": "Soshine"
 	}
 ]
