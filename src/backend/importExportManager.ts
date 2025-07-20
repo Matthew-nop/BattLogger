@@ -1,4 +1,4 @@
-import { Chemistry, FormFactor } from '../interfaces/interfaces.js';
+import { BatteryDTO, Chemistry, FormFactor, TestRunInfo } from '../interfaces/interfaces.js';
 import { ModelDTO } from '../interfaces/tables/ModelDTO.js';
 import { BatteryManager } from './batteryManager.js';
 import { ChemistryManager } from './chemistryManager.js';
@@ -52,6 +52,24 @@ export class ImportExportManager {
 
 	public async importModels(models: ModelDTO[]): Promise<void> {
 		await this.modelManager.populateModelsTable(models);
+	}
+
+	public async exportBatteriesToJson(): Promise<string> {
+		const batteries: BatteryDTO[] = await this.batteryManager.getAllBatteries();
+		return JSON.stringify(batteries, null, 2);
+	}
+
+	public async importBatteries(batteries: BatteryDTO[]): Promise<void> {
+		await this.batteryManager.populateBatteriesTable(batteries);
+	}
+
+	public async exportTestRunsToJson(): Promise<string> {
+		const testRuns: TestRunInfo[] = await this.testManager.getAllTestRuns();
+		return JSON.stringify(testRuns, null, 2);
+	}
+
+	public async importTestRuns(testRuns: TestRunInfo[]): Promise<void> {
+		await this.testManager.populateTestRunsTable(testRuns);
 	}
 
 	public async exportDbToJson(): Promise<string> {

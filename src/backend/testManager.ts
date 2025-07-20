@@ -75,7 +75,7 @@ export class TestManager {
 		}
 	}
 
-	public async populateTestRunsTable(testRuns: CreateTestRunInfoParams[]): Promise<{ id: number }[]> {
+	public async populateTestRunsTable(testRuns: TestRunInfo[]): Promise<{ id: number }[]> {
 		this.logger.log(LOG_LEVEL.INFO, `Attempting to populate battery tests table with ${testRuns.length} entries.`);
 		const db = this.getDb();
 		const insertedTestRuns: { id: number }[] = [];
@@ -83,11 +83,11 @@ export class TestManager {
 		const stmt = db.prepare("INSERT INTO battery_tests (battery_id, capacity, timestamp) VALUES (?, ?, ?)");
 		for (const testRun of testRuns) {
 			try {
-				const result = await stmtRunAsync(stmt, [testRun.batteryId, testRun.capacity, testRun.timestamp]);
+				const result = await stmtRunAsync(stmt, [testRun.battery_id, testRun.capacity, testRun.timestamp]);
 				insertedTestRuns.push({ id: result.lastID });
-				this.logger.log(LOG_LEVEL.INFO, `Successfully inserted test run for battery ID: ${testRun.batteryId}`);
+				this.logger.log(LOG_LEVEL.INFO, `Successfully inserted test run for battery ID: ${testRun.battery_id}`);
 			} catch (error: any) {
-				this.logger.log(LOG_LEVEL.ERROR, `Failed to process test run for battery ID ${testRun.batteryId}: ${error.message}`);
+				this.logger.log(LOG_LEVEL.ERROR, `Failed to process test run for battery ID ${testRun.battery_id}: ${error.message}`);
 			}
 		}
 		stmt.finalize();

@@ -41,4 +41,8 @@ export function setupApiRoutes(
 	app.post('/api/import/formfactors', importExportHandler.importFormFactors);
 	app.get('/api/export/models', importExportHandler.exportModels);
 	app.post('/api/import/models', importExportHandler.importModels);
+	app.get('/api/export/batteries', importExportHandler.exportBatteries);
+	app.post('/api/import/batteries', importExportHandler.importBatteries);
+	app.get('/api/export/testruns', importExportHandler.exportTestRuns);
+	app.post('/api/import/testruns', importExportHandler.importTestRuns);
 }

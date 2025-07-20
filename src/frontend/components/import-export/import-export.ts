@@ -142,4 +142,22 @@ document.addEventListener('DOMContentLoaded', () => {
 		handleImport('/api/import/models', 'importModelsFile', 'Models imported successfully!');
 	});
 	setupImportFallback('importModelsFile', '/api/import/models', 'Models imported successfully!');
+
+	// Batteries
+	document.getElementById('exportBatteriesBtn')?.addEventListener('click', () => {
+		handleExport('/api/export/batteries', 'batteries.json', 'Batteries exported successfully!');
+	});
+	document.getElementById('importBatteriesBtn')?.addEventListener('click', () => {
+		handleImport('/api/import/batteries', 'importBatteriesFile', 'Batteries imported successfully!');
+	});
+	setupImportFallback('importBatteriesFile', '/api/import/batteries', 'Batteries imported successfully!');
+
+	// Test Runs
+	document.getElementById('exportTestRunsBtn')?.addEventListener('click', () => {
+		handleExport('/api/export/testruns', 'testruns.json', 'Test Runs exported successfully!');
+	});
+	document.getElementById('importTestRunsBtn')?.addEventListener('click', () => {
+		handleImport('/api/import/testruns', 'importTestRunsFile', 'Test Runs imported successfully!');
+	});
+	setupImportFallback('importTestRunsFile', '/api/import/testruns', 'Test Runs imported successfully!');
 });
