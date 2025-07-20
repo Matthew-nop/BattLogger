@@ -1,4 +1,4 @@
-import { CreateChemistryParams, CreateFormFactorParams, CreateModelParams } from '../../../interfaces/interfaces.js';
+import { Chemistry, CreateChemistryParams, CreateFormFactorParams, CreateModelParams, FormFactor } from '../../../interfaces/interfaces.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
 	const batteryTypeSelect = document.getElementById('entityType') as HTMLSelectElement;
@@ -16,20 +16,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 				fetch('/api/formfactor_details'),
 				fetch('/api/chemistry_details')
 			]);
-			const formFactorDetails = await formFactorResponse.json();
-			const chemistryDetails = await chemistryResponse.json();
+			const formFactorDetails: FormFactor[] = await formFactorResponse.json();
+			const chemistryDetails: Chemistry[] = await chemistryResponse.json();
 
-			for (const guid in formFactorDetails) {
+			const sortedFormFactors: FormFactor[] = Object.values(formFactorDetails).sort((a: FormFactor, b: FormFactor) => a.name.localeCompare(b.name));
+			for (const formFactor of sortedFormFactors) {
 				const option = document.createElement('option');
-				option.value = guid;
-				option.textContent = formFactorDetails[guid].name;
+				option.value = formFactor.id;
+				option.textContent = formFactor.name;
 				formFactorSelect.appendChild(option);
 			}
 
-			for (const guid in chemistryDetails) {
+			const sortedChemistries: Chemistry[] = Object.values(chemistryDetails).sort((a: Chemistry, b: Chemistry) => a.name.localeCompare(b.name));
+			for (const chemistry of sortedChemistries) {
 				const option = document.createElement('option');
-				option.value = guid;
-				option.textContent = chemistryDetails[guid].name;
+				option.value = chemistry.id;
+				option.textContent = chemistry.name;
 				chemistrySelect.appendChild(option);
 			}
 

@@ -1,4 +1,4 @@
-import { CreateTestRunInfoParams, CreateTestRunProcessParams } from '../../../interfaces/interfaces.js';
+import { CreateTestRunInfoParams, CreateTestRunProcessParams, TestRunProcess } from '../../../interfaces/interfaces.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
 	const entityTypeSelect = document.getElementById('entityType') as HTMLSelectElement;
@@ -28,7 +28,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 				processIdSelect.remove(1);
 			}
 
-			for (const process of processes) {
+			const sortedProcesses: TestRunProcess[] = processes.sort((a: TestRunProcess, b: TestRunProcess) => a.name.localeCompare(b.name));
+			for (const process of sortedProcesses) {
 				const option = document.createElement('option');
 				option.value = process.id;
 				option.textContent = process.name;

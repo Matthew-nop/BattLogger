@@ -8,10 +8,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 		const modelResponse = await fetch('/api/model_details');
 		const modelDetails: Record<string, ModelData> = await modelResponse.json();
 
-		for (const guid in modelDetails) {
+		const sortedModels: ModelData[] = Object.values(modelDetails).sort((a, b) => a.name.localeCompare(b.name));
+
+		for (const model of sortedModels) {
 			const option = document.createElement('option');
-			option.value = guid;
-			option.textContent = modelDetails[guid].name;
+			option.value = model.id;
+			option.textContent = model.name;
 			modelSelect.appendChild(option);
 		}
 
