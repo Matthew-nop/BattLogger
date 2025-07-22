@@ -74,7 +74,7 @@
 		"@typescript-eslint/parser": "^8.37.0",
 		"eslint": "^9.31.0",
 		"eslint-plugin-jsonc": "^2.20.1",
-		"jest": "^30.0.4",
+		"jest": "^30.0.5",
 		"parcel": "^2.15.4",
 		"sass": "^1.89.2",
 		"supertest": "^7.1.1",
