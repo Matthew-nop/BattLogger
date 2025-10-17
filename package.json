@@ -73,7 +73,7 @@
 		"@typescript-eslint/eslint-plugin": "^8.46.1",
 		"@typescript-eslint/parser": "^8.38.0",
 		"eslint": "^9.37.0",
-		"eslint-plugin-jsonc": "^2.20.1",
+		"eslint-plugin-jsonc": "^2.21.0",
 		"jest": "^30.2.0",
 		"parcel": "^2.15.4",
 		"sass": "^1.93.2",
