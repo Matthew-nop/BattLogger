@@ -41,6 +41,7 @@ export class BatteryManager {
 		SELECT
 			bd.id AS id,
 			bd.model_id AS modelId,
+			m.name AS modelName,
 			bt.capacity AS lastTestedCapacity,
 			bt.timestamp AS lastTestedTimestamp,
 			c.name AS chemistryName,
@@ -82,7 +83,13 @@ export class BatteryManager {
 		}
 
 		if (sortBy) {
-			query += ` ORDER BY ${sortBy} ${order}`;
+			const allowedSortBy = ['id', 'modelName', 'lastTestedCapacity', 'lastTestedTimestamp', 'chemistryName', 'chemistryShortName', 'formfactorName'];
+			const lowerCaseOrder = order.toLowerCase();
+			if (allowedSortBy.includes(sortBy) && ['asc', 'desc'].includes(lowerCaseOrder)) {
+				query += ` ORDER BY ${sortBy} ${lowerCaseOrder}`;
+			} else {
+				this.logger.log(LOG_LEVEL.WARN, `Invalid sort parameters provided: sortBy=${sortBy}, order=${order}`);
+			}
 		}
 
 		return new Promise<BatteryData[]>((resolve, reject) => {
