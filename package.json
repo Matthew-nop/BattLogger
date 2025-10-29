@@ -67,7 +67,7 @@
 		"@parcel/transformer-sass": "^2.16.0",
 		"@playwright/test": "^1.56.1",
 		"@types/express": "^5.0.3",
-		"@types/node": "^24.8.1",
+		"@types/node": "^24.9.2",
 		"@types/jest": "^30.0.0",
 		"@types/supertest": "^6.0.3",
 		"@typescript-eslint/eslint-plugin": "^8.46.1",
