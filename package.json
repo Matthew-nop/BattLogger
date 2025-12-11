@@ -65,7 +65,7 @@
 	},
 	"devDependencies": {
 		"@parcel/transformer-sass": "^2.16.0",
-		"@playwright/test": "^1.56.1",
+		"@playwright/test": "^1.57.0",
 		"@types/express": "^5.0.6",
 		"@types/node": "^24.8.1",
 		"@types/jest": "^30.0.0",
