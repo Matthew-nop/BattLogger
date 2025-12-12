@@ -17,45 +17,10 @@
 		"test:e2e": "playwright test"
 	},
 	"targets": {
-		"@mainPage": {
-			"source": "src/frontend/index.html",
+		"@frontend": {
+			"source": "src/frontend/**/*.html",
 			"distDir": "dist/frontend",
 			"publicUrl": "."
-		},
-		"@addBatteryType": {
-			"source": "src/frontend/components/add-battery-type/add-battery-type.html",
-			"distDir": "dist/frontend/add-battery-type",
-			"publicUrl": "/add-battery-type/"
-		},
-		"@addBattery": {
-			"source": "src/frontend/components/add-battery/add_battery.html",
-			"distDir": "dist/frontend/add-battery",
-			"publicUrl": "/add-battery/"
-		},
-		"@batteryDetails": {
-			"source": "src/frontend/components/battery-details/battery_details.html",
-			"distDir": "dist/frontend/battery-details",
-			"publicUrl": "/battery-details/"
-		},
-		"@modelDetails": {
-			"source": "src/frontend/components/model-details/model_details.html",
-			"distDir": "dist/frontend/model-details",
-			"publicUrl": "/model-details/"
-		},
-		"@addTest": {
-			"source": "src/frontend/components/add-test-info/add_test_info.html",
-			"distDir": "dist/frontend/add-test-info",
-			"publicUrl": "/add-test-info/"
-		},
-		"@batterySummary": {
-			"source": "src/frontend/components/battery-summary/battery_summary.html",
-			"distDir": "dist/frontend/battery-summary",
-			"publicUrl": "/battery-summary/"
-		},
-		"@importExport": {
-			"source": "src/frontend/components/import-export/import_export.html",
-			"distDir": "dist/frontend/import-export",
-			"publicUrl": "/import-export/"
 		}
 	},
 	"dependencies": {
