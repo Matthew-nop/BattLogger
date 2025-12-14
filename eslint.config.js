@@ -6,7 +6,7 @@ import pluginJsonc from "eslint-plugin-jsonc";
 
 export default [
   {
-    ignores: ["dist/"],
+    ignores: ["out/"],
   },
   pluginJs.configs.recommended,
   {
