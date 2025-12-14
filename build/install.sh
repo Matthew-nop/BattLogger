@@ -17,7 +17,7 @@ useradd -U -m "${USER}"
 test -d "${SITE_DIRNAME}" || mkdir -p "${SITE_DIRNAME}"
 test -d "${SITE_PATH}" || rm -rf "${SITE_PATH}"
 
-cp -r dist "${SITE_PATH}"
+cp -r out/dist "${SITE_PATH}"
 
 chown -R ${USER}:${USER} ${SITE_PATH}
 chmod -R 700 ${SITE_PATH}
@@ -38,6 +38,6 @@ WantedBy=multi-user.target
 """ > /etc/systemd/system/${SERVICE_NAME}.service
 
 systemctl daemon-reload
-systemctl start website-stage
-systemctl enable website-stage
+systemctl start "${SERVICE_NAME}"
+systemctl enable "${SERVICE_NAME}"
 
