@@ -21,7 +21,7 @@ const initDb: boolean = process.argv.includes('--init-db');
 		exit(0);
 	}
 
-	const port = 3000;
+	const port = 50100;
 	app.listen(port, () => {
 		console.log(`Server listening at http://localhost:${port}`);
 	});
