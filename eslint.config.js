@@ -43,7 +43,7 @@ export default [
     },
   },
   {
-    files: ["data/**/*.json", "data/**/*.jsonc"],
+    files: ["src/data/**/*.json", "src/data/**/*.jsonc"],
     plugins: {
       jsonc: pluginJsonc,
     },

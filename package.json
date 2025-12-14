@@ -2,7 +2,7 @@
 	"name": "batt-logger",
 	"version": "0.0.1",
 	"description": "Logging and tracking app for batteries",
-	"main": "dist/backend/server.js",
+	"main": "out/dist/backend/server.js",
 	"type": "module",
 	"scripts": {
 		"start": "node out/dist/backend/server.js",
