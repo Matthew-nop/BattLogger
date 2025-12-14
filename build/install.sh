@@ -15,7 +15,7 @@ SERVICE_NAME="website-${SITE_NAME}"
 useradd -U -m "${USER}"
 
 test -d "${SITE_DIRNAME}" || mkdir -p "${SITE_DIRNAME}"
-test -d "${SITE_PATH}" || rm -rf "${SITE_PATH}"
+test -d "${SITE_PATH}" && rm -rf "${SITE_PATH}"
 
 cp -r out/dist "${SITE_PATH}"
 
@@ -31,6 +31,7 @@ After=network.target
 Restart=always
 User=${USER}
 Group=${USER}
+Environment=NODE_ENV=${SITE_PATH}/node_modules
 ExecStart=/usr/bin/node ${SITE_PATH}/backend/server.js
 
 [Install]
@@ -40,4 +41,3 @@ WantedBy=multi-user.target
 systemctl daemon-reload
 systemctl start "${SERVICE_NAME}"
 systemctl enable "${SERVICE_NAME}"
-
