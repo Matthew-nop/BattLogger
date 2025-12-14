@@ -31,6 +31,7 @@ After=network.target
 Restart=always
 User=${USER}
 Group=${USER}
+WorkingDirectory=${SITE_PATH}
 Environment=NODE_ENV=${SITE_PATH}/node_modules
 ExecStart=/usr/bin/node ${SITE_PATH}/backend/server.js
 
