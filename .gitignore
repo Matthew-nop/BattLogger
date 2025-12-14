@@ -1,4 +1,4 @@
-dist/
+out/
 logs/
 node_modules/
 .parcel-cache/

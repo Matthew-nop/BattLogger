@@ -5,12 +5,15 @@
 	"main": "dist/backend/server.js",
 	"type": "module",
 	"scripts": {
-		"start": "node dist/backend/server.js",
-		"start:dev": "NODE_ENV=dev node dist/backend/server.js",
-		"initialise": "npm run build && node dist/backend/server.js --init-db",
-		"build": "build/build.sh && npm run build:backend && npm run build:frontend",
+		"start": "node out/dist/backend/server.js",
+		"start:dev": "NODE_ENV=dev npm run start",
+		"initialise": "npm run rebuild && node out/dist/backend/server.js --init-db",
+		"initialise:dev": "NODE_ENV=dev npm run initialise",
+		"build": "npm run build:backend && npm run build:frontend && build/build.sh",
+		"rebuild": "npm run clean && npm run build",
 		"build:backend": "tsc -p tsconfig.json",
 		"build:frontend": "parcel build",
+		"clean": "build/clean.sh",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"test": "node --experimental-vm-modules node_modules/.bin/jest",
@@ -19,7 +22,7 @@
 	"targets": {
 		"@frontend": {
 			"source": "src/frontend/**/*.html",
-			"distDir": "dist/frontend",
+			"distDir": "out/dist/frontend",
 			"publicUrl": "."
 		}
 	},

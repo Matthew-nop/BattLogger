@@ -8,7 +8,7 @@ import { FormFactorManager } from '../formfactorManager.js';
 import { LOG_LEVEL, LoggingManager } from '../loggingManager.js';
 import { ModelManager } from '../modelManager.js';
 
-const dataPath = path.join(import.meta.dirname, '..', '..', '..', 'data');
+const dataPath = path.join(import.meta.dirname, '..', '..', 'data');
 
 export const isValidUUID = (uuid: string): boolean => {
 	const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;

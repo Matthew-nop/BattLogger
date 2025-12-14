@@ -4,7 +4,7 @@
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "lib": ["es2016", "dom"],
-    "outDir": "./dist",
+    "outDir": "./out/dist",
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,

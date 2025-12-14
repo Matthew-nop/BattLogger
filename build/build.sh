@@ -1,10 +1,10 @@
 #!/bin/sh
 
-rm -rf dist
+test -d out/dist/ || mkdir -p out/dist/
+test -d out/dist/data || mkdir out/dist/data
 
-test -d dist || mkdir dist
-test -d dist/data || mkdir dist/data
-test -d dist/data/batteries || mkdir dist/data/batteries
-test -d dist/data/test_runs || mkdir dist/data/test_runs
+cp -r src/data/* out/dist/data/
+test -d out/dist/data/batteries || mkdir out/dist/data/batteries
+test -d out/dist/data/test_runs || mkdir out/dist/data/test_runs
 
-cp -r data/* dist/data/
+cp build/install.sh out/
